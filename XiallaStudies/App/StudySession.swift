@@ -10,6 +10,8 @@ final class StudySession: ObservableObject {
         didSet { Task { await persistResumeRoute() } }
     }
     @Published var showSettings = false
+    /// Replays the brand splash from Home (does not clear study progress).
+    @Published var showBrandSplash = false
     @Published var isLoading = true
     @Published var lastError: String?
     @Published var lastIIEF5Summary: String?
@@ -53,6 +55,17 @@ final class StudySession: ObservableObject {
     func markSplashSeen() async {
         snapshot.preferences.hasSeenSplash = true
         await persist()
+    }
+
+    /// Home hero wordmark — show splash again without wiping enrollment / surveys.
+    func presentBrandSplash() {
+        showSettings = false
+        path = []
+        showBrandSplash = true
+    }
+
+    func dismissBrandSplash() {
+        showBrandSplash = false
     }
 
     // MARK: - Flow

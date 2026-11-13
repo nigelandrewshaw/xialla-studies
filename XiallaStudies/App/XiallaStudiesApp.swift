@@ -28,11 +28,17 @@ struct RootView: View {
                     ProgressView()
                         .tint(BrandTheme.chalk)
                 }
-            } else if showSplash && !session.hasSeenSplash {
+            } else if session.showBrandSplash || (showSplash && !session.hasSeenSplash) {
                 SplashView {
-                    Task { await session.markSplashSeen() }
-                    withAnimation(BrandTheme.reveal) {
-                        showSplash = false
+                    if session.showBrandSplash {
+                        withAnimation(BrandTheme.reveal) {
+                            session.dismissBrandSplash()
+                        }
+                    } else {
+                        Task { await session.markSplashSeen() }
+                        withAnimation(BrandTheme.reveal) {
+                            showSplash = false
+                        }
                     }
                 }
                 .transition(.opacity)
@@ -65,6 +71,7 @@ struct RootView: View {
             }
         }
         .animation(BrandTheme.reveal, value: showSplash)
+        .animation(BrandTheme.reveal, value: session.showBrandSplash)
         .animation(BrandTheme.reveal, value: session.isLoading)
         .onChange(of: session.hasSeenSplash) { _, seen in
             // Reset study progress clears hasSeenSplash — show splash again for a fresh demo.

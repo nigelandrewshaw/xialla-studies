@@ -82,12 +82,19 @@ struct HomeView: View {
                             endPoint: .bottom
                         )
 
-                        BrandWordmark(size: 40, light: true)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, BrandTheme.contentInset)
-                            .padding(.trailing, BrandTheme.contentInset)
-                            .padding(.bottom, 28)
-                            .opacity(appeared ? 1 : 0)
+                        Button {
+                            session.presentBrandSplash()
+                        } label: {
+                            BrandWordmark(size: 40, light: true)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Xialla")
+                        .accessibilityHint("Shows the welcome splash screen")
+                        .padding(.leading, BrandTheme.contentInset)
+                        .padding(.trailing, BrandTheme.contentInset)
+                        .padding(.bottom, 28)
+                        .opacity(appeared ? 1 : 0)
                     }
                 }
             }
