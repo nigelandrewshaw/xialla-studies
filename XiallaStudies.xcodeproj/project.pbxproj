@@ -1,0 +1,625 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9372BA05ADC784F8B5F7A3EE /* StudySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5236DEC4725414BE9D02BB74 /* StudySession.swift */; };
+		83882FBB6435AA1838FDB7A4 /* XiallaStudiesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8737017949832043FF232D63 /* XiallaStudiesApp.swift */; };
+		FE4AA21C7FBA4B60A6FE9E56 /* StudyConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513390C65FBA8721E27E557A /* StudyConfig.swift */; };
+		0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F269246B4DD871D37E23332 /* StudyParameters.swift */; };
+		F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648F92AA96FA5171F750B289 /* BrandComponents.swift */; };
+		71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6932CDFF5E49B18C9118306 /* BrandTheme.swift */; };
+		0A87024E3E19FEE708A6BA5F /* KeyboardAvoidingFormScroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170F18968A336D50FC6D8242 /* KeyboardAvoidingFormScroll.swift */; };
+		5A9A8E464427FAA289992260 /* ConsentDocumentCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266CB3925C7B88E76190B0C5 /* ConsentDocumentCopy.swift */; };
+		30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */; };
+		D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */; };
+		726ADD1B3686AB860004CD55 /* ConsentSignatureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AD61EAA61FFB8FF863A5BB /* ConsentSignatureStore.swift */; };
+		345A340986C1030DE32EA60C /* FocusableTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6FDA21C1672DFA8F890532 /* FocusableTextField.swift */; };
+		35F7372A9A6AAB5AF7B46CF1 /* SignaturePadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186DBD0A08BD900C308E6BB7 /* SignaturePadView.swift */; };
+		FAD5E87C5255B91FE898F920 /* EligibilityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAD1D68A9E9F28C9E587C10 /* EligibilityView.swift */; };
+		C099509641FC880434A54388 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3ED3154E841D7F362176CE /* HomeView.swift */; };
+		9B5ED234FE52E19913394407 /* KitFulfillmentStubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAEF5C25FAC273D196E1AD8 /* KitFulfillmentStubView.swift */; };
+		733BA7E0892F316B28500C09 /* ProviderProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6B75A9F0138F352BD5C349 /* ProviderProfileView.swift */; };
+		8A8601F95B903EC1F35492C3 /* ReminderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D427B2936BAC4BB5A78D2050 /* ReminderSettingsView.swift */; };
+		819CDE760F0CA9B2F2D1DEA3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB0B29F54C46DB409E2A788 /* SettingsView.swift */; };
+		AE457CEA45144AD8BBA0506F /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C2F31F29CE4608041631F1 /* SplashView.swift */; };
+		3DF9960A1D24C689E3E68C44 /* BrandedSurveyFallbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */; };
+		973ECD6898011F227E63B150 /* InstrumentSurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0D810520F49E72B9305506 /* InstrumentSurveyView.swift */; };
+		0555174015E9FD884B85058E /* SurveyFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */; };
+		ABB9556A046527A2101E4DF3 /* SurveyResultParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A47A1DB38A5BD758B9B1E72 /* SurveyResultParser.swift */; };
+		05EC4A687C13E0A1D8FA3170 /* IIEF5Scoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194D554DB420FFE822D4B7EC /* IIEF5Scoring.swift */; };
+		7C47258BEA5C9E161D4665A1 /* StudyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0510C2B4FD045414DBECDB /* StudyModels.swift */; };
+		0A961A33F9DEA0988113D929 /* StudyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B7274A50BE4E775287ACB6 /* StudyAPIClient.swift */; };
+		F5F5D19D6CAC7E97BB2434F8 /* LocalReminderScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2113606C0AE21208D26ED3 /* LocalReminderScheduler.swift */; };
+		6D8D981F71D8D44A278D9BF4 /* LocalStudyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E114535E65210A39F0A4D4 /* LocalStudyStore.swift */; };
+		AAA42432E197CC3BF2772328 /* StudyModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED38F693B63952063BE19618 /* StudyModelTests.swift */; };
+		D104D11189389958E0E9F8CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B9362427B1F9912B138A4AAC /* Assets.xcassets */; };
+		E181539947C474DB1A842A33 /* Fieldwork_Geo_Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 06486DEA0906B090FF149257 /* Fieldwork_Geo_Bold.otf */; };
+		661C6A24B3810FE3AB453FD2 /* Fieldwork_Geo_Demibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3DC0AC9B554E632CB36340FD /* Fieldwork_Geo_Demibold.otf */; };
+		38820B5EB5FFB0594FA325D6 /* Fieldwork_Geo_Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2D3FE8D68D508FB106D4EDE8 /* Fieldwork_Geo_Regular.otf */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		996AD237BC284D463E664FFE /* XiallaStudies.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XiallaStudies.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BD5FEB36355BB38F98691943 /* XiallaStudiesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XiallaStudiesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5236DEC4725414BE9D02BB74 /* StudySession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudySession.swift; sourceTree = "<group>"; };
+		8737017949832043FF232D63 /* XiallaStudiesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiallaStudiesApp.swift; sourceTree = "<group>"; };
+		513390C65FBA8721E27E557A /* StudyConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyConfig.swift; sourceTree = "<group>"; };
+		9F269246B4DD871D37E23332 /* StudyParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyParameters.swift; sourceTree = "<group>"; };
+		648F92AA96FA5171F750B289 /* BrandComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandComponents.swift; sourceTree = "<group>"; };
+		A6932CDFF5E49B18C9118306 /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
+		170F18968A336D50FC6D8242 /* KeyboardAvoidingFormScroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAvoidingFormScroll.swift; sourceTree = "<group>"; };
+		266CB3925C7B88E76190B0C5 /* ConsentDocumentCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentDocumentCopy.swift; sourceTree = "<group>"; };
+		C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentFlowView.swift; sourceTree = "<group>"; };
+		643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentPDFExporter.swift; sourceTree = "<group>"; };
+		A3AD61EAA61FFB8FF863A5BB /* ConsentSignatureStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentSignatureStore.swift; sourceTree = "<group>"; };
+		EE6FDA21C1672DFA8F890532 /* FocusableTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusableTextField.swift; sourceTree = "<group>"; };
+		186DBD0A08BD900C308E6BB7 /* SignaturePadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignaturePadView.swift; sourceTree = "<group>"; };
+		7BAD1D68A9E9F28C9E587C10 /* EligibilityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EligibilityView.swift; sourceTree = "<group>"; };
+		BC3ED3154E841D7F362176CE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		BEAEF5C25FAC273D196E1AD8 /* KitFulfillmentStubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KitFulfillmentStubView.swift; sourceTree = "<group>"; };
+		3D6B75A9F0138F352BD5C349 /* ProviderProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfileView.swift; sourceTree = "<group>"; };
+		D427B2936BAC4BB5A78D2050 /* ReminderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderSettingsView.swift; sourceTree = "<group>"; };
+		FBB0B29F54C46DB409E2A788 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		31C2F31F29CE4608041631F1 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandedSurveyFallbackView.swift; sourceTree = "<group>"; };
+		CD0D810520F49E72B9305506 /* InstrumentSurveyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentSurveyView.swift; sourceTree = "<group>"; };
+		A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyFlowView.swift; sourceTree = "<group>"; };
+		6A47A1DB38A5BD758B9B1E72 /* SurveyResultParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyResultParser.swift; sourceTree = "<group>"; };
+		194D554DB420FFE822D4B7EC /* IIEF5Scoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIEF5Scoring.swift; sourceTree = "<group>"; };
+		0D0510C2B4FD045414DBECDB /* StudyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyModels.swift; sourceTree = "<group>"; };
+		10B7274A50BE4E775287ACB6 /* StudyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyAPIClient.swift; sourceTree = "<group>"; };
+		AB2113606C0AE21208D26ED3 /* LocalReminderScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalReminderScheduler.swift; sourceTree = "<group>"; };
+		28E114535E65210A39F0A4D4 /* LocalStudyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStudyStore.swift; sourceTree = "<group>"; };
+		ED38F693B63952063BE19618 /* StudyModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyModelTests.swift; sourceTree = "<group>"; };
+		06486DEA0906B090FF149257 /* Fieldwork_Geo_Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fieldwork_Geo_Bold.otf; sourceTree = "<group>"; };
+		3DC0AC9B554E632CB36340FD /* Fieldwork_Geo_Demibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fieldwork_Geo_Demibold.otf; sourceTree = "<group>"; };
+		2D3FE8D68D508FB106D4EDE8 /* Fieldwork_Geo_Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fieldwork_Geo_Regular.otf; sourceTree = "<group>"; };
+		B9362427B1F9912B138A4AAC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AF2B8CF35D82091924F32330 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		71DC27D9F8E3B109C877BFC4 = {
+			isa = PBXGroup;
+			children = (
+				42006AB264CF2AB66A8087C0 /* XiallaStudies */,
+				D6C849779C92E025F6502698 /* XiallaStudiesTests */,
+				113236722DEE1DC96F378B9D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		113236722DEE1DC96F378B9D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				996AD237BC284D463E664FFE /* XiallaStudies.app */,
+				BD5FEB36355BB38F98691943 /* XiallaStudiesTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		42006AB264CF2AB66A8087C0 /* XiallaStudies */ = {
+			isa = PBXGroup;
+			children = (
+				3B45ECDBA330844E5C846974 /* App */,
+				7E1449822C97B0347BEC44EF /* Config */,
+				7C1D0871276D15567556DC33 /* Design */,
+				4AD8F7C2431807B40F391926 /* Features */,
+				C735CC2350356C2AD94B2FEE /* Models */,
+				184DB89E446E6818E7F06953 /* Resources */,
+				FB5C83723381A3129BB2E452 /* Services */,
+				C8E0398B8D1C71E6F0447DA6 /* Supporting */,
+			);
+			path = XiallaStudies;
+			sourceTree = "<group>";
+		};
+		3B45ECDBA330844E5C846974 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				5236DEC4725414BE9D02BB74 /* StudySession.swift */,
+				8737017949832043FF232D63 /* XiallaStudiesApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		7E1449822C97B0347BEC44EF /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				513390C65FBA8721E27E557A /* StudyConfig.swift */,
+				9F269246B4DD871D37E23332 /* StudyParameters.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		7C1D0871276D15567556DC33 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				648F92AA96FA5171F750B289 /* BrandComponents.swift */,
+				A6932CDFF5E49B18C9118306 /* BrandTheme.swift */,
+				170F18968A336D50FC6D8242 /* KeyboardAvoidingFormScroll.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		4AD8F7C2431807B40F391926 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				2733A94FC6201CAC65289A88 /* Consent */,
+				6114A3F06AE578CF7BBFEFCB /* Eligibility */,
+				DB13DE2AD419A423949EB982 /* Home */,
+				4DAA01EA8FAFFBEC3563C140 /* Kit */,
+				5EA3CB521159D44D29A210BB /* Provider */,
+				F8F2A7BC5DF4965C480A9598 /* Reminders */,
+				F22666AA846314FCBD444616 /* Settings */,
+				E3EA3E4E9537B7A9170931B4 /* Splash */,
+				7F0CAF55A820D7CB4AFEE849 /* Surveys */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		2733A94FC6201CAC65289A88 /* Consent */ = {
+			isa = PBXGroup;
+			children = (
+				266CB3925C7B88E76190B0C5 /* ConsentDocumentCopy.swift */,
+				C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */,
+				643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */,
+				A3AD61EAA61FFB8FF863A5BB /* ConsentSignatureStore.swift */,
+				EE6FDA21C1672DFA8F890532 /* FocusableTextField.swift */,
+				186DBD0A08BD900C308E6BB7 /* SignaturePadView.swift */,
+			);
+			path = Consent;
+			sourceTree = "<group>";
+		};
+		6114A3F06AE578CF7BBFEFCB /* Eligibility */ = {
+			isa = PBXGroup;
+			children = (
+				7BAD1D68A9E9F28C9E587C10 /* EligibilityView.swift */,
+			);
+			path = Eligibility;
+			sourceTree = "<group>";
+		};
+		DB13DE2AD419A423949EB982 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				BC3ED3154E841D7F362176CE /* HomeView.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		4DAA01EA8FAFFBEC3563C140 /* Kit */ = {
+			isa = PBXGroup;
+			children = (
+				BEAEF5C25FAC273D196E1AD8 /* KitFulfillmentStubView.swift */,
+			);
+			path = Kit;
+			sourceTree = "<group>";
+		};
+		5EA3CB521159D44D29A210BB /* Provider */ = {
+			isa = PBXGroup;
+			children = (
+				3D6B75A9F0138F352BD5C349 /* ProviderProfileView.swift */,
+			);
+			path = Provider;
+			sourceTree = "<group>";
+		};
+		F8F2A7BC5DF4965C480A9598 /* Reminders */ = {
+			isa = PBXGroup;
+			children = (
+				D427B2936BAC4BB5A78D2050 /* ReminderSettingsView.swift */,
+			);
+			path = Reminders;
+			sourceTree = "<group>";
+		};
+		F22666AA846314FCBD444616 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				FBB0B29F54C46DB409E2A788 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		E3EA3E4E9537B7A9170931B4 /* Splash */ = {
+			isa = PBXGroup;
+			children = (
+				31C2F31F29CE4608041631F1 /* SplashView.swift */,
+			);
+			path = Splash;
+			sourceTree = "<group>";
+		};
+		7F0CAF55A820D7CB4AFEE849 /* Surveys */ = {
+			isa = PBXGroup;
+			children = (
+				1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */,
+				CD0D810520F49E72B9305506 /* InstrumentSurveyView.swift */,
+				A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */,
+				6A47A1DB38A5BD758B9B1E72 /* SurveyResultParser.swift */,
+			);
+			path = Surveys;
+			sourceTree = "<group>";
+		};
+		C735CC2350356C2AD94B2FEE /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				194D554DB420FFE822D4B7EC /* IIEF5Scoring.swift */,
+				0D0510C2B4FD045414DBECDB /* StudyModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		184DB89E446E6818E7F06953 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B9362427B1F9912B138A4AAC /* Assets.xcassets */,
+				05B082DE7010F45199A1A1B0 /* Fonts */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		05B082DE7010F45199A1A1B0 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				06486DEA0906B090FF149257 /* Fieldwork_Geo_Bold.otf */,
+				3DC0AC9B554E632CB36340FD /* Fieldwork_Geo_Demibold.otf */,
+				2D3FE8D68D508FB106D4EDE8 /* Fieldwork_Geo_Regular.otf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
+		FB5C83723381A3129BB2E452 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				3B77698812C9F1FB51095DE7 /* API */,
+				1CDD55A23E6D3625A444DDC2 /* Notifications */,
+				83412C222EE0703ACE1A57F5 /* Persistence */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		3B77698812C9F1FB51095DE7 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				10B7274A50BE4E775287ACB6 /* StudyAPIClient.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
+		1CDD55A23E6D3625A444DDC2 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				AB2113606C0AE21208D26ED3 /* LocalReminderScheduler.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		83412C222EE0703ACE1A57F5 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				28E114535E65210A39F0A4D4 /* LocalStudyStore.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		C8E0398B8D1C71E6F0447DA6 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				AF2B8CF35D82091924F32330 /* Info.plist */,
+			);
+			path = Supporting;
+			sourceTree = "<group>";
+		};
+		D6C849779C92E025F6502698 /* XiallaStudiesTests */ = {
+			isa = PBXGroup;
+			children = (
+				ED38F693B63952063BE19618 /* StudyModelTests.swift */,
+			);
+			path = XiallaStudiesTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F01C2E624E08A72BC055B46F /* XiallaStudies */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C58D222281FD2115DABA0545 /* Build configuration list for PBXNativeTarget "XiallaStudies" */;
+			buildPhases = (
+				C197A1D4E0DE673615AC32CB /* Sources */,
+				4FCBC29864E7C7752B7E193F /* Frameworks */,
+				8A6A452CEE30B0908A47D41D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XiallaStudies;
+			productName = XiallaStudies;
+			productReference = 996AD237BC284D463E664FFE /* XiallaStudies.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C706FA839F4C1F2316B35783 /* XiallaStudiesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E00C9EF761E8D293FBAD7BAD /* Build configuration list for PBXNativeTarget "XiallaStudiesTests" */;
+			buildPhases = (
+				398305502C9DF523517A10FD /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C6F54CD3B3536366FC24E0ED /* PBXTargetDependency */,
+			);
+			name = XiallaStudiesTests;
+			productName = XiallaStudiesTests;
+			productReference = BD5FEB36355BB38F98691943 /* XiallaStudiesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		46F86FAA6BBF9AC94A7E4595 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					F01C2E624E08A72BC055B46F = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					C706FA839F4C1F2316B35783 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = F01C2E624E08A72BC055B46F;
+					};
+				};
+			};
+			buildConfigurationList = 628D93C358407428C20C1BBC /* Build configuration list for PBXProject "XiallaStudies" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 71DC27D9F8E3B109C877BFC4;
+			productRefGroup = 113236722DEE1DC96F378B9D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F01C2E624E08A72BC055B46F /* XiallaStudies */,
+				C706FA839F4C1F2316B35783 /* XiallaStudiesTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8A6A452CEE30B0908A47D41D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D104D11189389958E0E9F8CD /* Assets.xcassets in Resources */,
+				E181539947C474DB1A842A33 /* Fieldwork_Geo_Bold.otf in Resources */,
+				661C6A24B3810FE3AB453FD2 /* Fieldwork_Geo_Demibold.otf in Resources */,
+				38820B5EB5FFB0594FA325D6 /* Fieldwork_Geo_Regular.otf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4FCBC29864E7C7752B7E193F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C197A1D4E0DE673615AC32CB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9372BA05ADC784F8B5F7A3EE /* StudySession.swift in Sources */,
+				83882FBB6435AA1838FDB7A4 /* XiallaStudiesApp.swift in Sources */,
+				FE4AA21C7FBA4B60A6FE9E56 /* StudyConfig.swift in Sources */,
+				0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */,
+				F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */,
+				71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */,
+				0A87024E3E19FEE708A6BA5F /* KeyboardAvoidingFormScroll.swift in Sources */,
+				5A9A8E464427FAA289992260 /* ConsentDocumentCopy.swift in Sources */,
+				30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */,
+				D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */,
+				726ADD1B3686AB860004CD55 /* ConsentSignatureStore.swift in Sources */,
+				345A340986C1030DE32EA60C /* FocusableTextField.swift in Sources */,
+				35F7372A9A6AAB5AF7B46CF1 /* SignaturePadView.swift in Sources */,
+				FAD5E87C5255B91FE898F920 /* EligibilityView.swift in Sources */,
+				C099509641FC880434A54388 /* HomeView.swift in Sources */,
+				9B5ED234FE52E19913394407 /* KitFulfillmentStubView.swift in Sources */,
+				733BA7E0892F316B28500C09 /* ProviderProfileView.swift in Sources */,
+				8A8601F95B903EC1F35492C3 /* ReminderSettingsView.swift in Sources */,
+				819CDE760F0CA9B2F2D1DEA3 /* SettingsView.swift in Sources */,
+				AE457CEA45144AD8BBA0506F /* SplashView.swift in Sources */,
+				3DF9960A1D24C689E3E68C44 /* BrandedSurveyFallbackView.swift in Sources */,
+				973ECD6898011F227E63B150 /* InstrumentSurveyView.swift in Sources */,
+				0555174015E9FD884B85058E /* SurveyFlowView.swift in Sources */,
+				ABB9556A046527A2101E4DF3 /* SurveyResultParser.swift in Sources */,
+				05EC4A687C13E0A1D8FA3170 /* IIEF5Scoring.swift in Sources */,
+				7C47258BEA5C9E161D4665A1 /* StudyModels.swift in Sources */,
+				0A961A33F9DEA0988113D929 /* StudyAPIClient.swift in Sources */,
+				F5F5D19D6CAC7E97BB2434F8 /* LocalReminderScheduler.swift in Sources */,
+				6D8D981F71D8D44A278D9BF4 /* LocalStudyStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		398305502C9DF523517A10FD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AAA42432E197CC3BF2772328 /* StudyModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXContainerItemProxy section */
+		53F511E3872C09ACE96AEB40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F01C2E624E08A72BC055B46F;
+			remoteInfo = XiallaStudies;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		C6F54CD3B3536366FC24E0ED /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F01C2E624E08A72BC055B46F /* XiallaStudies */;
+			targetProxy = 53F511E3872C09ACE96AEB40 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		F3E469D9CF2672B87FCF79D5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_DYNAMIC_NO_PIC = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4FF944F08AACB37CF71EA40B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf-with-dsym;
+				GCC_DYNAMIC_NO_PIC = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F28A85BE60487DC1BDCF015E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = XiallaStudies/Supporting/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xialla.studies;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A86756326B10413DEF26E20B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = XiallaStudies/Supporting/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xialla.studies;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A6DC6CAC4D2233A7629A1FCC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xialla.studies.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiallaStudies.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/XiallaStudies";
+			};
+			name = Debug;
+		};
+		62B2CC67EBFCE271C9916763 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.xialla.studies.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/XiallaStudies.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/XiallaStudies";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		628D93C358407428C20C1BBC /* Build configuration list for PBXProject "XiallaStudies" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F3E469D9CF2672B87FCF79D5 /* Debug */,
+				4FF944F08AACB37CF71EA40B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C58D222281FD2115DABA0545 /* Build configuration list for PBXNativeTarget "XiallaStudies" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F28A85BE60487DC1BDCF015E /* Debug */,
+				A86756326B10413DEF26E20B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E00C9EF761E8D293FBAD7BAD /* Build configuration list for PBXNativeTarget "XiallaStudiesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6DC6CAC4D2233A7629A1FCC /* Debug */,
+				62B2CC67EBFCE271C9916763 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
+}

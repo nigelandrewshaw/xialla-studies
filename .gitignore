@@ -1,0 +1,65 @@
+# Xcode
+DerivedData/
+build/
+*.xcuserstate
+*.xcuserdata/
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+timeline.xctimeline
+playground.xcworkspace
+xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.resolved
+
+# CocoaPods / Carthage (unused; ignore if added)
+Pods/
+Carthage/Build/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# IDEs
+.idea/
+*.swp
+*~
+
+# Secrets / local env
+.env
+.env.*
+*.p12
+*.mobileprovision
+AuthKey_*.p8
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Legacy local ResearchKit clones (no longer used — safe to delete after pull)
+Vendor/ResearchKit/
+Vendor/ResearchKit.bootstrap.stamp
+
+# CocoaPods
+Podfile.lock
+*.xcworkspace
+!XiallaStudies.xcodeproj/project.xcworkspace/
