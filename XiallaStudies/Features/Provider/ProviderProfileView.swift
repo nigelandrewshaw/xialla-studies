@@ -6,64 +6,61 @@ struct ProviderProfileView: View {
     @State private var appeared = false
 
     var body: some View {
-        ZStack {
-            AtmosphereBackground()
+        ScrollView(.vertical, showsIndicators: true) {
+            VStack(alignment: .leading, spacing: 0) {
+                portrait
 
-            ScrollView(.vertical, showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 0) {
-                    portrait
-
-                    VStack(alignment: .leading, spacing: 24) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(provider.displayName)
-                                .font(BrandTheme.display(28, weight: .medium))
-                                .foregroundStyle(BrandTheme.ink)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Text(provider.credentials)
-                                .font(BrandTheme.body(15, weight: .semibold))
-                                .foregroundStyle(BrandTheme.ink)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Text(provider.title)
-                                .font(BrandTheme.body(16))
-                                .foregroundStyle(BrandTheme.ink)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Text(provider.specialty)
-                                .font(BrandTheme.body(15))
-                                .foregroundStyle(BrandTheme.graphite)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-                        .opacity(appeared ? 1 : 0)
-                        .offset(y: appeared ? 0 : 8)
-
-                        VStack(alignment: .leading, spacing: 10) {
-                            labelRow("Site", provider.organization)
-                            labelRow("Location", provider.location)
-                            labelRow("Study code", StudyConfig.studyCode)
-                            labelRow("Site code", StudyConfig.siteCode)
-                        }
-
-                        Text(provider.bio)
+                VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(provider.displayName)
+                            .font(BrandTheme.display(28, weight: .medium))
+                            .foregroundStyle(BrandTheme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(provider.credentials)
+                            .font(BrandTheme.body(15, weight: .semibold))
+                            .foregroundStyle(BrandTheme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(provider.title)
+                            .font(BrandTheme.body(16))
+                            .foregroundStyle(BrandTheme.ink)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Text(provider.specialty)
                             .font(BrandTheme.body(15))
                             .foregroundStyle(BrandTheme.graphite)
                             .fixedSize(horizontal: false, vertical: true)
-
-                        if let url = provider.profileURL {
-                            Link(destination: url) {
-                                Text("View on xialla.com")
-                                    .font(BrandTheme.body(15, weight: .semibold))
-                                    .foregroundStyle(BrandTheme.ink)
-                            }
-                        }
-
-                        Spacer(minLength: 24)
                     }
-                    .padding(.horizontal, BrandTheme.contentInset)
-                    .padding(.top, 24)
-                    .padding(.bottom, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .opacity(appeared ? 1 : 0)
+                    .offset(y: appeared ? 0 : 8)
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        labelRow("Site", provider.organization)
+                        labelRow("Location", provider.location)
+                        labelRow("Study code", StudyConfig.studyCode)
+                        labelRow("Site code", StudyConfig.siteCode)
+                    }
+
+                    Text(provider.bio)
+                        .font(BrandTheme.body(15))
+                        .foregroundStyle(BrandTheme.graphite)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    if let url = provider.profileURL {
+                        Link(destination: url) {
+                            Text("View on xialla.com")
+                                .font(BrandTheme.body(15, weight: .semibold))
+                                .foregroundStyle(BrandTheme.ink)
+                        }
+                    }
                 }
+                .padding(.horizontal, BrandTheme.contentInset)
+                .padding(.top, 24)
+                .padding(.bottom, 32)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .background {
+            AtmosphereBackground()
         }
         .navigationTitle("Study investigator")
         .navigationBarTitleDisplayMode(.inline)
