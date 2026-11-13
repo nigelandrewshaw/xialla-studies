@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 /// Single-instrument survey sheet — any baseline/follow-up row can open anytime (no forced sequence).
-/// All content (including IIEF-5 × 5 + Save) lives in `KeyboardAvoidingFormScroll`.
+/// Questions scroll in a plain `ScrollView`; Save is pinned sticky at the bottom.
 struct InstrumentSurveyView: View {
     let timepoint: SurveyTimepoint
     let instrument: InstrumentCode
@@ -44,16 +44,14 @@ struct InstrumentSurveyView: View {
                         )
 
                         content
-
-                        PrimaryButton(title: "Save") {
-                            onFinish(buildOutcome())
-                        }
-                        .formPrimaryActionAnchor()
-                        .padding(.top, 4)
-                        .padding(.bottom, 8)
                     }
                     .padding(.horizontal, BrandTheme.contentInset)
-                    .padding(.vertical, 16)
+                    .padding(.top, 16)
+                    .padding(.bottom, 8)
+                } stickyAction: {
+                    PrimaryButton(title: "Save") {
+                        onFinish(buildOutcome())
+                    }
                 }
             }
             .navigationTitle(timepoint.displayName)
@@ -83,7 +81,7 @@ struct InstrumentSurveyView: View {
     private var content: some View {
         switch instrument {
         case .iief5:
-            // One card per item so all 5 + Save scroll fully on short screens.
+            // One card per item — ScrollView must be able to reach Q5 above sticky Save.
             ForEach(Array(IIEF5Scoring.items.enumerated()), id: \.offset) { index, item in
                 questionCard {
                     VStack(alignment: .leading, spacing: 8) {
@@ -221,7 +219,7 @@ struct InstrumentSurveyView: View {
     private var supportCopy: String {
         switch instrument {
         case .iief5:
-            return "\(IIEF5Scoring.recallPeriodInstruction) Please rate each item from 1 to 5. Each slider starts at 3. Scroll to reach every question and Save."
+            return "\(IIEF5Scoring.recallPeriodInstruction) Please rate each item from 1 to 5. Each slider starts at 3. Scroll for all five questions; Save stays at the bottom."
         case .baselineHistory:
             return "Brief history questions for this study site. You can open any questionnaire from the list in any order."
         case .usability, .comfort, .satisfaction:

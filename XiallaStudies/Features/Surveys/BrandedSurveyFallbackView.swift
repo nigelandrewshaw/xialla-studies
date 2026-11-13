@@ -72,59 +72,55 @@ struct BrandedSurveyFallbackView: View {
         }
     }
 
-    /// Full-page scroll so every IIEF-5 item and Continue stay reachable on short devices.
+    /// Questions scroll; Continue is sticky so all five IIEF-5 items stay reachable.
     private var iief5Page: some View {
-        KeyboardAvoidingFormScroll(actionAnchorId: "fallback-continue") {
+        KeyboardAvoidingFormScroll {
             VStack(alignment: .leading, spacing: 16) {
                 SectionIntro(
                     headline: "IIEF-5",
-                    support: "\(IIEF5Scoring.recallPeriodInstruction) Please rate each item from 1 to 5. Each slider starts at 3."
+                    support: "\(IIEF5Scoring.recallPeriodInstruction) Please rate each item from 1 to 5. Each slider starts at 3. Scroll for all five questions."
                 )
 
-                VStack(alignment: .leading, spacing: 14) {
-                    ForEach(Array(IIEF5Scoring.items.enumerated()), id: \.offset) { index, item in
-                        questionCard {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("\(index + 1). \(item.prompt)")
-                                    .font(BrandTheme.body(14, weight: .medium))
-                                    .foregroundStyle(BrandTheme.ink)
+                ForEach(Array(IIEF5Scoring.items.enumerated()), id: \.offset) { index, item in
+                    questionCard {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("\(index + 1). \(item.prompt)")
+                                .font(BrandTheme.body(14, weight: .medium))
+                                .foregroundStyle(BrandTheme.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                            HStack(alignment: .center, spacing: 8) {
+                                Text(item.lowLabel)
+                                    .font(BrandTheme.body(11))
+                                    .foregroundStyle(BrandTheme.graphite)
+                                    .frame(maxWidth: 72, alignment: .leading)
                                     .fixedSize(horizontal: false, vertical: true)
-                                HStack(alignment: .center, spacing: 8) {
-                                    Text(item.lowLabel)
-                                        .font(BrandTheme.body(11))
-                                        .foregroundStyle(BrandTheme.graphite)
-                                        .frame(maxWidth: 72, alignment: .leading)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                    Slider(value: $answers[index], in: 1...5, step: 1)
-                                        .tint(BrandTheme.tan)
-                                    Text(item.highLabel)
-                                        .font(BrandTheme.body(11))
-                                        .foregroundStyle(BrandTheme.graphite)
-                                        .frame(maxWidth: 72, alignment: .trailing)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                                Text("Selected: \(Int(answers[index]))")
-                                    .font(BrandTheme.body(13, weight: .semibold))
-                                    .foregroundStyle(BrandTheme.ink)
+                                Slider(value: $answers[index], in: 1...5, step: 1)
+                                    .tint(BrandTheme.tan)
+                                Text(item.highLabel)
+                                    .font(BrandTheme.body(11))
+                                    .foregroundStyle(BrandTheme.graphite)
+                                    .frame(maxWidth: 72, alignment: .trailing)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
+                            Text("Selected: \(Int(answers[index]))")
+                                .font(BrandTheme.body(13, weight: .semibold))
+                                .foregroundStyle(BrandTheme.ink)
                         }
                     }
                 }
-
-                PrimaryButton(title: "Continue") {
-                    page = .companions
-                }
-                .formPrimaryActionAnchor("fallback-continue")
-                .padding(.top, 4)
-                .padding(.bottom, 8)
             }
             .padding(.horizontal, BrandTheme.contentInset)
-            .padding(.vertical, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 8)
+        } stickyAction: {
+            PrimaryButton(title: "Continue") {
+                page = .companions
+            }
         }
     }
 
     private var companionsPage: some View {
-        KeyboardAvoidingFormScroll(actionAnchorId: "fallback-save") {
+        KeyboardAvoidingFormScroll {
             VStack(alignment: .leading, spacing: 18) {
                 SectionIntro(
                     headline: "Additional questions",
@@ -190,20 +186,19 @@ struct BrandedSurveyFallbackView: View {
                         formTextEditor(text: $freeText, placeholder: "Optional comments for the study team")
                     }
                 }
-
-                PrimaryButton(title: "Save responses") {
-                    page = .done
-                }
-                .formPrimaryActionAnchor("fallback-save")
-                .padding(.bottom, 8)
             }
             .padding(.horizontal, BrandTheme.contentInset)
-            .padding(.vertical, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 8)
+        } stickyAction: {
+            PrimaryButton(title: "Save responses") {
+                page = .done
+            }
         }
     }
 
     private var donePage: some View {
-        KeyboardAvoidingFormScroll(actionAnchorId: "fallback-done") {
+        KeyboardAvoidingFormScroll {
             VStack(alignment: .leading, spacing: 16) {
                 let ints = answers.map { Int($0) }
                 let total = IIEF5Scoring.total(answers: ints) ?? 0
@@ -212,31 +207,30 @@ struct BrandedSurveyFallbackView: View {
                     headline: "Responses saved locally",
                     support: "Your IIEF-5 total is \(total) (\(IIEF5Scoring.displayName(for: band))). Your progress will persist if you quit the app."
                 )
-                PrimaryButton(title: "Done") {
-                    var notes: [InstrumentCode: String] = [
-                        .usability: String(Int(usability)),
-                        .comfort: String(Int(comfort)),
-                        .satisfaction: String(Int(satisfaction)),
-                        .adverseEvents: aeAny == "yes" ? aeDetail : "none",
-                        .freeText: freeText
-                    ]
-                    if timepoint == .baseline {
-                        notes[.baselineHistory] = historyPriorED
-                    }
-                    onFinish(
-                        SurveyResultParser.fromBrandedIIEF5(
-                            timepoint: timepoint,
-                            answers: ints,
-                            companionNotes: notes
-                        )
-                    )
-                }
-                .formPrimaryActionAnchor("fallback-done")
-                .padding(.top, 8)
-                .padding(.bottom, 8)
             }
             .padding(.horizontal, BrandTheme.contentInset)
-            .padding(.vertical, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 8)
+        } stickyAction: {
+            PrimaryButton(title: "Done") {
+                var notes: [InstrumentCode: String] = [
+                    .usability: String(Int(usability)),
+                    .comfort: String(Int(comfort)),
+                    .satisfaction: String(Int(satisfaction)),
+                    .adverseEvents: aeAny == "yes" ? aeDetail : "none",
+                    .freeText: freeText
+                ]
+                if timepoint == .baseline {
+                    notes[.baselineHistory] = historyPriorED
+                }
+                onFinish(
+                    SurveyResultParser.fromBrandedIIEF5(
+                        timepoint: timepoint,
+                        answers: answers.map { Int($0) },
+                        companionNotes: notes
+                    )
+                )
+            }
         }
     }
 

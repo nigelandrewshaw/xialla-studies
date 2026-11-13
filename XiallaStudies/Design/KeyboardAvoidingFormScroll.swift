@@ -2,47 +2,48 @@ import Combine
 import SwiftUI
 import UIKit
 
-/// Scroll form that lifts for the keyboard and scrolls the primary action (e.g. Save) into view.
-/// Use for instrument sheets so long content (IIEF-5 × 5) and text editors never clip behind chrome/keyboard.
-struct KeyboardAvoidingFormScroll<Content: View>: View {
-    /// `ScrollViewReader` id on the primary button / bottom action.
-    var actionAnchorId: String = "form-primary-action"
+/// Form layout: scrolling content + optional sticky bottom action.
+/// Avoids `GeometryReader` (it was preventing IIEF-5 finger-scroll / clipping Q4–Q5).
+struct KeyboardAvoidingFormScroll<Content: View, Action: View>: View {
     @ViewBuilder var content: () -> Content
+    @ViewBuilder var stickyAction: () -> Action
 
-    @State private var keyboardOverlap: CGFloat = 0
+    @State private var keyboardHeight: CGFloat = 0
 
     var body: some View {
-        GeometryReader { geo in
-            ScrollViewReader { proxy in
-                ScrollView(.vertical, showsIndicators: true) {
-                    content()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        // Extra space so Save / Done clears the keyboard when scrolled to the anchor.
-                        .padding(.bottom, max(keyboardOverlap, 32))
-                }
-                .scrollDismissesKeyboard(.interactively)
-                .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
-                .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { note in
-                    updateKeyboardOverlap(from: note, in: geo)
-                    if keyboardOverlap > 0 {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                            withAnimation(.easeOut(duration: 0.25)) {
-                                proxy.scrollTo(actionAnchorId, anchor: .bottom)
-                            }
-                        }
-                    }
-                }
-                .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
-                    withAnimation(.easeOut(duration: 0.2)) {
-                        keyboardOverlap = 0
-                    }
-                }
+        VStack(spacing: 0) {
+            ScrollView(.vertical, showsIndicators: true) {
+                content()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.bottom, 16)
+            }
+            .scrollDismissesKeyboard(.interactively)
+
+            // Sticky footer (Save / Continue) — always visible below the scroll region.
+            VStack(spacing: 0) {
+                stickyAction()
+            }
+            .padding(.horizontal, BrandTheme.contentInset)
+            .padding(.top, 10)
+            .padding(.bottom, 12)
+            .frame(maxWidth: .infinity)
+            .background(BrandTheme.canvas.opacity(0.97))
+        }
+        // Lift scroll + sticky Save together when the keyboard is up (no GeometryReader).
+        .padding(.bottom, keyboardHeight)
+        .animation(.easeOut(duration: 0.25), value: keyboardHeight)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillChangeFrameNotification)) { note in
+            keyboardHeight = Self.overlapHeight(from: note)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            withAnimation(.easeOut(duration: 0.2)) {
+                keyboardHeight = 0
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func updateKeyboardOverlap(from note: Notification, in geo: GeometryProxy) {
+    private static func overlapHeight(from note: Notification) -> CGFloat {
         guard
             let frame = note.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
             let window = UIApplication.shared.connectedScenes
@@ -50,21 +51,23 @@ struct KeyboardAvoidingFormScroll<Content: View>: View {
                 .flatMap(\.windows)
                 .first(where: \.isKeyWindow)
         else {
-            keyboardOverlap = 0
-            return
+            return 0
         }
-
         let frameInWindow = window.convert(frame, from: nil)
-        let viewFrame = geo.frame(in: .global)
-        let overlap = max(0, viewFrame.maxY - frameInWindow.minY)
-        withAnimation(.easeOut(duration: 0.25)) {
-            keyboardOverlap = overlap
-        }
+        // Distance the keyboard covers from the bottom of the key window.
+        return max(0, window.bounds.maxY - frameInWindow.minY - window.safeAreaInsets.bottom)
+    }
+}
+
+extension KeyboardAvoidingFormScroll where Action == EmptyView {
+    /// Content-only scroll (no sticky footer).
+    init(@ViewBuilder content: @escaping () -> Content) {
+        self.init(content: content, stickyAction: { EmptyView() })
     }
 }
 
 extension View {
-    /// Marks the primary form action for keyboard-aware scroll-into-view.
+    /// Marks the primary form action for keyboard-aware scroll-into-view (legacy id helper).
     func formPrimaryActionAnchor(_ id: String = "form-primary-action") -> some View {
         self.id(id)
     }
