@@ -376,12 +376,27 @@ def main() -> None:
     w("/* End PBXTargetDependency section */")
     w("")
 
+    def pbx_value(v: str) -> str:
+        """Format a build-setting value for OpenStep ASCII plist (pbxproj).
+
+        Values that already include quotes are passed through. Barewords are
+        only safe without spaces or plist punctuation; otherwise quote them.
+        """
+        if not v:
+            return '""'
+        if v.startswith('"') and v.endswith('"'):
+            return v
+        if any(ch.isspace() for ch in v) or any(ch in v for ch in '();,{}'):
+            escaped = v.replace("\\", "\\\\").replace('"', '\\"')
+            return f'"{escaped}"'
+        return v
+
     def cfg(oid: str, name: str, extra: dict[str, str]) -> None:
         w(f"\t\t{oid} /* {name} */ = {{")
         w("\t\t\tisa = XCBuildConfiguration;")
         w("\t\t\tbuildSettings = {")
         for k, v in extra.items():
-            w(f"\t\t\t\t{k} = {v};")
+            w(f"\t\t\t\t{k} = {pbx_value(v)};")
         w("\t\t\t};")
         w(f"\t\t\tname = {name};")
         w("\t\t};")
