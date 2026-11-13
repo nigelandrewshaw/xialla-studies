@@ -67,7 +67,8 @@ struct RootView: View {
         .animation(BrandTheme.reveal, value: showSplash)
         .animation(BrandTheme.reveal, value: session.isLoading)
         .onChange(of: session.hasSeenSplash) { _, seen in
-            if seen { showSplash = false }
+            // Reset study progress clears hasSeenSplash — show splash again for a fresh demo.
+            showSplash = !seen
         }
     }
 }

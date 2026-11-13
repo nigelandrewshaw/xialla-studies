@@ -281,7 +281,11 @@ final class StudySession: ObservableObject {
         showSettings = false
     }
 
+    /// Clears on-device LocalStudyStore and in-memory session so demos can restart consent from splash.
     func resetLocalDataForDebug() async {
+        if let enrollmentId = snapshot.enrollment?.id {
+            try? await reminders.cancelReminders(enrollmentId: enrollmentId)
+        }
         do {
             try await store.clear()
         } catch {
@@ -290,6 +294,8 @@ final class StudySession: ObservableObject {
         snapshot = .empty
         path = []
         lastIIEF5Summary = nil
+        lastError = nil
+        showSettings = false
         await persist()
     }
 

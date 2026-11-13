@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject private var session: StudySession
     @Environment(\.dismiss) private var dismiss
+    @State private var confirmReset = false
 
     var body: some View {
         NavigationStack {
@@ -69,7 +70,18 @@ struct SettingsView: View {
                         }
                     }
 
-                    Section("Jeff demo") {
+                    Section {
+                        Button("Reset study progress", role: .destructive) {
+                            confirmReset = true
+                        }
+                        Text("Clears LocalStudyStore on this device and returns to the splash so you can run consent from scratch.")
+                            .font(BrandTheme.body(12))
+                            .foregroundStyle(BrandTheme.graphite)
+                    } header: {
+                        Text("Demo")
+                    }
+
+                    Section("Jeff demo shortcuts") {
                         Button("Seed baseline complete + week 4 due") {
                             Task {
                                 await session.demoSeedBaselineComplete()
@@ -89,9 +101,6 @@ struct SettingsView: View {
                                 .font(BrandTheme.body(12))
                                 .foregroundStyle(BrandTheme.graphite)
                         }
-                        Button("Reset local study data", role: .destructive) {
-                            Task { await session.resetLocalDataForDebug() }
-                        }
                     }
 
                     Section("About") {
@@ -108,6 +117,21 @@ struct SettingsView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
                 }
+            }
+            .confirmationDialog(
+                "Reset study progress?",
+                isPresented: $confirmReset,
+                titleVisibility: .visible
+            ) {
+                Button("Reset study progress", role: .destructive) {
+                    Task {
+                        await session.resetLocalDataForDebug()
+                        dismiss()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This deletes consent, surveys, and preferences stored locally, then restarts from splash.")
             }
         }
     }
