@@ -12,6 +12,7 @@
 		0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F269246B4DD871D37E23332 /* StudyParameters.swift */; };
 		F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648F92AA96FA5171F750B289 /* BrandComponents.swift */; };
 		71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6932CDFF5E49B18C9118306 /* BrandTheme.swift */; };
+		35ABF541B3A35E0F429E628D /* ResearchKitChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F335F7659E21147879CB56 /* ResearchKitChrome.swift */; };
 		30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */; };
 		D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */; };
 		7CA543FB7C5D56EA7A385F79 /* ConsentResultParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4876AB18C3576C22B284F229 /* ConsentResultParser.swift */; };
@@ -50,6 +51,7 @@
 		9F269246B4DD871D37E23332 /* StudyParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyParameters.swift; sourceTree = "<group>"; };
 		648F92AA96FA5171F750B289 /* BrandComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandComponents.swift; sourceTree = "<group>"; };
 		A6932CDFF5E49B18C9118306 /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
+		51F335F7659E21147879CB56 /* ResearchKitChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitChrome.swift; sourceTree = "<group>"; };
 		C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentFlowView.swift; sourceTree = "<group>"; };
 		643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentPDFExporter.swift; sourceTree = "<group>"; };
 		4876AB18C3576C22B284F229 /* ConsentResultParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentResultParser.swift; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 			children = (
 				648F92AA96FA5171F750B289 /* BrandComponents.swift */,
 				A6932CDFF5E49B18C9118306 /* BrandTheme.swift */,
+				51F335F7659E21147879CB56 /* ResearchKitChrome.swift */,
 			);
 			path = Design;
 			sourceTree = "<group>";
@@ -424,6 +427,7 @@
 				0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */,
 				F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */,
 				71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */,
+				35ABF541B3A35E0F429E628D /* ResearchKitChrome.swift in Sources */,
 				30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */,
 				D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */,
 				7CA543FB7C5D56EA7A385F79 /* ConsentResultParser.swift in Sources */,

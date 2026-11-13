@@ -22,7 +22,7 @@ struct ResearchKitSurveyPresenter: UIViewControllerRepresentable {
         // Linked ResearchKit Swift overlay: init(task:taskRun:) (taskRunUUID was renamed).
         let vc = ORKTaskViewController(task: task, taskRun: nil)
         vc.delegate = context.coordinator
-        vc.view.tintColor = UIColor(BrandTheme.tan)
+        ResearchKitChrome.style(vc)
         return vc
     }
 
@@ -53,6 +53,15 @@ struct ResearchKitSurveyPresenter: UIViewControllerRepresentable {
             self.instrument = instrument
             self.onFinish = onFinish
             self.onCancel = onCancel
+        }
+
+        func taskViewController(
+            _ taskViewController: ORKTaskViewController,
+            stepViewControllerWillAppear stepViewController: ORKStepViewController
+        ) {
+            DispatchQueue.main.async {
+                ResearchKitChrome.polishStepView(stepViewController.view)
+            }
         }
 
         func taskViewController(

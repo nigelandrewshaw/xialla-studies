@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 #if canImport(ResearchKit)
 import ResearchKit
@@ -91,9 +92,10 @@ enum ResearchKitTaskFactory {
         document.addSignature(signature)
         lastConsentDocument = document
 
-        // ResearchKit 3+: `ORKVisualConsentStep` was removed. Prefer instruction pages
-        // derived from the consent document, then comprehension + signature review.
-        var steps: [ORKStep] = document.instructionSteps.map { $0 as ORKStep }
+        // ResearchKit 3+: visual consent removed. Build branded instruction pages with
+        // square SF Symbol icons + scrollable bodyItems above the sticky Next footer
+        // (default `instructionSteps` used landscape consent artwork that looked squashed).
+        var steps: [ORKStep] = brandedConsentInstructionSteps(from: document)
         if steps.isEmpty {
             let overview = ORKInstructionStep(identifier: "consent.overview")
             overview.title = document.title ?? "Informed consent"
@@ -134,6 +136,67 @@ enum ResearchKitTaskFactory {
         steps.append(review)
 
         return ORKOrderedTask(identifier: "xialla.consent", steps: steps)
+    }
+
+    /// Instruction pages: square SF Symbol `iconImage`, short summary as detail, long copy in
+    /// scrollable `bodyItems` so text clears the fixed Next button. No landscape `consent_XX` art.
+    private static func brandedConsentInstructionSteps(from document: ORKConsentDocument) -> [ORKStep] {
+        let sections = document.sections ?? []
+        return sections.enumerated().map { index, section in
+            let slug = (section.title ?? "section")
+                .lowercased()
+                .replacingOccurrences(of: " ", with: ".")
+            let step = ORKInstructionStep(identifier: "consent.section.\(index).\(slug)")
+            step.title = section.title
+            step.detailText = section.summary
+            // Keep `text` empty so body lives in scrollable bodyItems (not stacked under a banner image).
+            step.text = nil
+            step.image = nil
+            step.iconImage = consentIcon(for: section)
+            step.iconImageTintColor = UIColor(BrandTheme.ink)
+
+            let body = (section.content ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if !body.isEmpty {
+                step.bodyItems = [
+                    ORKBodyItem(
+                        text: body,
+                        detailText: nil,
+                        image: nil,
+                        learnMoreItem: nil,
+                        bodyItemStyle: .text
+                    )
+                ]
+            }
+            return step
+        }
+    }
+
+    /// Square SF Symbol — never landscape `consent_XX` art (that looked horizontally compressed).
+    private static func consentIcon(for section: ORKConsentSection) -> UIImage? {
+        let config = UIImage.SymbolConfiguration(pointSize: 36, weight: .regular)
+        return UIImage(systemName: consentSymbolName(for: section), withConfiguration: config)
+    }
+
+    private static func consentSymbolName(for section: ORKConsentSection) -> String {
+        let title = (section.title ?? "").lowercased()
+        if title.contains("purpose") || title.contains("overview") { return "heart.text.square" }
+        if title.contains("procedure") { return "list.clipboard" }
+        if title.contains("data") { return "chart.bar.doc.horizontal" }
+        if title.contains("privacy") || title.contains("risk") { return "lock.fill" }
+        if title.contains("withdraw") { return "person.crop.circle.badge.minus" }
+        if title.contains("contact") { return "stethoscope" }
+
+        switch section.type {
+        case .overview: return "heart.text.square"
+        case .dataGathering, .dataUse: return "chart.bar.doc.horizontal"
+        case .privacy: return "lock.fill"
+        case .timeCommitment: return "clock"
+        case .studySurvey: return "list.bullet.clipboard"
+        case .studyTasks: return "figure.walk"
+        case .withdrawing: return "person.crop.circle.badge.minus"
+        case .custom: return "doc.text"
+        @unknown default: return "doc.text"
+        }
     }
 
     private static func section(

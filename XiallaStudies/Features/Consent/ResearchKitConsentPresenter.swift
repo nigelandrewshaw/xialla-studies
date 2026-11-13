@@ -15,7 +15,7 @@ struct ResearchKitConsentPresenter: UIViewControllerRepresentable {
         // Linked ResearchKit Swift overlay: init(task:taskRun:) (taskRunUUID was renamed).
         let vc = ORKTaskViewController(task: task, taskRun: nil)
         vc.delegate = context.coordinator
-        vc.view.tintColor = UIColor(BrandTheme.tan)
+        ResearchKitChrome.style(vc)
         context.coordinator.document = ResearchKitTaskFactory.lastConsentDocument
         return vc
     }
@@ -37,6 +37,16 @@ struct ResearchKitConsentPresenter: UIViewControllerRepresentable {
         ) {
             self.onFinish = onFinish
             self.onCancel = onCancel
+        }
+
+        func taskViewController(
+            _ taskViewController: ORKTaskViewController,
+            stepViewControllerWillAppear stepViewController: ORKStepViewController
+        ) {
+            // ORK labels reset fonts on appear; re-apply Fieldwork, square icons, scroll inset.
+            DispatchQueue.main.async {
+                ResearchKitChrome.polishStepView(stepViewController.view)
+            }
         }
 
         func taskViewController(
@@ -64,7 +74,7 @@ struct ResearchKitConsentPresenter: UIViewControllerRepresentable {
 
 #else
 
-/// Fallback when ResearchKit is not yet linked — branded SwiftUI consent still works.
+/// Fallback when ResearchKit is not linked — branded SwiftUI consent still works.
 struct ResearchKitConsentPresenter: View {
     var onFinish: (_ signatureRef: String?, _ pdfURL: URL?, _ comprehensionPassed: Bool) -> Void
     var onCancel: () -> Void
