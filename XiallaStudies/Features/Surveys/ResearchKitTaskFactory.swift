@@ -162,7 +162,7 @@ enum ResearchKitTaskFactory {
         steps.append(intro)
 
         for instrument in timepoint.instruments {
-            steps.append(contentsOf: steps(for: instrument, timepoint: timepoint))
+            steps.append(contentsOf: Self.steps(for: instrument, timepoint: timepoint))
         }
 
         let done = ORKCompletionStep(identifier: "survey.\(timepoint.rawValue).done")
@@ -183,7 +183,7 @@ enum ResearchKitTaskFactory {
         intro.title = instrument.displayName
         intro.detailText = "You can leave and open any other questionnaire from the list at any time."
         steps.append(intro)
-        steps.append(contentsOf: steps(for: instrument, timepoint: timepoint))
+        steps.append(contentsOf: Self.steps(for: instrument, timepoint: timepoint))
         let done = ORKCompletionStep(identifier: "survey.\(timepoint.rawValue).\(instrument.rawValue).done")
         done.title = "Saved"
         done.text = "This questionnaire is saved on this device. Return to the list for any remaining items."
