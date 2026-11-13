@@ -85,7 +85,9 @@
 				7C1D0871276D15567556DC33 /* Design */,
 				4AD8F7C2431807B40F391926 /* Features */,
 				C735CC2350356C2AD94B2FEE /* Models */,
+				184DB89E446E6818E7F06953 /* Resources */,
 				FB5C83723381A3129BB2E452 /* Services */,
+				C8E0398B8D1C71E6F0447DA6 /* Supporting */,
 			);
 			path = XiallaStudies;
 			sourceTree = "<group>";
@@ -206,6 +208,14 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		184DB89E446E6818E7F06953 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B9362427B1F9912B138A4AAC /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		FB5C83723381A3129BB2E452 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -238,6 +248,14 @@
 				28E114535E65210A39F0A4D4 /* LocalStudyStore.swift */,
 			);
 			path = Persistence;
+			sourceTree = "<group>";
+		};
+		C8E0398B8D1C71E6F0447DA6 /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				AF2B8CF35D82091924F32330 /* Info.plist */,
+			);
+			path = Supporting;
 			sourceTree = "<group>";
 		};
 		D6C849779C92E025F6502698 /* XiallaStudiesTests */ = {

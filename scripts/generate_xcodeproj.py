@@ -146,8 +146,18 @@ def main() -> None:
     w('\t\t\tsourceTree = "<group>";')
     w("\t\t};")
 
-    # App root group children = top-level folders + Resources/Supporting refs
-    top_dirs = sorted({p.relative_to(ROOT / "XiallaStudies").parts[0] for p in swift_files})
+    # App root group children = Swift top-level folders + Resources/Supporting
+    # (Resources & Supporting have no .swift files; without them Assets/Info become
+    # orphaned "Recovered References" and Xcode resolves Assets.xcassets at repo root.)
+    if not asset.is_dir():
+        raise SystemExit(f"Missing asset catalog: {asset}")
+    if not info.is_file():
+        raise SystemExit(f"Missing Info.plist: {info}")
+
+    top_dirs = sorted(
+        {p.relative_to(ROOT / "XiallaStudies").parts[0] for p in swift_files}
+        | {"Resources", "Supporting"}
+    )
     top_group_ids = {name: group_id(f"app.{name}") for name in top_dirs}
 
     w(f"\t\t{app_group} /* XiallaStudies */ = {{")
