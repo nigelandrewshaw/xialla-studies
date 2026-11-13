@@ -1,6 +1,7 @@
 import Foundation
 
-/// IIEF-5 total score helpers (5–25). Item wording is separate and must be licensing-cleared.
+/// IIEF-5 total score helpers (5–25) and official instrument item wording
+/// (Rosen et al., Int J Impot Res 1999; license cleared for this study).
 enum IIEF5Scoring {
     enum Band: String, Codable, Equatable {
         case severe
@@ -11,14 +12,47 @@ enum IIEF5Scoring {
         case invalid
     }
 
-    /// Paraphrased placeholders — replace with licensed IIEF-5 item text before shipping.
-    static let placeholderPrompts: [String] = [
-        "Confidence that you could get and keep an erection (1 = very low, 5 = very high)",
-        "Erections hard enough for penetration when sexually stimulated (1 = almost never, 5 = almost always)",
-        "Ability to maintain erection after penetration (1 = almost never, 5 = almost always)",
-        "Ability to maintain erection to completion of intercourse (1 = extremely difficult, 5 = not difficult)",
-        "Satisfaction with sexual intercourse (1 = almost never, 5 = almost always)"
+    /// One official IIEF-5 item with endpoint labels for the 1–5 scale.
+    struct Item: Equatable {
+        let prompt: String
+        let lowLabel: String
+        let highLabel: String
+    }
+
+    /// Official recall framing for the IIEF-5 questionnaire.
+    static let recallPeriodInstruction = "Over the past six months:"
+
+    /// Official IIEF-5 items (Rosen et al. 1999). Sliders remain 1–5 with default 3.
+    static let items: [Item] = [
+        Item(
+            prompt: "How do you rate your confidence that you could get and keep an erection?",
+            lowLabel: "Very low",
+            highLabel: "Very high"
+        ),
+        Item(
+            prompt: "When you had erections with sexual stimulation, how often were your erections hard enough for penetration?",
+            lowLabel: "Almost never/never",
+            highLabel: "Almost always/always"
+        ),
+        Item(
+            prompt: "During sexual intercourse, how often were you able to maintain your erection after you had penetrated (entered) your partner?",
+            lowLabel: "Almost never/never",
+            highLabel: "Almost always/always"
+        ),
+        Item(
+            prompt: "During sexual intercourse, how difficult was it to maintain your erection to completion of intercourse?",
+            lowLabel: "Extremely difficult",
+            highLabel: "Not difficult"
+        ),
+        Item(
+            prompt: "When you attempted sexual intercourse, how often was it satisfactory for you?",
+            lowLabel: "Almost never/never",
+            highLabel: "Almost always/always"
+        )
     ]
+
+    /// Convenience: official prompts only, in instrument order.
+    static var itemPrompts: [String] { items.map(\.prompt) }
 
     static func total(answers: [Int]) -> Int? {
         guard answers.count == 5, answers.allSatisfy({ (1...5).contains($0) }) else {

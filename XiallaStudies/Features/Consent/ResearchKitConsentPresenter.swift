@@ -3,16 +3,18 @@ import SwiftUI
 #if canImport(ResearchKit) && canImport(ResearchKitUI)
 import ResearchKit
 import ResearchKitUI
+import UIKit
 
 /// Presents an `ORKTaskViewController` for eConsent (info → comprehension → signature → PDF).
 struct ResearchKitConsentPresenter: UIViewControllerRepresentable {
-    var onFinish: (_ signatureRef: String?, _ pdfURL: URL?) -> Void
+    var onFinish: (_ signatureRef: String?, _ pdfURL: URL?, _ comprehensionPassed: Bool) -> Void
     var onCancel: () -> Void
 
     func makeUIViewController(context: Context) -> ORKTaskViewController {
         let task = ResearchKitTaskFactory.makeConsentTask()
         let vc = ORKTaskViewController(task: task, taskRun: nil)
         vc.delegate = context.coordinator
+        vc.view.tintColor = UIColor(BrandTheme.tan)
         context.coordinator.document = ResearchKitTaskFactory.lastConsentDocument
         return vc
     }
@@ -24,12 +26,12 @@ struct ResearchKitConsentPresenter: UIViewControllerRepresentable {
     }
 
     final class Coordinator: NSObject, ORKTaskViewControllerDelegate {
-        let onFinish: (_ signatureRef: String?, _ pdfURL: URL?) -> Void
+        let onFinish: (_ signatureRef: String?, _ pdfURL: URL?, _ comprehensionPassed: Bool) -> Void
         let onCancel: () -> Void
         var document: ORKConsentDocument?
 
         init(
-            onFinish: @escaping (_ signatureRef: String?, _ pdfURL: URL?) -> Void,
+            onFinish: @escaping (_ signatureRef: String?, _ pdfURL: URL?, _ comprehensionPassed: Bool) -> Void,
             onCancel: @escaping () -> Void
         ) {
             self.onFinish = onFinish
@@ -42,12 +44,12 @@ struct ResearchKitConsentPresenter: UIViewControllerRepresentable {
             error: Error?
         ) {
             if reason == .completed {
-                let signatureRef = ConsentResultParser.signatureReference(
-                    from: taskViewController.result
-                )
+                let result = taskViewController.result
+                let signatureRef = ConsentResultParser.signatureReference(from: result)
+                let passed = ConsentResultParser.comprehensionPassed(from: result)
                 ConsentPDFExporter.export(document: document) { [weak self] url in
                     taskViewController.dismiss(animated: true) {
-                        self?.onFinish(signatureRef, url)
+                        self?.onFinish(signatureRef, url, passed)
                     }
                 }
             } else {
@@ -63,26 +65,27 @@ struct ResearchKitConsentPresenter: UIViewControllerRepresentable {
 
 /// Fallback when ResearchKit is not yet linked — branded SwiftUI consent still works.
 struct ResearchKitConsentPresenter: View {
-    var onFinish: (_ signatureRef: String?, _ pdfURL: URL?) -> Void
+    var onFinish: (_ signatureRef: String?, _ pdfURL: URL?, _ comprehensionPassed: Bool) -> Void
     var onCancel: () -> Void
 
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 20) {
-                Text("ResearchKit not linked")
+                Text("ResearchKit is not linked yet")
                     .font(BrandTheme.display(24, weight: .medium))
-                Text("Add ResearchKit + ResearchKitUI to the Xcode target (see README). Until then, use the in-app consent stubs.")
+                Text("Run ./scripts/bootstrap-researchkit.sh on a Mac, then reopen XiallaStudies.xcodeproj. Until then, please use the in-app consent review on the previous screen.")
                     .font(BrandTheme.body(15))
                     .foregroundStyle(BrandTheme.graphite)
                 Spacer()
                 PrimaryButton(title: "Continue without ResearchKit UI") {
-                    onFinish("local-stub:rk-unavailable", nil)
+                    onFinish("local-stub:rk-unavailable", nil, true)
                 }
                 SecondaryButton(title: "Cancel") {
                     onCancel()
                 }
             }
             .padding(24)
+            .background(BrandTheme.canvas.ignoresSafeArea())
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close", action: onCancel)

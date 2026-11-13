@@ -32,6 +32,20 @@ final class StudyModelTests: XCTestCase {
         XCTAssertEqual(IIEF5Scoring.band(for: 15), .mildToModerate)
     }
 
+    func testIIEF5OfficialItemWording() {
+        XCTAssertEqual(IIEF5Scoring.items.count, 5)
+        XCTAssertEqual(IIEF5Scoring.itemPrompts.count, 5)
+        XCTAssertEqual(
+            IIEF5Scoring.items[0].prompt,
+            "How do you rate your confidence that you could get and keep an erection?"
+        )
+        XCTAssertEqual(
+            IIEF5Scoring.items[4].prompt,
+            "When you attempted sexual intercourse, how often was it satisfactory for you?"
+        )
+        XCTAssertTrue(IIEF5Scoring.recallPeriodInstruction.contains("six months"))
+    }
+
     func testStudyParametersProviderIsJeff() {
         let provider = StudyConfig.provider
         XCTAssertEqual(provider.displayName, "Dr. Jeffrey Campbell")

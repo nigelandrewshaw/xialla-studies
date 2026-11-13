@@ -10,14 +10,14 @@ struct EligibilityView: View {
 
             VStack(alignment: .leading, spacing: 28) {
                 SectionIntro(
-                    headline: "Who is this for?",
-                    support: "This version enrolls people who are starting Xialla. A path for current users may be added later."
+                    headline: "Who is this study for?",
+                    support: "This version enrolls people who are starting Xialla. A separate path for people who already use Xialla may be added later."
                 )
 
                 VStack(spacing: 14) {
                     armCard(
                         title: StudyArm.prospective.displayName,
-                        detail: "Baseline before first use, then a week‑4 follow-up.",
+                        detail: "You will complete baseline questionnaires before first use, then return for a week‑4 follow-up.",
                         enabled: true
                     ) {
                         Task { await session.selectProspectiveArm() }
@@ -25,7 +25,7 @@ struct EligibilityView: View {
 
                     armCard(
                         title: StudyArm.currentUserAddOn.displayName,
-                        detail: "Optional add-on — pending protocol owner approval.",
+                        detail: "This optional path for current users is not available yet and is pending protocol owner approval.",
                         enabled: false
                     ) {}
                 }
@@ -68,7 +68,7 @@ struct EligibilityView: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(enabled ? BrandTheme.accent.opacity(0.35) : BrandTheme.mist, lineWidth: 1)
+                    .stroke(enabled ? BrandTheme.tan.opacity(0.7) : BrandTheme.mist, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

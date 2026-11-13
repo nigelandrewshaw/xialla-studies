@@ -16,14 +16,15 @@ Suggested bundle ID: `com.xialla.studies`
    git clone https://github.com/nigelandrewshaw/xialla-studies.git
    cd xialla-studies
    git checkout cursor/scaffold-ios-study-app-5ff7   # or main once merged
+   ./scripts/bootstrap-researchkit.sh                 # clone + wire ResearchKit
    open XiallaStudies.xcodeproj
    ```
 
 2. Select the **XiallaStudies** scheme → set your **Team** for signing.
 3. Run on a simulator or device.
-4. Walkthrough: Splash → Eligibility → Consent → Baseline (IIEF-5 sliders default **3**) → Home → Settings → **Demo: jump to week 4** → Week‑4 surveys → Reminders / Investigator profile.
+4. Walkthrough: Splash → Eligibility → Consent (ORK when linked) → Baseline (official IIEF-5, sliders default **3**, tan fill) → Home → Settings → **Demo: jump to week 4** → Week‑4 surveys → Reminders / Investigator profile.
 
-> Optional: `./scripts/bootstrap-researchkit.sh` then embed ResearchKit + ResearchKitUI for native ORK chrome. Without it, branded SwiftUI fallbacks still complete the full demo.
+> Without bootstrap, branded SwiftUI fallbacks still complete the full demo. See `docs/BUILD_NOTES.md` for Mac wiring details.
 
 ## ResearchKit dependency
 
@@ -32,22 +33,23 @@ Suggested bundle ID: `com.xialla.studies`
 # optional: RESEARCHKIT_URL=https://github.com/nigelandrewshaw/ResearchKit.git ./scripts/bootstrap-researchkit.sh
 ```
 
-Then in Xcode: add `Vendor/ResearchKit/ResearchKit.xcodeproj` → embed **ResearchKit** + **ResearchKitUI**.
+Bootstrap clones `Vendor/ResearchKit` (gitignored) and wires **ResearchKit** + **ResearchKitUI** into the checked-in Xcode project (link + Embed & Sign). No manual Add Files step required after a successful run.
 
 ## What’s included
 
 | Area | Status |
 |------|--------|
-| Splash / Home | Full-bleed xialla.com hero + logo |
+| Splash / Home | Full-bleed xialla.com hero + logo; white content canvas |
 | Provider | `StudyParameters.provider` → Dr. Jeffrey Campbell profile |
 | Eligibility | Prospective enabled; current-user gated |
-| Consent | Info → comprehension → signature; RK + PDF when linked |
-| Surveys | IIEF-5 sliders **1–5 default 3** + history / UX / AE |
+| Consent | ORK visual consent → comprehension → signature → PDF when linked |
+| Surveys | Official IIEF-5 wording; sliders **1–5 default 3** (tan fill) + history / UX / AE |
+| Chrome | White screens; primary buttons `#212322`; tan `#CDA788` accents |
 | Week-4 | Real path + **demo advance** / seed in Settings |
 | Reminders | Local notification scheduler (~4 weeks) |
 | Persistence | `LocalStudyStore` JSON — survives relaunch |
 | Config | `study_code` / `site_code` + study parameters model |
-| Tests | Model / scoring / snapshot round-trip |
+| Tests | Model / scoring / official IIEF-5 wording / snapshot round-trip |
 
 ## Study flow (v1)
 
@@ -66,4 +68,4 @@ Edit `StudyParameters.xiallaObservationalV1` / `StudyConfig.active` (or later lo
 - `provider` (name, photo asset, title, site, bio)
 - `apiBaseURL` when Cloud Run is live
 
-See `docs/BUILD_NOTES.md` for Fieldwork font licensing, assets, and no-Mac notes.
+See `docs/BUILD_NOTES.md` for Fieldwork font licensing, ResearchKit Mac steps, assets, and no-Mac notes.

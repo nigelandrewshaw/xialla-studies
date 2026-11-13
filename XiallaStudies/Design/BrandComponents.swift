@@ -39,7 +39,7 @@ struct PrimaryButton: View {
                 .foregroundStyle(BrandTheme.chalk)
                 .background(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .fill(enabled ? BrandTheme.accent : BrandTheme.graphite.opacity(0.35))
+                        .fill(enabled ? BrandTheme.ink : BrandTheme.graphite.opacity(0.35))
                 )
         }
         .disabled(!enabled)
@@ -97,7 +97,7 @@ struct StatusChip: View {
         var color: Color {
             switch self {
             case .neutral: return BrandTheme.graphite
-            case .active: return BrandTheme.accent
+            case .active: return BrandTheme.tan
             case .due: return BrandTheme.attention
             case .done: return BrandTheme.ink
             }

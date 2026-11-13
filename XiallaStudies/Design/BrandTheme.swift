@@ -7,13 +7,13 @@ import SwiftUI
 enum BrandTheme {
     // MARK: - Official swatch (Pantone)
 
-    /// Near-black — Pantone 419 C `#212322`. Primary text / dark UI / secondary chrome.
+    /// Near-black — Pantone 419 C `#212322`. Primary text / primary buttons / dark chrome.
     static let ink = Color(red: 33 / 255, green: 35 / 255, blue: 34 / 255)
 
-    /// Tan — Pantone 4665 C `#CDA788`. Surfaces / backgrounds.
+    /// Tan — Pantone 4665 C `#CDA788`. Visual interest only (slider fills, light accents) — not full-screen fills.
     static let tan = Color(red: 205 / 255, green: 167 / 255, blue: 136 / 255)
 
-    /// Accent — Pantone 1645 C `#FF6A39`. Highlighted type, badges, tints, primary CTAs.
+    /// Accent — Pantone 1645 C `#FF6A39`. Available sparingly for badges; not primary CTAs or slider tracks.
     static let accent = Color(red: 255 / 255, green: 106 / 255, blue: 57 / 255)
 
     /// Forest — Pantone kit `#1D3C34`. Available sparingly; not brand chrome.
@@ -24,32 +24,36 @@ enum BrandTheme {
 
     // MARK: - Derived UI tokens
 
-    /// Secondary text — ink at reduced strength on tan.
+    /// Secondary text on white.
     static let graphite = Color(red: 72 / 255, green: 68 / 255, blue: 64 / 255)
 
-    /// Soft border / chip wash — tan lightened toward chalk.
+    /// Soft border / chip wash — light tan tint on white.
     static let mist = Color(red: 232 / 255, green: 214 / 255, blue: 196 / 255)
 
-    /// Alias for surface fills that previously used paper gray.
-    static let parchment = tan
+    /// Light surface wash (chips, subtle bands) — not a screen fill.
+    static let parchment = mist
 
-    /// Reminders / due — same family as accent highlight.
-    static let attention = accent
+    /// Reminders / due — ink family for clarity on white.
+    static let attention = ink
 
-    /// Pure white for overlays on dark hero / labels on accent fills.
+    /// Pure white — main screen backgrounds and text on dark fills.
     static let chalk = Color.white
+
+    /// Main screen canvas.
+    static let canvas = Color.white
 
     // MARK: - Gradients
 
+    /// Subtle top wash for main screens — white with a light tan tip for interest (not a full tan fill).
     static var atmosphere: LinearGradient {
         LinearGradient(
             colors: [
-                tan,
-                mist,
-                tan.opacity(0.92)
+                mist.opacity(0.55),
+                canvas,
+                canvas
             ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+            startPoint: .top,
+            endPoint: .bottom
         )
     }
 

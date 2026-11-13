@@ -11,7 +11,7 @@ struct KitFulfillmentStubView: View {
             VStack(alignment: .leading, spacing: 24) {
                 SectionIntro(
                     headline: "Study kit",
-                    support: "Fulfillment timing is undecided. This screen is a placeholder so the app can record intent without shipping logic."
+                    support: "Kit fulfillment timing is still undecided. This screen records your intent so the study can proceed without shipping logic yet."
                 )
 
                 if let kit = session.snapshot.kit {

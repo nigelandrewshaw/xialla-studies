@@ -3,6 +3,7 @@ import SwiftUI
 #if canImport(ResearchKit) && canImport(ResearchKitUI)
 import ResearchKit
 import ResearchKitUI
+import UIKit
 
 struct ResearchKitSurveyPresenter: UIViewControllerRepresentable {
     let timepoint: SurveyTimepoint
@@ -13,6 +14,7 @@ struct ResearchKitSurveyPresenter: UIViewControllerRepresentable {
         let task = ResearchKitTaskFactory.makeSurveyTask(timepoint: timepoint)
         let vc = ORKTaskViewController(task: task, taskRun: nil)
         vc.delegate = context.coordinator
+        vc.view.tintColor = UIColor(BrandTheme.tan)
         return vc
     }
 
@@ -65,7 +67,7 @@ struct ResearchKitSurveyPresenter: View {
     var onCancel: () -> Void
 
     var body: some View {
-        // Branded custom IIEF-5 + companion stubs when RK is not linked.
+        // Branded custom IIEF-5 + companion surveys when RK is not linked.
         BrandedSurveyFallbackView(timepoint: timepoint, onFinish: onFinish, onCancel: onCancel)
     }
 }

@@ -1,5 +1,6 @@
 # XcodeGen spec — on a Mac: `brew install xcodegen && xcodegen generate`
-# ResearchKit: run ./scripts/bootstrap-researchkit.sh then embed ResearchKit.xcodeproj (see README).
+# Then wire ResearchKit: `./scripts/bootstrap-researchkit.sh` (or
+# `python3 scripts/wire_researchkit_xcodeproj.py` if Vendor/ already cloned).
 
 name: XiallaStudies
 options:
@@ -35,9 +36,13 @@ targets:
         ENABLE_PREVIEWS: YES
     info:
       path: XiallaStudies/Supporting/Info.plist
-    # After bootstrap, add manually in Xcode:
+    # Prefer scripts/wire_researchkit_xcodeproj.py after bootstrap.
+    # Manual XcodeGen alternative once Vendor/ResearchKit exists:
     # dependencies:
-    #   - framework: Vendor/ResearchKit/build/...  (prefer Embed ResearchKit + ResearchKitUI)
+    #   - target: ResearchKit/ResearchKit
+    #     embed: true
+    #   - target: ResearchKit/ResearchKitUI
+    #     embed: true
 
   XiallaStudiesTests:
     type: bundle.unit-test

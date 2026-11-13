@@ -25,8 +25,8 @@ struct ConsentFlowView: View {
 
         var label: String {
             switch self {
-            case .observational: return "An observational study of Xialla use"
-            case .treatment: return "A treatment program that diagnoses ED"
+            case .observational: return "An observational study of Xialla use (not a treatment program)"
+            case .treatment: return "A treatment program that diagnoses erectile dysfunction"
             case .diagnosis: return "A clinical trial of a new drug"
             }
         }
@@ -48,8 +48,13 @@ struct ConsentFlowView: View {
         .navigationTitle("Consent")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showResearchKitTask) {
-            ResearchKitConsentPresenter { signatureRef, pdfURL in
+            ResearchKitConsentPresenter { signatureRef, pdfURL, comprehensionPassed in
                 showResearchKitTask = false
+                guard comprehensionPassed else {
+                    // Wrong comprehension answer — return to the in-app check.
+                    step = .comprehension
+                    return
+                }
                 Task {
                     await session.completeConsent(
                         comprehensionPassed: true,
@@ -69,28 +74,28 @@ struct ConsentFlowView: View {
         switch step {
         case .intro:
             SectionIntro(
-                headline: "What you’re agreeing to",
-                support: "You’ll review study information, answer a short comprehension check, and sign if you choose to join. Progress is saved on this device."
+                headline: "What you are agreeing to",
+                support: "You will review study information, answer a short comprehension check, and sign if you choose to join. Your progress is saved on this device."
             )
             providerChip
         case .info:
             SectionIntro(
                 headline: "Study information",
-                support: "Purpose, procedures, risks/benefits, data use, and withdrawal — aligned with the observational protocol (IRB text can replace stubs)."
+                support: "Please review the purpose, procedures, risks and benefits, data use, and withdrawal options for this observational study. IRB-approved language can replace these stubs later."
             )
             VStack(alignment: .leading, spacing: 10) {
-                infoLine("Prospective observational study (not a treatment program).")
-                infoLine("Baseline questionnaires before first use; week‑4 follow-up.")
-                infoLine("Data tagged with study_code and site_code.")
-                infoLine("Investigator: \(StudyConfig.provider.displayName).")
+                infoLine("This is a prospective observational study of Xialla use, not a treatment program.")
+                infoLine("You will complete baseline questionnaires before first use, then a week‑4 follow-up.")
+                infoLine("Your records are tagged with a study_code and site_code for the coordinating site.")
+                infoLine("The site investigator is \(StudyConfig.provider.displayName).")
             }
         case .comprehension:
             SectionIntro(
                 headline: "Comprehension check",
-                support: "Confirm you understand the study type."
+                support: "Please confirm that you understand what kind of study this is before you continue."
             )
             VStack(spacing: 10) {
-                Text("This app is for:")
+                Text("Which of the following best describes this study?")
                     .font(BrandTheme.body(15, weight: .medium))
                     .foregroundStyle(BrandTheme.ink)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -106,14 +111,14 @@ struct ConsentFlowView: View {
                             Spacer()
                             if comprehensionAnswer == choice {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(BrandTheme.accent)
+                                    .foregroundStyle(BrandTheme.ink)
                             }
                         }
                         .padding(14)
                         .background(
                             RoundedRectangle(cornerRadius: 4, style: .continuous)
                                 .stroke(
-                                    comprehensionAnswer == choice ? BrandTheme.accent : BrandTheme.mist,
+                                    comprehensionAnswer == choice ? BrandTheme.ink : BrandTheme.mist,
                                     lineWidth: 1
                                 )
                         )
@@ -124,7 +129,7 @@ struct ConsentFlowView: View {
         case .signature:
             SectionIntro(
                 headline: "Signature",
-                support: "Type your name to record consent locally. With ResearchKit linked, a drawn signature + PDF export are used."
+                support: "Please type your full name to record consent on this device. When ResearchKit is linked, a drawn signature and PDF export are used instead."
             )
             TextField("Full name", text: $signatureName)
                 .textContentType(.name)
@@ -140,7 +145,7 @@ struct ConsentFlowView: View {
         case .done:
             SectionIntro(
                 headline: "Consent saved locally",
-                support: "Version \(StudyConfig.consentDocumentVersion). You can quit and reopen — progress persists on this device."
+                support: "Your consent (document version \(StudyConfig.consentDocumentVersion)) is saved on this device. You can quit and reopen the app without losing this progress."
             )
         }
     }
@@ -170,10 +175,10 @@ struct ConsentFlowView: View {
         switch step {
         case .intro:
             VStack(spacing: 12) {
-                PrimaryButton(title: "Open consent task") {
+                PrimaryButton(title: "Continue with ResearchKit consent") {
                     showResearchKitTask = true
                 }
-                SecondaryButton(title: "Review in app instead") {
+                SecondaryButton(title: "Review study information in the app") {
                     step = .info
                 }
             }
@@ -208,7 +213,7 @@ struct ConsentFlowView: View {
     private func infoLine(_ text: String) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Circle()
-                .fill(BrandTheme.accent)
+                .fill(BrandTheme.tan)
                 .frame(width: 6, height: 6)
                 .padding(.top, 7)
             Text(text)

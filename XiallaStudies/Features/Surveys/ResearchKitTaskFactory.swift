@@ -2,18 +2,12 @@ import Foundation
 
 #if canImport(ResearchKit)
 import ResearchKit
-#else
-/// Present when ResearchKit is not linked — branded SwiftUI surveys still run.
-enum ResearchKitTaskFactory {
-    static let isAvailable = false
-}
-#endif
-
-#if canImport(ResearchKit)
 
 /// Builds ResearchKit ordered tasks for consent and surveys.
-/// IIEF-5 uses horizontal scale sliders (1–5) with **defaultValue 3**.
+/// IIEF-5 uses horizontal scale sliders (1–5) with **defaultValue 3** and official wording.
 enum ResearchKitTaskFactory {
+    static let isAvailable = true
+
     /// Retained so the consent presenter can export a PDF after the task completes.
     static var lastConsentDocument: ORKConsentDocument?
 
@@ -37,10 +31,10 @@ enum ResearchKitTaskFactory {
             section(
                 .custom,
                 title: "Procedures",
-                summary: "Baseline questionnaires before first use, then a week‑4 follow-up.",
+                summary: "You will complete baseline questionnaires before first use, then a week‑4 follow-up.",
                 content: """
                 If you join, you will: (1) confirm eligibility, (2) complete baseline surveys \
-                including IIEF-5 and brief history / usability / comfort / satisfaction / \
+                including the IIEF-5 and brief history, usability, comfort, satisfaction, and \
                 adverse-event questions, (3) use Xialla as you normally would, and (4) complete \
                 a week‑4 follow-up in the app. Optional local reminders help you remember the follow-up. \
                 Records are tagged with study_code and site_code for the coordinating site.
@@ -58,8 +52,8 @@ enum ResearchKitTaskFactory {
             ),
             section(
                 .privacy,
-                title: "Privacy & risks",
-                summary: "Sexual-health answers are sensitive; residual privacy risk remains.",
+                title: "Privacy and risks",
+                summary: "Sexual-health answers are sensitive, and a residual privacy risk remains.",
                 content: """
                 Sexual health information is sensitive. We apply technical safeguards appropriate for a \
                 HIPAA-oriented study environment when syncing. Risks include discomfort answering personal \
@@ -80,10 +74,10 @@ enum ResearchKitTaskFactory {
             section(
                 .custom,
                 title: "Contact",
-                summary: "First site: Dr. Jeffrey Campbell / St. Joseph’s London.",
+                summary: "The first site investigator is Dr. Jeffrey Campbell at St. Joseph’s London.",
                 content: """
-                Questions about the study: contact your site investigator. \
-                Site code and study code appear in Settings. Replace this stub with IRB-approved \
+                If you have questions about the study, contact your site investigator. \
+                The site code and study code appear in Settings. Replace this stub with IRB-approved \
                 contact language before enrollment.
                 """
             )
@@ -101,15 +95,18 @@ enum ResearchKitTaskFactory {
 
         let comprehension = ORKQuestionStep(
             identifier: "consent.comprehension",
-            title: "Comprehension",
-            question: "This study is primarily:",
+            title: "Comprehension check",
+            question: "Which of the following best describes this study?",
             answer: ORKTextChoiceAnswerFormat(style: .singleChoice, textChoices: [
-                ORKTextChoice(text: "Observational (not a treatment program)", value: "observational" as NSString),
-                ORKTextChoice(text: "A new drug trial", value: "drug" as NSString),
-                ORKTextChoice(text: "Diagnostic testing", value: "dx" as NSString)
+                ORKTextChoice(
+                    text: "An observational study of Xialla use (not a treatment program)",
+                    value: "observational" as NSString
+                ),
+                ORKTextChoice(text: "A clinical trial of a new drug", value: "drug" as NSString),
+                ORKTextChoice(text: "A diagnostic testing service for erectile dysfunction", value: "dx" as NSString)
             ])
         )
-        comprehension.text = "Please confirm you understand the study type before signing."
+        comprehension.text = "Please confirm that you understand what kind of study this is before you sign."
 
         let review = ORKConsentReviewStep(identifier: "consent.review", signature: nil, in: document)
         review.reasonForConsent = "I agree to join this observational study of Xialla use."
@@ -138,8 +135,8 @@ enum ResearchKitTaskFactory {
         let intro = ORKInstructionStep(identifier: "survey.\(timepoint.rawValue).intro")
         intro.title = timepoint.displayName
         intro.detailText = timepoint == .baseline
-            ? "Complete these before first use when possible. IIEF-5 items use a 1–5 slider (starts at 3)."
-            : "Week‑4 follow-up. IIEF-5 items use a 1–5 slider (starts at 3)."
+            ? "Please complete these questionnaires before your first study use of Xialla when possible. The IIEF-5 items use a 1–5 slider that starts at 3."
+            : "This is your week‑4 follow-up. The IIEF-5 items use a 1–5 slider that starts at 3."
         steps.append(intro)
 
         steps.append(iief5Form(timepoint: timepoint))
@@ -151,14 +148,14 @@ enum ResearchKitTaskFactory {
         steps.append(likertForm(
             id: "\(timepoint.rawValue).usability",
             title: "Usability",
-            prompt: "How easy was Xialla to use?",
+            prompt: "Thinking about your experience so far, how easy was Xialla to use?",
             low: "Very difficult",
             high: "Very easy"
         ))
         steps.append(likertForm(
             id: "\(timepoint.rawValue).comfort",
             title: "Comfort",
-            prompt: "How comfortable was Xialla to wear?",
+            prompt: "How comfortable was Xialla to wear during use?",
             low: "Very uncomfortable",
             high: "Very comfortable"
         ))
@@ -173,27 +170,25 @@ enum ResearchKitTaskFactory {
         steps.append(freeTextForm(timepoint: timepoint))
 
         let done = ORKCompletionStep(identifier: "survey.\(timepoint.rawValue).done")
-        done.title = "Saved"
-        done.text = "Responses stay on-device until the API syncs. IIEF-5 total is scored locally (5–25)."
+        done.title = "Responses saved"
+        done.text = "Your responses stay on this device until the study API syncs. Your IIEF-5 total is scored locally on a scale from 5 to 25."
         steps.append(done)
 
         return ORKOrderedTask(identifier: "xialla.survey.\(timepoint.rawValue)", steps: steps)
     }
 
-    /// IIEF-5: five horizontal scale sliders, range 1–5, **default 3**.
-    /// Item wording is paraphrased placeholder until licensing is cleared.
+    /// IIEF-5: five horizontal scale sliders, range 1–5, **default 3**, official item wording.
     private static func iief5Form(timepoint: SurveyTimepoint) -> ORKFormStep {
         let step = ORKFormStep(
             identifier: "iief5.\(timepoint.rawValue)",
             title: "IIEF-5",
             text: """
-            Rate each item from 1 (lowest) to 5 (highest). Sliders start at 3. \
-            Official IIEF-5 wording must be cleared for licensing before shipping final copy.
+            \(IIEF5Scoring.recallPeriodInstruction) \
+            Please rate each item from 1 to 5 using the slider. Each slider starts at 3.
             """
         )
-        let prompts = IIEF5Scoring.placeholderPrompts
         var items: [ORKFormItem] = []
-        for (index, prompt) in prompts.enumerated() {
+        for (index, item) in IIEF5Scoring.items.enumerated() {
             let q = index + 1
             let format = ORKScaleAnswerFormat(
                 maximumValue: 5,
@@ -201,15 +196,15 @@ enum ResearchKitTaskFactory {
                 defaultValue: 3,
                 step: 1,
                 vertical: false,
-                maximumValueDescription: "5",
-                minimumValueDescription: "1"
+                maximumValueDescription: item.highLabel,
+                minimumValueDescription: item.lowLabel
             )
-            let item = ORKFormItem(
+            let formItem = ORKFormItem(
                 identifier: "iief5.q\(q)",
-                text: "\(q). \(prompt)",
+                text: "\(q). \(item.prompt)",
                 answerFormat: format
             )
-            items.append(item)
+            items.append(formItem)
         }
         step.formItems = items
         return step
@@ -219,12 +214,12 @@ enum ResearchKitTaskFactory {
         let step = ORKFormStep(
             identifier: "baseline.history",
             title: "Baseline history",
-            text: "Brief history before first study use of Xialla."
+            text: "Please answer these brief history questions before your first study use of Xialla."
         )
         step.formItems = [
             ORKFormItem(
                 identifier: "baseline.history.prior_ed_tx",
-                text: "Have you used other ED treatments before?",
+                text: "Have you used other treatments for erectile dysfunction before starting this study?",
                 answerFormat: ORKTextChoiceAnswerFormat(style: .singleChoice, textChoices: [
                     ORKTextChoice(text: "Yes", value: "yes" as NSString),
                     ORKTextChoice(text: "No", value: "no" as NSString),
@@ -233,7 +228,7 @@ enum ResearchKitTaskFactory {
             ),
             ORKFormItem(
                 identifier: "baseline.history.notes",
-                text: "Anything else relevant for the study team?",
+                text: "Is there anything else you would like the study team to know about your history before first use of Xialla?",
                 answerFormat: ORKTextAnswerFormat(maximumLength: 400)
             )
         ]
@@ -268,12 +263,12 @@ enum ResearchKitTaskFactory {
         let step = ORKFormStep(
             identifier: id,
             title: "Adverse events",
-            text: "Report any problems related to Xialla use since the last questionnaire."
+            text: "Please report any problems that may be related to Xialla use since the last questionnaire."
         )
         step.formItems = [
             ORKFormItem(
                 identifier: "\(id).any",
-                text: "Did you experience any adverse events?",
+                text: "Did you experience any adverse events or problems that you think may be related to using Xialla?",
                 answerFormat: ORKTextChoiceAnswerFormat(style: .singleChoice, textChoices: [
                     ORKTextChoice(text: "No", value: "no" as NSString),
                     ORKTextChoice(text: "Yes", value: "yes" as NSString)
@@ -281,7 +276,7 @@ enum ResearchKitTaskFactory {
             ),
             ORKFormItem(
                 identifier: "\(id).detail",
-                text: "If yes, briefly describe:",
+                text: "If you answered yes, please briefly describe what happened.",
                 answerFormat: ORKTextAnswerFormat(maximumLength: 500)
             )
         ]
@@ -292,18 +287,25 @@ enum ResearchKitTaskFactory {
         let id = "\(timepoint.rawValue).freeText"
         let step = ORKFormStep(
             identifier: id,
-            title: "Free text",
-            text: "Optional comments for the study team."
+            title: "Additional comments",
+            text: "You may share any additional comments for the study team. This step is optional."
         )
         step.formItems = [
             ORKFormItem(
                 identifier: "\(id).note",
-                text: "Comments",
+                text: "Please share any additional comments for the study team.",
                 answerFormat: ORKTextAnswerFormat(maximumLength: 800)
             )
         ]
         return step
     }
+}
+
+#else
+
+/// Present when ResearchKit is not linked — branded SwiftUI surveys still run.
+enum ResearchKitTaskFactory {
+    static let isAvailable = false
 }
 
 #endif

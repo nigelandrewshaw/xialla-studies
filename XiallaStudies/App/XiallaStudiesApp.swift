@@ -8,7 +8,7 @@ struct XiallaStudiesApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(session)
-                .tint(BrandTheme.accent)
+                .tint(BrandTheme.tan)
                 .task {
                     await session.bootstrap()
                 }

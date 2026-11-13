@@ -6,25 +6,72 @@ The scaffolding agent ran on Linux without Xcode / `xcodebuild` / iOS Simulator.
 
 - Sources, `project.yml`, and `XiallaStudies.xcodeproj` were generated here.
 - **Compile and UI tests must run on a Mac** with Xcode 16+.
-- ResearchKit is **not** vendored in this commit (large + git-lfs). Use `scripts/bootstrap-researchkit.sh` on a Mac.
+- ResearchKit is **not** committed (large + git-lfs). Bootstrap on a Mac clones it into `Vendor/` (gitignored) and wires the Xcode project.
 
-## Verify on Mac
+## Mac: open, sign, run (without ResearchKit)
 
 ```bash
 git pull
 open XiallaStudies.xcodeproj
-# Set Team for signing, Run on simulator/device
-
-# Optional ResearchKit:
-./scripts/bootstrap-researchkit.sh
-# Then embed ResearchKit + ResearchKitUI (README)
+# Select XiallaStudies scheme → Signing & Capabilities → your Team
+# Run on simulator or device
 ```
 
-## Unit tests / simulator without ResearchKit
+Branded SwiftUI consent/survey fallbacks run the full demo without ResearchKit (`#if canImport`). IIEF-5 uses **official item wording**, 1–5 sliders defaulting to **3**, with tan `#CDA788` filled tracks.
 
-`XiallaStudiesTests` covers config/timepoints, arm gating, `site_code`/`study_code` meta, IIEF-5 bands, snapshot Codable round-trip (incl. preferences). These do not require ResearchKit.
+## Mac: wire ResearchKit (recommended)
 
-The app target does **not** link ResearchKit by default. Presenters use `#if canImport(ResearchKit)` with a branded SwiftUI fallback (IIEF-5 **sliders 1–5, default 3**), so a simulator build should compile and demo the full flow without ResearchKit. After bootstrap + embed, real `ORKOrderedTask`s activate.
+```bash
+# One-time (or after a clean clone):
+./scripts/bootstrap-researchkit.sh
+
+# Optional fork:
+# RESEARCHKIT_URL=https://github.com/nigelandrewshaw/ResearchKit.git ./scripts/bootstrap-researchkit.sh
+
+open XiallaStudies.xcodeproj
+# Team → Build & Run
+```
+
+What bootstrap does:
+
+1. Clones ResearchKit into `Vendor/ResearchKit/` (requires network; `brew install git-lfs` recommended).
+2. Regenerates `XiallaStudies.xcodeproj` via `scripts/generate_xcodeproj.py`.
+3. Runs `scripts/wire_researchkit_xcodeproj.py` to:
+   - add `Vendor/ResearchKit/ResearchKit.xcodeproj` as a subproject
+   - link **ResearchKit** + **ResearchKitUI**
+   - **Embed & Sign** both frameworks on the app target
+
+You should **not** need to manually Add Files / Embed in Xcode after a successful bootstrap. If frameworks are missing (e.g. you regenerated the project later):
+
+```bash
+python3 scripts/generate_xcodeproj.py
+python3 scripts/wire_researchkit_xcodeproj.py
+```
+
+### XcodeGen alternative
+
+```bash
+brew install xcodegen
+./scripts/bootstrap-researchkit.sh   # clone + wire checked-in pbxproj
+# If you prefer regenerating from project.yml:
+xcodegen generate
+python3 scripts/wire_researchkit_xcodeproj.py
+```
+
+### What “wired” ResearchKit enables
+
+| Flow | Behavior |
+|------|----------|
+| Consent | `ORKVisualConsentStep` → comprehension question → `ORKConsentReviewStep` signature → PDF via `ORKConsentDocument.makePDF` when feasible |
+| Surveys | `ORKOrderedTask` with official IIEF-5 scale items (1–5, default 3) + companion forms |
+| Bookends | Branded SwiftUI intro/hub screens still wrap the ORK task sheets |
+| Fallback | If frameworks are not linked, SwiftUI consent stubs + `BrandedSurveyFallbackView` keep demos working |
+
+ORK task chrome uses the app tint (tan `#CDA788`) for scale/slider fills. Primary CTAs remain black `#212322` on white canvases.
+
+## Unit tests
+
+`XiallaStudiesTests` covers config/timepoints, arm gating, `site_code`/`study_code` meta, IIEF-5 bands + official wording smoke check, snapshot Codable round-trip (incl. preferences). These do not require ResearchKit.
 
 ## Local persistence
 
@@ -34,7 +81,7 @@ The app target does **not** link ResearchKit by default. Presenters use `#if can
 
 - Logo + homepage hero pulled from xialla.com CDN into `Assets.xcassets`.
 - **Fieldwork** is Adobe Fonts (Typekit kit `shw7daa`) — webfont license does **not** allow shipping binaries in the app. See `XiallaStudies/Resources/Fonts/README.md`. Until a desktop license is added, UI uses **Avenir Next** at Fieldwork-like weights. `UIAppFonts` can be registered when `.otf` files are dropped in.
-- Official Pantone swatch in `BrandTheme`: ink `#212322` (419 C), tan surfaces `#CDA788` (4665 C), accent `#FF6A39` (1645 C). Forest/sage in kit but not chrome.
+- Chrome: white main screens; primary buttons Pantone 419 C `#212322`; tan Pantone 4665 C `#CDA788` for slider fills and light visual interest only (not full-screen fills). Accent orange remains in the kit but is not used for CTAs or slider tracks.
 
 ## Study parameters / provider
 
@@ -48,6 +95,8 @@ The app target does **not** link ResearchKit by default. Presenters use `#if can
 
 ```bash
 python3 scripts/generate_xcodeproj.py
+# If ResearchKit was bootstrapped:
+python3 scripts/wire_researchkit_xcodeproj.py
 # or
-xcodegen generate
+xcodegen generate && python3 scripts/wire_researchkit_xcodeproj.py
 ```

@@ -17,13 +17,13 @@ struct HomeView: View {
                         if let summary = session.lastIIEF5Summary {
                             Text(summary)
                                 .font(BrandTheme.body(15, weight: .semibold))
-                                .foregroundStyle(BrandTheme.accent)
+                                .foregroundStyle(BrandTheme.ink)
                                 .fixedSize(horizontal: false, vertical: true)
                         } else if let iief = session.snapshot.surveys.last(where: { $0.instrument == .iief5 }),
                                   let total = iief.scoreTotal {
                             Text("Latest IIEF-5 \(total)" + (iief.scoreBand.map { " (\($0))" } ?? ""))
                                 .font(BrandTheme.body(15, weight: .semibold))
-                                .foregroundStyle(BrandTheme.accent)
+                                .foregroundStyle(BrandTheme.ink)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                         nextAction

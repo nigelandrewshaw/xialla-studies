@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Branded IIEF-5 + companion surveys when ResearchKit is not linked.
-/// IIEF-5 items use **sliders 1–5 defaulting to 3**.
+/// IIEF-5 items use **sliders 1–5 defaulting to 3** with official instrument wording.
 struct BrandedSurveyFallbackView: View {
     let timepoint: SurveyTimepoint
     var onFinish: (SurveyTaskOutcome) -> Void
@@ -20,6 +20,17 @@ struct BrandedSurveyFallbackView: View {
     enum Page {
         case iief5, companions, done
     }
+
+    private let historyOptions: [(value: String, label: String)] = [
+        ("yes", "Yes"),
+        ("no", "No"),
+        ("na", "Prefer not to say")
+    ]
+
+    private let aeOptions: [(value: String, label: String)] = [
+        ("no", "No"),
+        ("yes", "Yes")
+    ]
 
     var body: some View {
         NavigationStack {
@@ -52,29 +63,33 @@ struct BrandedSurveyFallbackView: View {
         VStack(alignment: .leading, spacing: 16) {
             SectionIntro(
                 headline: "IIEF-5",
-                support: "Each item is a 1–5 slider starting at 3. Official wording pending license clearance."
+                support: "\(IIEF5Scoring.recallPeriodInstruction) Please rate each item from 1 to 5. Each slider starts at 3."
             )
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    ForEach(0..<5, id: \.self) { index in
+                    ForEach(Array(IIEF5Scoring.items.enumerated()), id: \.offset) { index, item in
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("\(index + 1). \(IIEF5Scoring.placeholderPrompts[index])")
+                            Text("\(index + 1). \(item.prompt)")
                                 .font(BrandTheme.body(14, weight: .medium))
                                 .foregroundStyle(BrandTheme.ink)
-                            HStack {
-                                Text("1")
-                                    .font(BrandTheme.body(12))
+                            HStack(alignment: .center, spacing: 8) {
+                                Text(item.lowLabel)
+                                    .font(BrandTheme.body(11))
                                     .foregroundStyle(BrandTheme.graphite)
+                                    .frame(maxWidth: 72, alignment: .leading)
+                                    .fixedSize(horizontal: false, vertical: true)
                                 Slider(value: $answers[index], in: 1...5, step: 1)
-                                    .tint(BrandTheme.accent)
-                                Text("5")
-                                    .font(BrandTheme.body(12))
+                                    .tint(BrandTheme.tan)
+                                Text(item.highLabel)
+                                    .font(BrandTheme.body(11))
                                     .foregroundStyle(BrandTheme.graphite)
+                                    .frame(maxWidth: 72, alignment: .trailing)
+                                    .fixedSize(horizontal: false, vertical: true)
                             }
                             Text("Selected: \(Int(answers[index]))")
                                 .font(BrandTheme.body(13, weight: .semibold))
-                                .foregroundStyle(BrandTheme.accent)
+                                .foregroundStyle(BrandTheme.ink)
                         }
                     }
                 }
@@ -92,25 +107,52 @@ struct BrandedSurveyFallbackView: View {
                 SectionIntro(
                     headline: "Additional questions",
                     support: timepoint == .baseline
-                        ? "History, usability, comfort, satisfaction, and adverse events."
-                        : "Usability, comfort, satisfaction, and adverse events."
+                        ? "Please answer these history, usability, comfort, satisfaction, and adverse-event questions."
+                        : "Please answer these usability, comfort, satisfaction, and adverse-event questions."
                 )
 
                 if timepoint == .baseline {
-                    pickerRow("Prior ED treatment?", selection: $historyPriorED, options: ["yes", "no", "na"])
+                    pickerRow(
+                        "Have you used other treatments for erectile dysfunction before starting this study?",
+                        selection: $historyPriorED,
+                        options: historyOptions
+                    )
                 }
 
-                sliderRow("Usability", value: $usability, low: "Hard", high: "Easy")
-                sliderRow("Comfort", value: $comfort, low: "Low", high: "High")
-                sliderRow("Satisfaction", value: $satisfaction, low: "Low", high: "High")
-                pickerRow("Any adverse events?", selection: $aeAny, options: ["no", "yes"])
+                sliderRow(
+                    "Thinking about your experience so far, how easy was Xialla to use?",
+                    value: $usability,
+                    low: "Very difficult",
+                    high: "Very easy"
+                )
+                sliderRow(
+                    "How comfortable was Xialla to wear during use?",
+                    value: $comfort,
+                    low: "Very uncomfortable",
+                    high: "Very comfortable"
+                )
+                sliderRow(
+                    "Overall, how satisfied are you with Xialla?",
+                    value: $satisfaction,
+                    low: "Very dissatisfied",
+                    high: "Very satisfied"
+                )
+                pickerRow(
+                    "Did you experience any adverse events or problems that you think may be related to using Xialla?",
+                    selection: $aeAny,
+                    options: aeOptions
+                )
                 if aeAny == "yes" {
-                    TextField("Describe", text: $aeDetail, axis: .vertical)
+                    Text("If you answered yes, please briefly describe what happened.")
+                        .font(BrandTheme.body(15, weight: .semibold))
+                    TextField("Please describe what happened", text: $aeDetail, axis: .vertical)
                         .lineLimit(3...6)
                         .padding(12)
                         .background(RoundedRectangle(cornerRadius: 4).stroke(BrandTheme.mist))
                 }
-                TextField("Optional comments", text: $freeText, axis: .vertical)
+                Text("Please share any additional comments for the study team. This is optional.")
+                    .font(BrandTheme.body(15, weight: .semibold))
+                TextField("Optional comments for the study team", text: $freeText, axis: .vertical)
                     .lineLimit(3...6)
                     .padding(12)
                     .background(RoundedRectangle(cornerRadius: 4).stroke(BrandTheme.mist))
@@ -128,8 +170,8 @@ struct BrandedSurveyFallbackView: View {
             let total = IIEF5Scoring.total(answers: ints) ?? 0
             let band = IIEF5Scoring.band(for: total)
             SectionIntro(
-                headline: "Saved locally",
-                support: "IIEF-5 total \(total) (\(IIEF5Scoring.displayName(for: band))). Progress persists if you quit the app."
+                headline: "Responses saved locally",
+                support: "Your IIEF-5 total is \(total) (\(IIEF5Scoring.displayName(for: band))). Your progress will persist if you quit the app."
             )
             Spacer()
             PrimaryButton(title: "Done") {
@@ -160,21 +202,27 @@ struct BrandedSurveyFallbackView: View {
                 .font(BrandTheme.body(15, weight: .semibold))
             HStack {
                 Text(low).font(BrandTheme.body(12)).foregroundStyle(BrandTheme.graphite)
-                Slider(value: value, in: 1...5, step: 1).tint(BrandTheme.accent)
+                Slider(value: value, in: 1...5, step: 1).tint(BrandTheme.tan)
                 Text(high).font(BrandTheme.body(12)).foregroundStyle(BrandTheme.graphite)
             }
-            Text("\(Int(value.wrappedValue))")
+            Text("Selected: \(Int(value.wrappedValue))")
                 .font(BrandTheme.body(13, weight: .medium))
-                .foregroundStyle(BrandTheme.accent)
+                .foregroundStyle(BrandTheme.ink)
         }
     }
 
-    private func pickerRow(_ title: String, selection: Binding<String>, options: [String]) -> some View {
+    private func pickerRow(
+        _ title: String,
+        selection: Binding<String>,
+        options: [(value: String, label: String)]
+    ) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
                 .font(BrandTheme.body(15, weight: .semibold))
             Picker(title, selection: selection) {
-                ForEach(options, id: \.self) { Text($0).tag($0) }
+                ForEach(options, id: \.value) { option in
+                    Text(option.label).tag(option.value)
+                }
             }
             .pickerStyle(.segmented)
         }

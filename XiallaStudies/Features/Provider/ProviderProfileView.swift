@@ -19,7 +19,7 @@ struct ProviderProfileView: View {
                             .foregroundStyle(BrandTheme.ink)
                         Text(provider.credentials)
                             .font(BrandTheme.body(15, weight: .semibold))
-                            .foregroundStyle(BrandTheme.accent)
+                            .foregroundStyle(BrandTheme.tan)
                         Text(provider.title)
                             .font(BrandTheme.body(16))
                             .foregroundStyle(BrandTheme.ink)
@@ -45,7 +45,7 @@ struct ProviderProfileView: View {
                         Link(destination: url) {
                             Text("View on xialla.com")
                                 .font(BrandTheme.body(15, weight: .semibold))
-                                .foregroundStyle(BrandTheme.accent)
+                                .foregroundStyle(BrandTheme.ink)
                         }
                     }
 
@@ -71,7 +71,7 @@ struct ProviderProfileView: View {
                     .resizable()
                     .scaledToFill()
             } else {
-                BrandTheme.accent.opacity(0.35)
+                BrandTheme.tan.opacity(0.45)
             }
         }
         .frame(maxWidth: .infinity)
@@ -93,7 +93,7 @@ struct ProviderProfileView: View {
             Text(title.uppercased())
                 .font(BrandTheme.body(11, weight: .semibold))
                 .tracking(0.8)
-                .foregroundStyle(BrandTheme.accent)
+                .foregroundStyle(BrandTheme.tan)
             Text(value)
                 .font(BrandTheme.body(15))
                 .foregroundStyle(BrandTheme.ink)

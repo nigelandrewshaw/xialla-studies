@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
-# Clone ResearchKit into Vendor/ and optionally patch project.yml for XcodeGen.
-# On a Mac: run this, then `xcodegen generate` (or use the checked-in xcodeproj + Add Files).
+# Clone ResearchKit into Vendor/ and wire it into XiallaStudies.xcodeproj
+# (subproject + Embed & Sign for ResearchKit + ResearchKitUI).
+#
+# On a Mac after this script:
+#   open XiallaStudies.xcodeproj
+#   Select Team → Build & Run
+#
+# See docs/BUILD_NOTES.md for full Mac steps.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 VENDOR="$ROOT/Vendor/ResearchKit"
-# Prefer user's fork if RESEARCHKIT_URL is set; default upstream.
 REPO_URL="${RESEARCHKIT_URL:-https://github.com/ResearchKit/ResearchKit.git}"
-# Alternate: https://github.com/nigelandrewshaw/ResearchKit.git
+# Alternate fork: RESEARCHKIT_URL=https://github.com/nigelandrewshaw/ResearchKit.git
 
 clone_rk() {
   if [[ -d "$VENDOR/.git" ]]; then
     echo "ResearchKit already present at $VENDOR"
+    if [[ "${RESEARCHKIT_UPDATE:-0}" == "1" ]]; then
+      echo "RESEARCHKIT_UPDATE=1 — fetching…"
+      git -C "$VENDOR" fetch --depth 1 origin
+      git -C "$VENDOR" reset --hard FETCH_HEAD || true
+    fi
     return 0
   fi
   mkdir -p "$ROOT/Vendor"
@@ -26,32 +36,57 @@ clone_rk() {
   echo "Clone done."
 }
 
-print_xcode_steps() {
+wire_xcodeproj() {
+  if [[ ! -d "$VENDOR/ResearchKit.xcodeproj" ]]; then
+    echo "ERROR: Expected $VENDOR/ResearchKit.xcodeproj after clone." >&2
+    exit 1
+  fi
+
+  # Regenerate base project (keeps sources in sync), then wire RK subproject.
+  if [[ -f "$ROOT/scripts/generate_xcodeproj.py" ]]; then
+    echo "Regenerating XiallaStudies.xcodeproj…"
+    python3 "$ROOT/scripts/generate_xcodeproj.py"
+  fi
+
+  echo "Wiring ResearchKit + ResearchKitUI into Xcode project…"
+  python3 "$ROOT/scripts/wire_researchkit_xcodeproj.py"
+
+  # Optional XcodeGen path — keep project.yml in sync for Mac regenerators.
+  if command -v xcodegen >/dev/null 2>&1 && [[ -f "$ROOT/project.yml" ]]; then
+    echo "xcodegen found — you may run: xcodegen generate && python3 scripts/wire_researchkit_xcodeproj.py"
+  fi
+}
+
+print_mac_steps() {
   cat <<'EOF'
 
-Next (Mac / Xcode):
-  1. Open XiallaStudies.xcodeproj
-  2. File → Add Files to "XiallaStudies"… → select Vendor/ResearchKit/ResearchKit.xcodeproj
-  3. App target → General → Frameworks, Libraries, and Embedded Content
-       → add ResearchKit + ResearchKitUI (Embed & Sign)
-  4. Build & Run
+Next (Mac / Xcode 16+):
+  1. open XiallaStudies.xcodeproj
+  2. Select the XiallaStudies target → Signing & Capabilities → choose your Team
+  3. Build & Run on a simulator or device
 
-Or with XcodeGen after clone:
-  brew install xcodegen
-  # project.yml already lists an optional local path — uncomment local packages if using SPM-style,
-  # otherwise keep the embedded .xcodeproj approach above (official RK install).
-  xcodegen generate
-  open XiallaStudies.xcodeproj
+  The bootstrap script already:
+    • cloned Vendor/ResearchKit (gitignored)
+    • regenerated XiallaStudies.xcodeproj
+    • added ResearchKit.xcodeproj as a subproject
+    • linked + Embed & Sign ResearchKit + ResearchKitUI
 
-Without ResearchKit linked, branded SwiftUI consent/survey fallbacks still run
-(IIEF-5 sliders 1–5 default 3). #if canImport(ResearchKit) activates real ORK tasks once linked.
+  If Xcode shows missing frameworks after a clean clone:
+    ./scripts/bootstrap-researchkit.sh
+    # or only re-wire: python3 scripts/wire_researchkit_xcodeproj.py
+
+  Branded SwiftUI bookends still wrap ORK tasks (consent intro / survey hub).
+  Without ResearchKit linked, #if canImport fallbacks keep the demo runnable.
+
+  Theme: white canvases, primary buttons #212322, tan #CDA788 slider fill.
 EOF
 }
 
 clone_rk
-print_xcode_steps
+wire_xcodeproj
+print_mac_steps
 
-# Touch a stamp so CI/docs can detect bootstrap.
 mkdir -p "$ROOT/Vendor"
 echo "bootstrapped=$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$ROOT/Vendor/ResearchKit.bootstrap.stamp"
 echo "Wrote Vendor/ResearchKit.bootstrap.stamp"
+echo "Done."

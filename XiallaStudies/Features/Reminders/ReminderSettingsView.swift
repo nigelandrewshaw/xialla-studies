@@ -11,7 +11,7 @@ struct ReminderSettingsView: View {
             VStack(alignment: .leading, spacing: 24) {
                 SectionIntro(
                     headline: "Reminders",
-                    support: "V1 schedules local notifications for the week‑4 follow-up only. Push (APNs) can layer on later."
+                    support: "This version schedules local notifications for the week‑4 follow-up only. Push notifications (APNs) can be added later."
                 )
 
                 VStack(alignment: .leading, spacing: 8) {

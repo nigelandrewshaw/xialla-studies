@@ -25,8 +25,8 @@ struct SurveyFlowView: View {
                 SectionIntro(
                     headline: timepoint.displayName,
                     support: timepoint == .baseline
-                        ? "IIEF-5 uses 1–5 sliders (default 3), then history and experience questions. Saved on-device."
-                        : "Week‑4 instruments. IIEF-5 sliders default to 3."
+                        ? "Please complete the IIEF-5 (1–5 sliders that start at 3), then the history and experience questions. Your answers are saved on this device."
+                        : "Please complete the week‑4 follow-up questionnaires. The IIEF-5 uses 1–5 sliders that start at 3. Your answers are saved on this device."
                 )
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -48,7 +48,7 @@ struct SurveyFlowView: View {
                 if let scoreSummary {
                     Text(scoreSummary)
                         .font(BrandTheme.body(15, weight: .semibold))
-                        .foregroundStyle(BrandTheme.accent)
+                        .foregroundStyle(BrandTheme.ink)
                 }
 
                 Spacer()
