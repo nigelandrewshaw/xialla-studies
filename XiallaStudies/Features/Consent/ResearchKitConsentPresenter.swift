@@ -12,7 +12,8 @@ struct ResearchKitConsentPresenter: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> ORKTaskViewController {
         let task = ResearchKitTaskFactory.makeConsentTask()
-        let vc = ORKTaskViewController(task: task, taskRun: nil)
+        // ResearchKit 3+: initializer uses taskRunUUID (not the old taskRun label).
+        let vc = ORKTaskViewController(task: task, taskRunUUID: nil)
         vc.delegate = context.coordinator
         vc.view.tintColor = UIColor(BrandTheme.tan)
         context.coordinator.document = ResearchKitTaskFactory.lastConsentDocument
@@ -40,7 +41,7 @@ struct ResearchKitConsentPresenter: UIViewControllerRepresentable {
 
         func taskViewController(
             _ taskViewController: ORKTaskViewController,
-            didFinishWith reason: ORKTaskViewControllerFinishReason,
+            didFinishWith reason: ORKTaskFinishReason,
             error: Error?
         ) {
             if reason == .completed {

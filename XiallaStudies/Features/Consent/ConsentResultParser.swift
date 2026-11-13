@@ -22,12 +22,22 @@ enum ConsentResultParser {
     }
 
     static func comprehensionPassed(from taskResult: ORKTaskResult) -> Bool {
-        guard
-            let step = taskResult.stepResult(forStepIdentifier: "consent.comprehension"),
-            let choice = step.results?.first as? ORKChoiceQuestionResult,
-            let value = choice.choiceAnswers?.first as? String
-        else {
+        guard let step = taskResult.stepResult(forStepIdentifier: "consent.comprehension") else {
             return false
+        }
+        // Prefer the form-item result id; fall back to the first choice result.
+        let choice = (step.result(forIdentifier: "consent.comprehension.choice") as? ORKChoiceQuestionResult)
+            ?? (step.results?.first as? ORKChoiceQuestionResult)
+        guard let answer = choice?.choiceAnswers?.first else {
+            return false
+        }
+        let value: String
+        if let string = answer as? String {
+            value = string
+        } else if let nsString = answer as? NSString {
+            value = nsString as String
+        } else {
+            value = String(describing: answer)
         }
         return value == "observational"
     }

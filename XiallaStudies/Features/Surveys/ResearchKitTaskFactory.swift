@@ -91,27 +91,49 @@ enum ResearchKitTaskFactory {
         document.addSignature(signature)
         lastConsentDocument = document
 
-        let visual = ORKVisualConsentStep(identifier: "consent.visual", document: document)
+        // ResearchKit 3+: `ORKVisualConsentStep` was removed. Prefer instruction pages
+        // derived from the consent document, then comprehension + signature review.
+        var steps: [ORKStep] = document.instructionSteps.map { $0 as ORKStep }
+        if steps.isEmpty {
+            let overview = ORKInstructionStep(identifier: "consent.overview")
+            overview.title = document.title ?? "Informed consent"
+            overview.detailText = """
+            Please review the study information, answer the comprehension check, \
+            and sign to join this observational study of Xialla use.
+            """
+            steps = [overview]
+        }
 
-        let comprehension = ORKQuestionStep(
+        let comprehension = ORKFormStep(
             identifier: "consent.comprehension",
             title: "Comprehension check",
-            question: "Which of the following best describes this study?",
-            answer: ORKTextChoiceAnswerFormat(style: .singleChoice, textChoices: [
-                ORKTextChoice(
-                    text: "An observational study of Xialla use (not a treatment program)",
-                    value: "observational" as NSString
-                ),
-                ORKTextChoice(text: "A clinical trial of a new drug", value: "drug" as NSString),
-                ORKTextChoice(text: "A diagnostic testing service for erectile dysfunction", value: "dx" as NSString)
-            ])
+            text: "Please confirm that you understand what kind of study this is before you sign."
         )
-        comprehension.text = "Please confirm that you understand what kind of study this is before you sign."
+        comprehension.formItems = [
+            ORKFormItem(
+                identifier: "consent.comprehension.choice",
+                text: "Which of the following best describes this study?",
+                answerFormat: ORKTextChoiceAnswerFormat(style: .singleChoice, textChoices: [
+                    ORKTextChoice(
+                        text: "An observational study of Xialla use (not a treatment program)",
+                        value: "observational" as NSString
+                    ),
+                    ORKTextChoice(text: "A clinical trial of a new drug", value: "drug" as NSString),
+                    ORKTextChoice(
+                        text: "A diagnostic testing service for erectile dysfunction",
+                        value: "dx" as NSString
+                    )
+                ])
+            )
+        ]
+        steps.append(comprehension)
 
-        let review = ORKConsentReviewStep(identifier: "consent.review", signature: nil, in: document)
+        // Pass the document signature so name + finger-scrawl are collected.
+        let review = ORKConsentReviewStep(identifier: "consent.review", signature: signature, in: document)
         review.reasonForConsent = "I agree to join this observational study of Xialla use."
+        steps.append(review)
 
-        return ORKOrderedTask(identifier: "xialla.consent", steps: [visual, comprehension, review])
+        return ORKOrderedTask(identifier: "xialla.consent", steps: steps)
     }
 
     private static func section(

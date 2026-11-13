@@ -111,7 +111,8 @@ enum SurveyResultParser {
             if let scale = result as? ORKScaleQuestionResult {
                 value = scale.scaleAnswer?.stringValue ?? ""
             } else if let choice = result as? ORKChoiceQuestionResult {
-                value = (choice.choiceAnswers?.first as? String) ?? String(describing: choice.choiceAnswers?.first ?? "")
+                // choiceAnswers are NSObject & NSCopying & NSSecureCoding (often NSString), not String.
+                value = stringifyORKAnswer(choice.choiceAnswers?.first)
             } else if let text = result as? ORKTextQuestionResult {
                 value = text.textAnswer ?? ""
             } else if let bool = result as? ORKBooleanQuestionResult {
@@ -129,6 +130,23 @@ enum SurveyResultParser {
             )
         }
         return items
+    }
+
+    /// Bridges ORK choice / scale boxed values into plain strings for local persistence.
+    private static func stringifyORKAnswer(_ answer: (any NSCopying & NSSecureCoding & NSObjectProtocol)?) -> String {
+        if let string = answer as? String {
+            return string
+        }
+        if let nsString = answer as? NSString {
+            return nsString as String
+        }
+        if let number = answer as? NSNumber {
+            return number.stringValue
+        }
+        if let answer {
+            return String(describing: answer)
+        }
+        return ""
     }
     #endif
 

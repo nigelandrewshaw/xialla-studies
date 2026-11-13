@@ -62,7 +62,7 @@ python3 scripts/wire_researchkit_xcodeproj.py
 
 | Flow | Behavior |
 |------|----------|
-| Consent | `ORKVisualConsentStep` → comprehension question → `ORKConsentReviewStep` signature → PDF via `ORKConsentDocument.makePDF` when feasible |
+| Consent | Instruction steps (from `ORKConsentDocument.instructionSteps`; `ORKVisualConsentStep` removed in RK 3) → comprehension form → `ORKConsentReviewStep` signature → PDF via `ORKConsentDocument.makePDF` when feasible |
 | Surveys | `ORKOrderedTask` with official IIEF-5 scale items (1–5, default 3) + companion forms |
 | Bookends | Branded SwiftUI intro/hub screens still wrap the ORK task sheets |
 | Fallback | If frameworks are not linked, SwiftUI consent stubs + `BrandedSurveyFallbackView` keep demos working |
