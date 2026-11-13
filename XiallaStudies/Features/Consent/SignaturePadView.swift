@@ -3,6 +3,7 @@ import SwiftUI
 import UIKit
 
 /// Finger / Apple Pencil signature capture via PencilKit.
+/// Always fills the SwiftUI frame with an opaque white canvas so the pad stays visible.
 struct SignaturePadView: UIViewRepresentable {
     @Binding var drawing: PKDrawing
     var inkColor: UIColor = UIColor(BrandTheme.ink)
@@ -16,12 +17,15 @@ struct SignaturePadView: UIViewRepresentable {
         let canvas = PKCanvasView()
         canvas.delegate = context.coordinator
         canvas.drawing = drawing
-        canvas.backgroundColor = .clear
-        canvas.isOpaque = false
+        canvas.backgroundColor = .white
+        canvas.isOpaque = true
         canvas.drawingPolicy = .anyInput
         canvas.tool = PKInkingTool(.pen, color: inkColor, width: 2.5)
         canvas.isScrollEnabled = false
-        // Do not becomeFirstResponder here — that steals keyboard focus from name fields in Simulator.
+        canvas.alwaysBounceVertical = false
+        canvas.alwaysBounceHorizontal = false
+        canvas.contentInsetAdjustmentBehavior = .never
+        // Do not becomeFirstResponder here — that steals keyboard focus from name fields.
         return canvas
     }
 
@@ -31,6 +35,7 @@ struct SignaturePadView: UIViewRepresentable {
             canvas.drawing = drawing
         }
         canvas.tool = PKInkingTool(.pen, color: inkColor, width: 2.5)
+        canvas.backgroundColor = .white
     }
 
     final class Coordinator: NSObject, PKCanvasViewDelegate {

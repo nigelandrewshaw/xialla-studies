@@ -2,9 +2,9 @@ import PencilKit
 import SwiftUI
 import UIKit
 
-/// Native branded multi-step eConsent — sole consent UI (no ResearchKit / typed-name fallback).
+/// Branded multi-step eConsent.
 /// Sections: purpose → procedures → data use → risks/benefits → voluntary →
-/// comprehension → first/last name + PencilKit pad + date.
+/// comprehension → first/last name + signature pad + date.
 struct ConsentFlowView: View {
     @EnvironmentObject private var session: StudySession
 
@@ -19,7 +19,7 @@ struct ConsentFlowView: View {
     @State private var isSaving = false
     @State private var saveError: String?
 
-    private let signaturePadSize = CGSize(width: 320, height: 160)
+    private let signaturePadHeight: CGFloat = 180
     private let signedAt = Date()
 
     /// Body copy one point above the prior 15pt stubs for readability.
@@ -111,65 +111,72 @@ struct ConsentFlowView: View {
         }
     }
 
-    // MARK: - Signature step (first / last / pad / date only)
+    // MARK: - Signature step (names scroll; pad pinned above Sign & join)
 
     private var signatureStep: some View {
-        ScrollView(.vertical, showsIndicators: true) {
-            VStack(alignment: .leading, spacing: 20) {
-                SectionIntro(
-                    headline: "Sign to join",
-                    support: "Type your first and last name in the fields below, then draw your signature. This is the native consent signature step — there is no separate typed-name fallback."
-                )
+        VStack(spacing: 0) {
+            ScrollView(.vertical, showsIndicators: true) {
+                VStack(alignment: .leading, spacing: 16) {
+                    SectionIntro(
+                        headline: "Sign to join",
+                        support: "Type your first and last name, then draw your signature."
+                    )
 
-                nameField(
-                    label: "First name",
-                    placeholder: "First name",
-                    text: $firstName,
-                    field: .firstName,
-                    contentType: .givenName,
-                    returnKey: .next
-                ) {
-                    focusedNameField = .lastName
+                    nameField(
+                        label: "First name",
+                        placeholder: "First name",
+                        text: $firstName,
+                        field: .firstName,
+                        contentType: .givenName,
+                        returnKey: .next
+                    ) {
+                        focusedNameField = .lastName
+                    }
+
+                    nameField(
+                        label: "Last name",
+                        placeholder: "Last name",
+                        text: $lastName,
+                        field: .lastName,
+                        contentType: .familyName,
+                        returnKey: .done
+                    ) {
+                        focusedNameField = nil
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Date")
+                            .font(BrandTheme.body(13, weight: .medium))
+                            .foregroundStyle(BrandTheme.graphite)
+                        Text(formattedDate(signedAt))
+                            .font(BrandTheme.body(bodyPointSize))
+                            .foregroundStyle(BrandTheme.ink)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(14)
+                            .background(fieldChrome)
+                    }
+
+                    if let saveError {
+                        Text(saveError)
+                            .font(BrandTheme.body(14))
+                            .foregroundStyle(BrandTheme.attention)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
-
-                nameField(
-                    label: "Last name",
-                    placeholder: "Last name",
-                    text: $lastName,
-                    field: .lastName,
-                    contentType: .familyName,
-                    returnKey: .done
-                ) {
-                    focusedNameField = nil
-                }
-
-                signaturePadBlock
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Date")
-                        .font(BrandTheme.body(13, weight: .medium))
-                        .foregroundStyle(BrandTheme.graphite)
-                    Text(formattedDate(signedAt))
-                        .font(BrandTheme.body(bodyPointSize))
-                        .foregroundStyle(BrandTheme.ink)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(14)
-                        .background(fieldChrome)
-                }
-
-                if let saveError {
-                    Text(saveError)
-                        .font(BrandTheme.body(14))
-                        .foregroundStyle(BrandTheme.attention)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+                .padding(.horizontal, BrandTheme.contentInset)
+                .padding(.top, 16)
+                .padding(.bottom, 12)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.horizontal, BrandTheme.contentInset)
-            .padding(.top, 20)
-            .padding(.bottom, 16)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .scrollDismissesKeyboard(.interactively)
+
+            // Always visible between the name fields scroll area and the sticky footer.
+            signaturePadBlock
+                .padding(.horizontal, BrandTheme.contentInset)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
+                .background(BrandTheme.canvas)
         }
-        .scrollDismissesKeyboard(.interactively)
     }
 
     private func nameField(
@@ -302,26 +309,33 @@ struct ConsentFlowView: View {
                 .font(BrandTheme.body(13, weight: .medium))
                 .foregroundStyle(BrandTheme.ink)
                 .disabled(!signatureHasInk)
+                .accessibilityLabel("Clear signature")
             }
 
             ZStack {
                 RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(Color.white.opacity(0.85))
+                    .fill(Color.white)
                 RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .stroke(BrandTheme.mist, lineWidth: 1)
-                if !signatureHasInk {
-                    Text("Sign with finger or Apple Pencil")
-                        .font(BrandTheme.body(14))
-                        .foregroundStyle(BrandTheme.graphite.opacity(0.7))
-                        .allowsHitTesting(false)
-                }
+                    .stroke(BrandTheme.ink.opacity(0.35), lineWidth: 1.5)
+
                 SignaturePadView(drawing: $signatureDrawing) { drawing in
                     focusedNameField = nil
                     signatureHasInk = drawing.hasInk
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+                if !signatureHasInk {
+                    Text("Draw your signature here")
+                        .font(BrandTheme.body(15))
+                        .foregroundStyle(BrandTheme.graphite.opacity(0.55))
+                        .allowsHitTesting(false)
+                }
             }
-            .frame(height: signaturePadSize.height)
+            .frame(maxWidth: .infinity)
+            .frame(height: signaturePadHeight)
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("Signature pad")
+            .accessibilityHint("Draw with your finger or Apple Pencil. Sign and join stays disabled until you add a stroke.")
         }
     }
 
@@ -413,10 +427,11 @@ struct ConsentFlowView: View {
             saveError = "Please enter your first and last name."
             return
         }
+        let padSize = CGSize(width: 320, height: signaturePadHeight)
         guard signatureHasInk,
-              let png = signatureDrawing.pngData(padSize: signaturePadSize)
+              let png = signatureDrawing.pngData(padSize: padSize)
         else {
-            saveError = "Please add your signature before continuing."
+            saveError = "Please draw your signature in the box before continuing."
             return
         }
 
