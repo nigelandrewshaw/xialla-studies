@@ -67,6 +67,16 @@ enum SurveyTimepoint: String, Codable, CaseIterable, Identifiable {
         case .week12: return 12
         }
     }
+
+    /// Instruments for this timepoint — each can be opened independently from the list.
+    var instruments: [InstrumentCode] {
+        switch self {
+        case .baseline:
+            return [.iief5, .baselineHistory, .usability, .comfort, .satisfaction, .adverseEvents, .freeText]
+        case .week4, .week8, .week12:
+            return [.iief5, .usability, .comfort, .satisfaction, .adverseEvents, .freeText]
+        }
+    }
 }
 
 enum InstrumentCode: String, Codable, CaseIterable, Identifiable {

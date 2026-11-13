@@ -14,22 +14,49 @@ enum SurveyResultParser {
     #if canImport(ResearchKit)
     static func parse(taskResult: ORKTaskResult, timepoint: SurveyTimepoint) -> SurveyTaskOutcome {
         var administrations: [SurveyAdministration] = []
-        let enrollmentId = UUID()
+        var iiefTotal: Int?
+        var iiefBand: IIEF5Scoring.Band?
 
-        let iiefAnswers = iief5Answers(from: taskResult, timepoint: timepoint)
-        let total = IIEF5Scoring.total(answers: iiefAnswers)
-        let band = total.map { IIEF5Scoring.band(for: $0) }
-
-        let iiefResponses: [SurveyResponseItem] = iiefAnswers.enumerated().map { index, value in
-            SurveyResponseItem(
-                id: UUID(),
-                itemCode: "iief5.q\(index + 1)",
-                value: String(value),
-                answeredAt: Date()
+        for instrument in timepoint.instruments {
+            let piece = parseInstrument(
+                taskResult: taskResult,
+                timepoint: timepoint,
+                instrument: instrument
             )
+            administrations.append(contentsOf: piece.administrations)
+            if instrument == .iief5 {
+                iiefTotal = piece.iief5Total
+                iiefBand = piece.iief5Band
+            }
         }
-        administrations.append(
-            SurveyAdministration(
+
+        return SurveyTaskOutcome(
+            administrations: administrations,
+            iief5Total: iiefTotal,
+            iief5Band: iiefBand
+        )
+    }
+
+    static func parseInstrument(
+        taskResult: ORKTaskResult,
+        timepoint: SurveyTimepoint,
+        instrument: InstrumentCode
+    ) -> SurveyTaskOutcome {
+        let enrollmentId = UUID()
+        switch instrument {
+        case .iief5:
+            let iiefAnswers = iief5Answers(from: taskResult, timepoint: timepoint)
+            let total = IIEF5Scoring.total(answers: iiefAnswers)
+            let band = total.map { IIEF5Scoring.band(for: $0) }
+            let iiefResponses: [SurveyResponseItem] = iiefAnswers.enumerated().map { index, value in
+                SurveyResponseItem(
+                    id: UUID(),
+                    itemCode: "iief5.q\(index + 1)",
+                    value: String(value),
+                    answeredAt: Date()
+                )
+            }
+            let admin = SurveyAdministration(
                 id: UUID(),
                 enrollmentId: enrollmentId,
                 instrument: .iief5,
@@ -42,44 +69,29 @@ enum SurveyResultParser {
                 scoreBand: band.map { IIEF5Scoring.displayName(for: $0) },
                 meta: .makeNow()
             )
-        )
-
-        let otherCodes: [InstrumentCode]
-        if timepoint == .baseline {
-            otherCodes = [.baselineHistory, .usability, .comfort, .satisfaction, .adverseEvents, .freeText]
-        } else {
-            otherCodes = [.usability, .comfort, .satisfaction, .adverseEvents, .freeText]
-        }
-
-        for code in otherCodes {
+            return SurveyTaskOutcome(administrations: [admin], iief5Total: total, iief5Band: band)
+        case .baselineHistory, .usability, .comfort, .satisfaction, .adverseEvents, .freeText:
             let stepId: String
-            switch code {
+            switch instrument {
             case .baselineHistory: stepId = "baseline.history"
-            default: stepId = "\(timepoint.rawValue).\(code.rawValue)"
+            default: stepId = "\(timepoint.rawValue).\(instrument.rawValue)"
             }
             let responses = formResponses(from: taskResult, stepIdentifier: stepId)
-            administrations.append(
-                SurveyAdministration(
-                    id: UUID(),
-                    enrollmentId: enrollmentId,
-                    instrument: code,
-                    timepoint: timepoint,
-                    status: .completed,
-                    startedAt: Date(),
-                    completedAt: Date(),
-                    responses: responses,
-                    scoreTotal: nil,
-                    scoreBand: nil,
-                    meta: .makeNow()
-                )
+            let admin = SurveyAdministration(
+                id: UUID(),
+                enrollmentId: enrollmentId,
+                instrument: instrument,
+                timepoint: timepoint,
+                status: .completed,
+                startedAt: Date(),
+                completedAt: Date(),
+                responses: responses,
+                scoreTotal: nil,
+                scoreBand: nil,
+                meta: .makeNow()
             )
+            return SurveyTaskOutcome(administrations: [admin], iief5Total: nil, iief5Band: nil)
         }
-
-        return SurveyTaskOutcome(
-            administrations: administrations,
-            iief5Total: total,
-            iief5Band: band
-        )
     }
 
     private static func iief5Answers(from taskResult: ORKTaskResult, timepoint: SurveyTimepoint) -> [Int] {
@@ -189,10 +201,7 @@ extension SurveyTaskOutcome {
                 meta: .makeNow()
             )
         ]
-        let others: [InstrumentCode] = timepoint == .baseline
-            ? [.baselineHistory, .usability, .comfort, .satisfaction, .adverseEvents, .freeText]
-            : [.usability, .comfort, .satisfaction, .adverseEvents, .freeText]
-        for code in others {
+        for code in timepoint.instruments where code != .iief5 {
             admins.append(
                 SurveyAdministration(
                     id: UUID(),
@@ -217,5 +226,61 @@ extension SurveyTaskOutcome {
             )
         }
         return SurveyTaskOutcome(administrations: admins, iief5Total: total, iief5Band: band)
+    }
+
+    /// One IIEF-5 administration from the per-row survey sheet.
+    static func singleIIEF5(timepoint: SurveyTimepoint, answers: [Int]) -> SurveyTaskOutcome {
+        let total = IIEF5Scoring.total(answers: answers)
+        let band = total.map { IIEF5Scoring.band(for: $0) }
+        let admin = SurveyAdministration(
+            id: UUID(),
+            enrollmentId: UUID(),
+            instrument: .iief5,
+            timepoint: timepoint,
+            status: .completed,
+            startedAt: Date(),
+            completedAt: Date(),
+            responses: answers.enumerated().map { i, v in
+                SurveyResponseItem(
+                    id: UUID(),
+                    itemCode: "iief5.q\(i + 1)",
+                    value: String(v),
+                    answeredAt: Date()
+                )
+            },
+            scoreTotal: total,
+            scoreBand: band.map { IIEF5Scoring.displayName(for: $0) },
+            meta: .makeNow()
+        )
+        return SurveyTaskOutcome(administrations: [admin], iief5Total: total, iief5Band: band)
+    }
+
+    /// One non–IIEF-5 administration from the per-row survey sheet.
+    static func singleNote(
+        instrument: InstrumentCode,
+        timepoint: SurveyTimepoint,
+        value: String
+    ) -> SurveyTaskOutcome {
+        let admin = SurveyAdministration(
+            id: UUID(),
+            enrollmentId: UUID(),
+            instrument: instrument,
+            timepoint: timepoint,
+            status: .completed,
+            startedAt: Date(),
+            completedAt: Date(),
+            responses: [
+                SurveyResponseItem(
+                    id: UUID(),
+                    itemCode: "\(instrument.rawValue).note",
+                    value: value,
+                    answeredAt: Date()
+                )
+            ],
+            scoreTotal: nil,
+            scoreBand: nil,
+            meta: .makeNow()
+        )
+        return SurveyTaskOutcome(administrations: [admin], iief5Total: nil, iief5Band: nil)
     }
 }

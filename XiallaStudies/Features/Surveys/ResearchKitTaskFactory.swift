@@ -161,35 +161,9 @@ enum ResearchKitTaskFactory {
             : "This is your week‑4 follow-up. The IIEF-5 items use a 1–5 slider that starts at 3."
         steps.append(intro)
 
-        steps.append(iief5Form(timepoint: timepoint))
-
-        if timepoint == .baseline {
-            steps.append(baselineHistoryForm())
+        for instrument in timepoint.instruments {
+            steps.append(contentsOf: steps(for: instrument, timepoint: timepoint))
         }
-
-        steps.append(likertForm(
-            id: "\(timepoint.rawValue).usability",
-            title: "Usability",
-            prompt: "Thinking about your experience so far, how easy was Xialla to use?",
-            low: "Very difficult",
-            high: "Very easy"
-        ))
-        steps.append(likertForm(
-            id: "\(timepoint.rawValue).comfort",
-            title: "Comfort",
-            prompt: "How comfortable was Xialla to wear during use?",
-            low: "Very uncomfortable",
-            high: "Very comfortable"
-        ))
-        steps.append(likertForm(
-            id: "\(timepoint.rawValue).satisfaction",
-            title: "Satisfaction",
-            prompt: "Overall, how satisfied are you with Xialla?",
-            low: "Very dissatisfied",
-            high: "Very satisfied"
-        ))
-        steps.append(adverseEventsForm(timepoint: timepoint))
-        steps.append(freeTextForm(timepoint: timepoint))
 
         let done = ORKCompletionStep(identifier: "survey.\(timepoint.rawValue).done")
         done.title = "Responses saved"
@@ -197,6 +171,64 @@ enum ResearchKitTaskFactory {
         steps.append(done)
 
         return ORKOrderedTask(identifier: "xialla.survey.\(timepoint.rawValue)", steps: steps)
+    }
+
+    /// One instrument only — used when the participant taps a list row.
+    static func makeInstrumentTask(
+        timepoint: SurveyTimepoint,
+        instrument: InstrumentCode
+    ) -> ORKOrderedTask {
+        var steps: [ORKStep] = []
+        let intro = ORKInstructionStep(identifier: "survey.\(timepoint.rawValue).\(instrument.rawValue).intro")
+        intro.title = instrument.displayName
+        intro.detailText = "You can leave and open any other questionnaire from the list at any time."
+        steps.append(intro)
+        steps.append(contentsOf: steps(for: instrument, timepoint: timepoint))
+        let done = ORKCompletionStep(identifier: "survey.\(timepoint.rawValue).\(instrument.rawValue).done")
+        done.title = "Saved"
+        done.text = "This questionnaire is saved on this device. Return to the list for any remaining items."
+        steps.append(done)
+        return ORKOrderedTask(
+            identifier: "xialla.survey.\(timepoint.rawValue).\(instrument.rawValue)",
+            steps: steps
+        )
+    }
+
+    private static func steps(for instrument: InstrumentCode, timepoint: SurveyTimepoint) -> [ORKStep] {
+        switch instrument {
+        case .iief5:
+            return [iief5Form(timepoint: timepoint)]
+        case .baselineHistory:
+            return [baselineHistoryForm()]
+        case .usability:
+            return [likertForm(
+                id: "\(timepoint.rawValue).usability",
+                title: "Usability",
+                prompt: "Thinking about your experience so far, how easy was Xialla to use?",
+                low: "Very difficult",
+                high: "Very easy"
+            )]
+        case .comfort:
+            return [likertForm(
+                id: "\(timepoint.rawValue).comfort",
+                title: "Comfort",
+                prompt: "How comfortable was Xialla to wear during use?",
+                low: "Very uncomfortable",
+                high: "Very comfortable"
+            )]
+        case .satisfaction:
+            return [likertForm(
+                id: "\(timepoint.rawValue).satisfaction",
+                title: "Satisfaction",
+                prompt: "Overall, how satisfied are you with Xialla?",
+                low: "Very dissatisfied",
+                high: "Very satisfied"
+            )]
+        case .adverseEvents:
+            return [adverseEventsForm(timepoint: timepoint)]
+        case .freeText:
+            return [freeTextForm(timepoint: timepoint)]
+        }
     }
 
     /// IIEF-5: five horizontal scale sliders, range 1–5, **default 3**, official item wording.

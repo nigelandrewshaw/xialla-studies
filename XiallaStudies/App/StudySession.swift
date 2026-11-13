@@ -141,10 +141,11 @@ final class StudySession: ObservableObject {
         guard var enrollment = snapshot.enrollment else { return }
         let enrollmentId = enrollment.id
 
-        // Replace prior administrations for this timepoint (re-take safe for demo).
-        snapshot.surveys.removeAll { $0.timepoint == timepoint }
-
+        // Merge per instrument so rows can be completed in any order (re-take replaces that instrument only).
         for var admin in outcome.administrations {
+            snapshot.surveys.removeAll {
+                $0.timepoint == timepoint && $0.instrument == admin.instrument
+            }
             admin.enrollmentId = enrollmentId
             snapshot.surveys.append(admin)
             do {
@@ -158,31 +159,42 @@ final class StudySession: ObservableObject {
             lastIIEF5Summary = "IIEF-5 \(total) (\(IIEF5Scoring.displayName(for: band)))"
         }
 
-        let now = Date()
-        if timepoint == .baseline {
-            enrollment.baselineCompletedAt = now
-            enrollment.followUpDueAt = Calendar.current.date(
-                byAdding: .day,
-                value: StudyConfig.primaryFollowUpWeek * 7,
-                to: now
-            )
-            enrollment.status = .baselineComplete
-            snapshot.enrollment = enrollment
-            snapshot.preferences.demoWeek4Advanced = false
-            await scheduleReminders(enrollmentId: enrollmentId, baselineCompletedAt: now)
-        } else if timepoint == .week4 {
-            enrollment.status = .completed
-            enrollment.completedAt = now
-            snapshot.enrollment = enrollment
-            do {
-                try await reminders.cancelReminders(enrollmentId: enrollmentId)
-            } catch {
-                lastError = error.localizedDescription
-            }
-        }
+        let completedInstruments = Set(
+            snapshot.surveys
+                .filter { $0.timepoint == timepoint && $0.status == .completed }
+                .map(\.instrument)
+        )
+        let required = Set(timepoint.instruments)
+        let timepointComplete = required.isSubset(of: completedInstruments)
 
-        await persist()
-        path = []
+        if timepointComplete {
+            let now = Date()
+            if timepoint == .baseline {
+                enrollment.baselineCompletedAt = now
+                enrollment.followUpDueAt = Calendar.current.date(
+                    byAdding: .day,
+                    value: StudyConfig.primaryFollowUpWeek * 7,
+                    to: now
+                )
+                enrollment.status = .baselineComplete
+                snapshot.enrollment = enrollment
+                snapshot.preferences.demoWeek4Advanced = false
+                await scheduleReminders(enrollmentId: enrollmentId, baselineCompletedAt: now)
+            } else if timepoint == .week4 {
+                enrollment.status = .completed
+                enrollment.completedAt = now
+                snapshot.enrollment = enrollment
+                do {
+                    try await reminders.cancelReminders(enrollmentId: enrollmentId)
+                } catch {
+                    lastError = error.localizedDescription
+                }
+            }
+            await persist()
+            path = []
+        } else {
+            await persist()
+        }
     }
 
     /// Convenience for stub / branded fallback “complete all” without RK result parsing.

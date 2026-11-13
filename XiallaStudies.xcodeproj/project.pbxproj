@@ -24,6 +24,7 @@
 		819CDE760F0CA9B2F2D1DEA3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB0B29F54C46DB409E2A788 /* SettingsView.swift */; };
 		AE457CEA45144AD8BBA0506F /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C2F31F29CE4608041631F1 /* SplashView.swift */; };
 		3DF9960A1D24C689E3E68C44 /* BrandedSurveyFallbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */; };
+		973ECD6898011F227E63B150 /* InstrumentSurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0D810520F49E72B9305506 /* InstrumentSurveyView.swift */; };
 		FE02F94E3B17D772EE801D69 /* ResearchKitSurveyPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBB36FD2E33BA4BBCC3618B9 /* ResearchKitSurveyPresenter.swift */; };
 		3687716EDEB98DCFFBEF607D /* ResearchKitTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15E11D0FBA68290E5DE5267 /* ResearchKitTaskFactory.swift */; };
 		0555174015E9FD884B85058E /* SurveyFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */; };
@@ -58,6 +59,7 @@
 		FBB0B29F54C46DB409E2A788 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		31C2F31F29CE4608041631F1 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandedSurveyFallbackView.swift; sourceTree = "<group>"; };
+		CD0D810520F49E72B9305506 /* InstrumentSurveyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentSurveyView.swift; sourceTree = "<group>"; };
 		CBB36FD2E33BA4BBCC3618B9 /* ResearchKitSurveyPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitSurveyPresenter.swift; sourceTree = "<group>"; };
 		A15E11D0FBA68290E5DE5267 /* ResearchKitTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitTaskFactory.swift; sourceTree = "<group>"; };
 		A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyFlowView.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 			isa = PBXGroup;
 			children = (
 				1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */,
+				CD0D810520F49E72B9305506 /* InstrumentSurveyView.swift */,
 				CBB36FD2E33BA4BBCC3618B9 /* ResearchKitSurveyPresenter.swift */,
 				A15E11D0FBA68290E5DE5267 /* ResearchKitTaskFactory.swift */,
 				A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */,
@@ -413,6 +416,7 @@
 				819CDE760F0CA9B2F2D1DEA3 /* SettingsView.swift in Sources */,
 				AE457CEA45144AD8BBA0506F /* SplashView.swift in Sources */,
 				3DF9960A1D24C689E3E68C44 /* BrandedSurveyFallbackView.swift in Sources */,
+				973ECD6898011F227E63B150 /* InstrumentSurveyView.swift in Sources */,
 				FE02F94E3B17D772EE801D69 /* ResearchKitSurveyPresenter.swift in Sources */,
 				3687716EDEB98DCFFBEF607D /* ResearchKitTaskFactory.swift in Sources */,
 				0555174015E9FD884B85058E /* SurveyFlowView.swift in Sources */,

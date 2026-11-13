@@ -60,6 +60,25 @@ final class StudyModelTests: XCTestCase {
         XCTAssertNotEqual(StudyConfig.siteCode, "SITE_CODE")
     }
 
+    func testBaselineInstrumentsIncludeHistoryAndIIEF5() {
+        let baseline = SurveyTimepoint.baseline.instruments
+        XCTAssertEqual(baseline.first, .iief5)
+        XCTAssertTrue(baseline.contains(.baselineHistory))
+        XCTAssertTrue(baseline.contains(.usability))
+        XCTAssertFalse(SurveyTimepoint.week4.instruments.contains(.baselineHistory))
+    }
+
+    func testSingleInstrumentOutcomeDoesNotBundleCompanions() {
+        let outcome = SurveyTaskOutcome.singleNote(
+            instrument: .usability,
+            timepoint: .baseline,
+            value: "4"
+        )
+        XCTAssertEqual(outcome.administrations.count, 1)
+        XCTAssertEqual(outcome.administrations.first?.instrument, .usability)
+        XCTAssertNil(outcome.iief5Total)
+    }
+
     func testSnapshotRoundTripIncludesPreferences() throws {
         let enrollmentId = UUID()
         var prefs = StudyPreferences.defaults
