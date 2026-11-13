@@ -36,6 +36,9 @@
 		6D8D981F71D8D44A278D9BF4 /* LocalStudyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28E114535E65210A39F0A4D4 /* LocalStudyStore.swift */; };
 		AAA42432E197CC3BF2772328 /* StudyModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED38F693B63952063BE19618 /* StudyModelTests.swift */; };
 		D104D11189389958E0E9F8CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B9362427B1F9912B138A4AAC /* Assets.xcassets */; };
+		E181539947C474DB1A842A33 /* Fieldwork_Geo_Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 06486DEA0906B090FF149257 /* Fieldwork_Geo_Bold.otf */; };
+		661C6A24B3810FE3AB453FD2 /* Fieldwork_Geo_Demibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3DC0AC9B554E632CB36340FD /* Fieldwork_Geo_Demibold.otf */; };
+		38820B5EB5FFB0594FA325D6 /* Fieldwork_Geo_Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2D3FE8D68D508FB106D4EDE8 /* Fieldwork_Geo_Regular.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +73,9 @@
 		AB2113606C0AE21208D26ED3 /* LocalReminderScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalReminderScheduler.swift; sourceTree = "<group>"; };
 		28E114535E65210A39F0A4D4 /* LocalStudyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStudyStore.swift; sourceTree = "<group>"; };
 		ED38F693B63952063BE19618 /* StudyModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyModelTests.swift; sourceTree = "<group>"; };
+		06486DEA0906B090FF149257 /* Fieldwork_Geo_Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fieldwork_Geo_Bold.otf; sourceTree = "<group>"; };
+		3DC0AC9B554E632CB36340FD /* Fieldwork_Geo_Demibold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fieldwork_Geo_Demibold.otf; sourceTree = "<group>"; };
+		2D3FE8D68D508FB106D4EDE8 /* Fieldwork_Geo_Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fieldwork_Geo_Regular.otf; sourceTree = "<group>"; };
 		B9362427B1F9912B138A4AAC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AF2B8CF35D82091924F32330 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -244,8 +250,19 @@
 			isa = PBXGroup;
 			children = (
 				B9362427B1F9912B138A4AAC /* Assets.xcassets */,
+				05B082DE7010F45199A1A1B0 /* Fonts */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		05B082DE7010F45199A1A1B0 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				06486DEA0906B090FF149257 /* Fieldwork_Geo_Bold.otf */,
+				3DC0AC9B554E632CB36340FD /* Fieldwork_Geo_Demibold.otf */,
+				2D3FE8D68D508FB106D4EDE8 /* Fieldwork_Geo_Regular.otf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		FB5C83723381A3129BB2E452 /* Services */ = {
@@ -378,6 +395,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D104D11189389958E0E9F8CD /* Assets.xcassets in Resources */,
+				E181539947C474DB1A842A33 /* Fieldwork_Geo_Bold.otf in Resources */,
+				661C6A24B3810FE3AB453FD2 /* Fieldwork_Geo_Demibold.otf in Resources */,
+				38820B5EB5FFB0594FA325D6 /* Fieldwork_Geo_Regular.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

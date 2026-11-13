@@ -42,5 +42,11 @@
 	</array>
 	<key>NSUserNotificationsUsageDescription</key>
 	<string>Xialla Studies uses notifications to remind you about your week‑4 follow-up questionnaire.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Fieldwork_Geo_Regular.otf</string>
+		<string>Fieldwork_Geo_Demibold.otf</string>
+		<string>Fieldwork_Geo_Bold.otf</string>
+	</array>
 </dict>
 </plist>

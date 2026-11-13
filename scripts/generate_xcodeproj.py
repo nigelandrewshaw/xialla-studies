@@ -18,6 +18,7 @@ def uid(name: str) -> str:
 def main() -> None:
     swift_files = sorted((ROOT / "XiallaStudies").rglob("*.swift"))
     test_files = sorted((ROOT / "XiallaStudiesTests").rglob("*.swift"))
+    font_files = sorted((ROOT / "XiallaStudies" / "Resources" / "Fonts").glob("*.otf"))
     asset = ROOT / "XiallaStudies" / "Resources" / "Assets.xcassets"
     info = ROOT / "XiallaStudies" / "Supporting" / "Info.plist"
 
@@ -49,7 +50,7 @@ def main() -> None:
     file_refs: dict[Path, str] = {}
     build_files: dict[Path, str] = {}
 
-    for path in swift_files + test_files:
+    for path in swift_files + test_files + font_files:
         rel = path.relative_to(ROOT)
         file_refs[path] = uid(f"ref.{rel}")
         build_files[path] = uid(f"build.{rel}")
@@ -82,6 +83,11 @@ def main() -> None:
         f"\t\t{asset_build} /* Assets.xcassets in Resources */ = "
         f"{{isa = PBXBuildFile; fileRef = {asset_ref} /* Assets.xcassets */; }};"
     )
+    for path in font_files:
+        w(
+            f"\t\t{build_files[path]} /* {path.name} in Resources */ = "
+            f"{{isa = PBXBuildFile; fileRef = {file_refs[path]} /* {path.name} */; }};"
+        )
     w("/* End PBXBuildFile section */")
     w("")
 
@@ -101,6 +107,12 @@ def main() -> None:
         w(
             f"\t\t{file_refs[path]} /* {path.name} */ = "
             f"{{isa = PBXFileReference; lastKnownFileType = sourcecode.swift; "
+            f"path = {path.name}; sourceTree = \"<group>\"; }};"
+        )
+    for path in font_files:
+        w(
+            f"\t\t{file_refs[path]} /* {path.name} */ = "
+            f"{{isa = PBXFileReference; lastKnownFileType = file; "
             f"path = {path.name}; sourceTree = \"<group>\"; }};"
         )
     w(
@@ -179,8 +191,11 @@ def main() -> None:
         w(f"\t\t{top_group_ids[name]} /* {name} */ = {{")
         w("\t\t\tisa = PBXGroup;")
         w("\t\t\tchildren = (")
+        fonts_group = group_id("app.Resources.Fonts")
         if name == "Resources":
             w(f"\t\t\t\t{asset_ref} /* Assets.xcassets */,")
+            if font_files:
+                w(f"\t\t\t\t{fonts_group} /* Fonts */,")
         if name == "Supporting":
             w(f"\t\t\t\t{info_ref} /* Info.plist */,")
         # nested relative groups
@@ -195,6 +210,17 @@ def main() -> None:
         w(f"\t\t\tpath = {name};")
         w('\t\t\tsourceTree = "<group>";')
         w("\t\t};")
+
+        if name == "Resources" and font_files:
+            w(f"\t\t{fonts_group} /* Fonts */ = {{")
+            w("\t\t\tisa = PBXGroup;")
+            w("\t\t\tchildren = (")
+            for path in font_files:
+                w(f"\t\t\t\t{file_refs[path]} /* {path.name} */,")
+            w("\t\t\t);")
+            w("\t\t\tpath = Fonts;")
+            w('\t\t\tsourceTree = "<group>";')
+            w("\t\t};")
 
         for d in children_dirs:
             rel = d.relative_to(base)
@@ -324,6 +350,8 @@ def main() -> None:
     w("\t\t\tbuildActionMask = 2147483647;")
     w("\t\t\tfiles = (")
     w(f"\t\t\t\t{asset_build} /* Assets.xcassets in Resources */,")
+    for path in font_files:
+        w(f"\t\t\t\t{build_files[path]} /* {path.name} in Resources */,")
     w("\t\t\t);")
     w("\t\t\trunOnlyForDeploymentPostprocessing = 0;")
     w("\t\t};")

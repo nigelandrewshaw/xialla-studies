@@ -1,9 +1,8 @@
 import SwiftUI
 
-/// Xialla study visual tokens — official Pantone brand swatch + site layout habits.
-/// Fieldwork (Adobe Fonts / Typekit) cannot be legally redistributed as an app binary;
-/// we match weights with Avenir Next until a desktop Fieldwork license is added under
-/// `Resources/Fonts/` + `UIAppFonts`. See `docs/BUILD_NOTES.md`.
+/// Xialla study visual tokens — official Pantone brand swatch + Fieldwork Geo type.
+/// Bundled desktop Fieldwork Geo OTFs live under `Resources/Fonts/` and are registered
+/// via `UIAppFonts` (PostScript: Fieldwork-Geo-Regular / Demibold / Bold).
 enum BrandTheme {
     // MARK: - Official swatch (Pantone)
 
@@ -69,43 +68,28 @@ enum BrandTheme {
         )
     }
 
-    // MARK: - Typography
+    // MARK: - Typography (Fieldwork Geo)
 
-    /// PostScript names for bundled Fieldwork (when licensed desktop fonts are dropped in).
-    static let fieldworkRegularName = "Fieldwork-Regular"
-    static let fieldworkSemiboldName = "Fieldwork-Semibold"
-    static let fieldworkBoldName = "Fieldwork-Bold"
+    /// PostScript names from the bundled Fieldwork Geo OTFs.
+    static let fieldworkRegularName = "Fieldwork-Geo-Regular"
+    static let fieldworkDemiboldName = "Fieldwork-Geo-Demibold"
+    static let fieldworkBoldName = "Fieldwork-Geo-Bold"
 
-    /// Display / brand face — Fieldwork when bundled, else Avenir Next.
+    /// Display / brand face — Fieldwork Geo.
     static func display(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
-        if UIFont(name: fieldworkName(for: weight), size: size) != nil {
-            return .custom(fieldworkName(for: weight), size: size)
-        }
-        return .custom(avenirName(for: weight), size: size)
+        .custom(fieldworkName(for: weight), size: size)
     }
 
-    /// Body / UI face — same Fieldwork family at text sizes when available.
+    /// Body / UI face — Fieldwork Geo at text sizes.
     static func body(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
-        if UIFont(name: fieldworkName(for: weight), size: size) != nil {
-            return .custom(fieldworkName(for: weight), size: size)
-        }
-        return .custom(avenirName(for: weight), size: size)
+        .custom(fieldworkName(for: weight), size: size)
     }
 
     private static func fieldworkName(for weight: Font.Weight) -> String {
         switch weight {
         case .semibold, .bold, .heavy, .black: return fieldworkBoldName
-        case .medium: return fieldworkSemiboldName
+        case .medium: return fieldworkDemiboldName
         default: return fieldworkRegularName
-        }
-    }
-
-    private static func avenirName(for weight: Font.Weight) -> String {
-        switch weight {
-        case .bold, .heavy, .black: return "AvenirNext-Bold"
-        case .semibold, .medium: return "AvenirNext-DemiBold"
-        case .light, .thin, .ultraLight: return "AvenirNext-Regular"
-        default: return "AvenirNext-Regular"
         }
     }
 
