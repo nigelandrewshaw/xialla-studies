@@ -16,6 +16,7 @@
 		30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */; };
 		D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */; };
 		726ADD1B3686AB860004CD55 /* ConsentSignatureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AD61EAA61FFB8FF863A5BB /* ConsentSignatureStore.swift */; };
+		345A340986C1030DE32EA60C /* FocusableTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE6FDA21C1672DFA8F890532 /* FocusableTextField.swift */; };
 		35F7372A9A6AAB5AF7B46CF1 /* SignaturePadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186DBD0A08BD900C308E6BB7 /* SignaturePadView.swift */; };
 		FAD5E87C5255B91FE898F920 /* EligibilityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAD1D68A9E9F28C9E587C10 /* EligibilityView.swift */; };
 		C099509641FC880434A54388 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3ED3154E841D7F362176CE /* HomeView.swift */; };
@@ -53,6 +54,7 @@
 		C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentFlowView.swift; sourceTree = "<group>"; };
 		643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentPDFExporter.swift; sourceTree = "<group>"; };
 		A3AD61EAA61FFB8FF863A5BB /* ConsentSignatureStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentSignatureStore.swift; sourceTree = "<group>"; };
+		EE6FDA21C1672DFA8F890532 /* FocusableTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusableTextField.swift; sourceTree = "<group>"; };
 		186DBD0A08BD900C308E6BB7 /* SignaturePadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignaturePadView.swift; sourceTree = "<group>"; };
 		7BAD1D68A9E9F28C9E587C10 /* EligibilityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EligibilityView.swift; sourceTree = "<group>"; };
 		BC3ED3154E841D7F362176CE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -162,6 +164,7 @@
 				C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */,
 				643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */,
 				A3AD61EAA61FFB8FF863A5BB /* ConsentSignatureStore.swift */,
+				EE6FDA21C1672DFA8F890532 /* FocusableTextField.swift */,
 				186DBD0A08BD900C308E6BB7 /* SignaturePadView.swift */,
 			);
 			path = Consent;
@@ -425,6 +428,7 @@
 				30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */,
 				D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */,
 				726ADD1B3686AB860004CD55 /* ConsentSignatureStore.swift in Sources */,
+				345A340986C1030DE32EA60C /* FocusableTextField.swift in Sources */,
 				35F7372A9A6AAB5AF7B46CF1 /* SignaturePadView.swift in Sources */,
 				FAD5E87C5255B91FE898F920 /* EligibilityView.swift in Sources */,
 				C099509641FC880434A54388 /* HomeView.swift in Sources */,

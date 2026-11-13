@@ -21,7 +21,7 @@ struct SignaturePadView: UIViewRepresentable {
         canvas.drawingPolicy = .anyInput
         canvas.tool = PKInkingTool(.pen, color: inkColor, width: 2.5)
         canvas.isScrollEnabled = false
-        canvas.becomeFirstResponder()
+        // Do not becomeFirstResponder here — that steals keyboard focus from name fields in Simulator.
         return canvas
     }
 

@@ -1,9 +1,10 @@
 import PencilKit
 import SwiftUI
+import UIKit
 
-/// Native branded multi-step eConsent — no ResearchKit.
+/// Native branded multi-step eConsent — sole consent UI (no ResearchKit / typed-name fallback).
 /// Sections: purpose → procedures → data use → risks/benefits → voluntary →
-/// comprehension → name + signature pad + date.
+/// comprehension → first/last name + PencilKit pad + date.
 struct ConsentFlowView: View {
     @EnvironmentObject private var session: StudySession
 
@@ -12,6 +13,7 @@ struct ConsentFlowView: View {
     @State private var comprehensionAnswer: ComprehensionChoice?
     @State private var firstName = ""
     @State private var lastName = ""
+    @State private var focusedNameField: FocusableTextField.Field? = nil
     @State private var signatureDrawing = PKDrawing()
     @State private var signatureHasInk = false
     @State private var isSaving = false
@@ -70,23 +72,13 @@ struct ConsentFlowView: View {
     var body: some View {
         ZStack {
             AtmosphereBackground()
+                .allowsHitTesting(false)
 
             VStack(spacing: 0) {
-                if step == .signature {
-                    // Keep the PencilKit pad outside ScrollView so finger/Pencil strokes are not stolen.
-                    ScrollView(.vertical, showsIndicators: true) {
-                        VStack(alignment: .leading, spacing: 20) {
-                            signatureHeaderFields
-                        }
-                        .padding(.horizontal, BrandTheme.contentInset)
-                        .padding(.top, 20)
-                        .padding(.bottom, 8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    signaturePadBlock
-                        .padding(.horizontal, BrandTheme.contentInset)
-                        .padding(.bottom, 8)
-                } else {
+                switch step {
+                case .signature:
+                    signatureStep
+                default:
                     ScrollView(.vertical, showsIndicators: true) {
                         VStack(alignment: .leading, spacing: 20) {
                             content
@@ -107,9 +99,112 @@ struct ConsentFlowView: View {
         }
         .navigationTitle("Consent")
         .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: step) { _, newStep in
+            if newStep == .signature {
+                // Open the keyboard on the first-name field when the sign step appears.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                    focusedNameField = .firstName
+                }
+            } else {
+                focusedNameField = nil
+            }
+        }
     }
 
-    // MARK: - Content
+    // MARK: - Signature step (first / last / pad / date only)
+
+    private var signatureStep: some View {
+        ScrollView(.vertical, showsIndicators: true) {
+            VStack(alignment: .leading, spacing: 20) {
+                SectionIntro(
+                    headline: "Sign to join",
+                    support: "Type your first and last name in the fields below, then draw your signature. This is the native consent signature step — there is no separate typed-name fallback."
+                )
+
+                nameField(
+                    label: "First name",
+                    placeholder: "First name",
+                    text: $firstName,
+                    field: .firstName,
+                    contentType: .givenName,
+                    returnKey: .next
+                ) {
+                    focusedNameField = .lastName
+                }
+
+                nameField(
+                    label: "Last name",
+                    placeholder: "Last name",
+                    text: $lastName,
+                    field: .lastName,
+                    contentType: .familyName,
+                    returnKey: .done
+                ) {
+                    focusedNameField = nil
+                }
+
+                signaturePadBlock
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Date")
+                        .font(BrandTheme.body(13, weight: .medium))
+                        .foregroundStyle(BrandTheme.graphite)
+                    Text(formattedDate(signedAt))
+                        .font(BrandTheme.body(bodyPointSize))
+                        .foregroundStyle(BrandTheme.ink)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(14)
+                        .background(fieldChrome)
+                }
+
+                if let saveError {
+                    Text(saveError)
+                        .font(BrandTheme.body(14))
+                        .foregroundStyle(BrandTheme.attention)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(.horizontal, BrandTheme.contentInset)
+            .padding(.top, 20)
+            .padding(.bottom, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .scrollDismissesKeyboard(.interactively)
+    }
+
+    private func nameField(
+        label: String,
+        placeholder: String,
+        text: Binding<String>,
+        field: FocusableTextField.Field,
+        contentType: UITextContentType,
+        returnKey: UIReturnKeyType,
+        onSubmit: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(label)
+                .font(BrandTheme.body(13, weight: .medium))
+                .foregroundStyle(BrandTheme.graphite)
+            FocusableTextField(
+                placeholder: placeholder,
+                text: text,
+                field: field,
+                focusedField: $focusedNameField,
+                textContentType: contentType,
+                returnKeyType: returnKey,
+                onSubmit: onSubmit
+            )
+            .frame(maxWidth: .infinity, minHeight: 24)
+            .padding(14)
+            .background(fieldChrome)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                focusedNameField = field
+            }
+        }
+    }
+
+    // MARK: - Other steps
 
     @ViewBuilder
     private var content: some View {
@@ -117,12 +212,11 @@ struct ConsentFlowView: View {
         case .intro:
             SectionIntro(
                 headline: "What you are agreeing to",
-                support: "You will review study information in several short screens, answer a comprehension check, then type your name and sign if you choose to join. Your progress is saved on this device."
+                support: "You will review study information in several short screens, answer a comprehension check, then enter your first and last name and sign if you choose to join. Your progress is saved on this device."
             )
             providerChip
 
         case .review:
-            // No icon / header overlays — title + scrollable body only.
             Text(currentSection.title)
                 .font(BrandTheme.display(28, weight: .medium))
                 .foregroundStyle(BrandTheme.ink)
@@ -184,63 +278,12 @@ struct ConsentFlowView: View {
                 }
             }
 
-        case .signature:
-            EmptyView()
-
-        case .done:
-            SectionIntro(
-                headline: "Consent saved locally",
-                support: "Your consent (document version \(StudyConfig.consentDocumentVersion)) and signature are saved on this device. You can quit and reopen the app without losing this progress."
-            )
-        }
-    }
-
-    private var signatureHeaderFields: some View {
-        Group {
-            SectionIntro(
-                headline: "Sign to join",
-                support: ConsentDocumentCopy.reasonForConsent
-            )
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text("First name")
-                    .font(BrandTheme.body(13, weight: .medium))
-                    .foregroundStyle(BrandTheme.graphite)
-                TextField("First name", text: $firstName)
-                    .textContentType(.givenName)
-                    .autocorrectionDisabled()
-                    .padding(14)
-                    .background(fieldChrome)
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Last name")
-                    .font(BrandTheme.body(13, weight: .medium))
-                    .foregroundStyle(BrandTheme.graphite)
-                TextField("Last name", text: $lastName)
-                    .textContentType(.familyName)
-                    .autocorrectionDisabled()
-                    .padding(14)
-                    .background(fieldChrome)
-            }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Date")
-                    .font(BrandTheme.body(13, weight: .medium))
-                    .foregroundStyle(BrandTheme.graphite)
-                Text(formattedDate(signedAt))
-                    .font(BrandTheme.body(bodyPointSize))
-                    .foregroundStyle(BrandTheme.ink)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(14)
-                    .background(fieldChrome)
-            }
-
-            if let saveError {
-                Text(saveError)
-                    .font(BrandTheme.body(14))
-                    .foregroundStyle(BrandTheme.attention)
-                    .fixedSize(horizontal: false, vertical: true)
+        case .signature, .done:
+            if step == .done {
+                SectionIntro(
+                    headline: "Consent saved locally",
+                    support: "Your consent (document version \(StudyConfig.consentDocumentVersion)) and signature are saved on this device. You can quit and reopen the app without losing this progress."
+                )
             }
         }
     }
@@ -273,6 +316,7 @@ struct ConsentFlowView: View {
                         .allowsHitTesting(false)
                 }
                 SignaturePadView(drawing: $signatureDrawing) { drawing in
+                    focusedNameField = nil
                     signatureHasInk = drawing.hasInk
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 4, style: .continuous))
@@ -283,7 +327,7 @@ struct ConsentFlowView: View {
 
     private var fieldChrome: some View {
         RoundedRectangle(cornerRadius: 4, style: .continuous)
-            .fill(Color.white.opacity(0.7))
+            .fill(Color.white.opacity(0.92))
             .overlay(
                 RoundedRectangle(cornerRadius: 4, style: .continuous)
                     .stroke(BrandTheme.mist, lineWidth: 1)
@@ -346,6 +390,7 @@ struct ConsentFlowView: View {
             }
         case .signature:
             PrimaryButton(title: isSaving ? "Saving…" : "Sign & join", enabled: canSign) {
+                focusedNameField = nil
                 Task { await saveAndComplete() }
             }
         case .done:
@@ -364,6 +409,10 @@ struct ConsentFlowView: View {
 
         let given = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
         let family = lastName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !given.isEmpty, !family.isEmpty else {
+            saveError = "Please enter your first and last name."
+            return
+        }
         guard signatureHasInk,
               let png = signatureDrawing.pngData(padSize: signaturePadSize)
         else {

@@ -51,7 +51,7 @@ extension StudyParameters {
     static let xiallaObservationalV1 = StudyParameters(
         studyCode: "XIALLA-OBS-V1",
         siteCode: "SJH-LON",
-        consentDocumentVersion: "0.1.0-stub",
+        consentDocumentVersion: "0.2.0-native",
         primaryFollowUpWeek: 4,
         followUpWeeks: [4],
         reminderLeadDays: [3, 0],

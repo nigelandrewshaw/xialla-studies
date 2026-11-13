@@ -29,9 +29,9 @@ Branded multi-step eConsent:
 4. Risks and benefits  
 5. Voluntary participation / withdrawal  
 6. Comprehension check  
-7. First name + last name + PencilKit signature pad (finger / Apple Pencil) + date  
+7. First name + last name (UIKit `FocusableTextField`, Simulator-keyboard friendly) + PencilKit signature pad (finger / Apple Pencil) + date  
 
-Signature PNG and a lightweight consent PDF are written under the app Documents directory; `ConsentRecord.signatureBlobRef` and `consentPDFPath` persist via `LocalStudyStore`. Sign & join requires non-empty names and ink on the pad.
+Signature PNG and a lightweight consent PDF are written under the app Documents directory; `ConsentRecord.signatureBlobRef` and `consentPDFPath` persist via `LocalStudyStore`. Sign & join requires non-empty names and ink on the pad. There is no typed “Full name” / ResearchKit-fallback signature screen — Home/eligibility route only to `ConsentFlowView`.
 
 Fieldwork Geo body copy on consent screens uses **16pt** (+1pt vs earlier stubs). No header/icon overlays on review sections.
 
