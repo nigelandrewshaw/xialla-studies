@@ -12,6 +12,7 @@
 		0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F269246B4DD871D37E23332 /* StudyParameters.swift */; };
 		F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648F92AA96FA5171F750B289 /* BrandComponents.swift */; };
 		71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6932CDFF5E49B18C9118306 /* BrandTheme.swift */; };
+		0A87024E3E19FEE708A6BA5F /* KeyboardAvoidingFormScroll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 170F18968A336D50FC6D8242 /* KeyboardAvoidingFormScroll.swift */; };
 		5A9A8E464427FAA289992260 /* ConsentDocumentCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266CB3925C7B88E76190B0C5 /* ConsentDocumentCopy.swift */; };
 		30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */; };
 		D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */; };
@@ -50,6 +51,7 @@
 		9F269246B4DD871D37E23332 /* StudyParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyParameters.swift; sourceTree = "<group>"; };
 		648F92AA96FA5171F750B289 /* BrandComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandComponents.swift; sourceTree = "<group>"; };
 		A6932CDFF5E49B18C9118306 /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
+		170F18968A336D50FC6D8242 /* KeyboardAvoidingFormScroll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardAvoidingFormScroll.swift; sourceTree = "<group>"; };
 		266CB3925C7B88E76190B0C5 /* ConsentDocumentCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentDocumentCopy.swift; sourceTree = "<group>"; };
 		C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentFlowView.swift; sourceTree = "<group>"; };
 		643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentPDFExporter.swift; sourceTree = "<group>"; };
@@ -137,6 +139,7 @@
 			children = (
 				648F92AA96FA5171F750B289 /* BrandComponents.swift */,
 				A6932CDFF5E49B18C9118306 /* BrandTheme.swift */,
+				170F18968A336D50FC6D8242 /* KeyboardAvoidingFormScroll.swift */,
 			);
 			path = Design;
 			sourceTree = "<group>";
@@ -424,6 +427,7 @@
 				0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */,
 				F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */,
 				71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */,
+				0A87024E3E19FEE708A6BA5F /* KeyboardAvoidingFormScroll.swift in Sources */,
 				5A9A8E464427FAA289992260 /* ConsentDocumentCopy.swift in Sources */,
 				30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */,
 				D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */,

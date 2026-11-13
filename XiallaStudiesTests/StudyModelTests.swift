@@ -173,4 +173,63 @@ final class StudyModelTests: XCTestCase {
         let cleared = try await store.loadSnapshot()
         XCTAssertFalse(cleared.preferences.hasSeenSplash)
     }
+
+    func testInstrumentSavesRoundTripAsCompleted() throws {
+        let enrollmentId = UUID()
+        let iief = SurveyTaskOutcome.singleIIEF5(timepoint: .baseline, answers: [3, 3, 3, 3, 3])
+        let ae = SurveyTaskOutcome.singleNote(
+            instrument: .adverseEvents,
+            timepoint: .baseline,
+            value: "mild irritation"
+        )
+        let free = SurveyTaskOutcome.singleNote(
+            instrument: .freeText,
+            timepoint: .baseline,
+            value: "helpful"
+        )
+
+        var surveys: [SurveyAdministration] = []
+        for outcome in [iief, ae, free] {
+            for var admin in outcome.administrations {
+                admin.enrollmentId = enrollmentId
+                admin.status = .completed
+                surveys.removeAll {
+                    $0.timepoint == admin.timepoint && $0.instrument == admin.instrument
+                }
+                surveys.append(admin)
+            }
+        }
+
+        let snapshot = StudySnapshot(
+            participant: nil,
+            enrollment: nil,
+            consent: nil,
+            surveys: surveys,
+            reminders: [],
+            kit: nil,
+            preferences: .defaults,
+            consentPDFPath: nil,
+            schemaVersion: StudySnapshot.currentSchemaVersion
+        )
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(snapshot)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(StudySnapshot.self, from: data)
+
+        XCTAssertEqual(decoded.surveys.count, 3)
+        XCTAssertTrue(decoded.surveys.contains {
+            $0.instrument == .iief5 && $0.status == .completed && $0.scoreTotal == 15
+        })
+        XCTAssertTrue(decoded.surveys.contains {
+            $0.instrument == .adverseEvents && $0.status == .completed
+                && $0.responses.first?.value == "mild irritation"
+        })
+        XCTAssertTrue(decoded.surveys.contains {
+            $0.instrument == .freeText && $0.status == .completed
+                && $0.responses.first?.value == "helpful"
+        })
+    }
 }

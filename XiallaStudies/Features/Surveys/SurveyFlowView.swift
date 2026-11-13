@@ -6,6 +6,7 @@ struct SurveyFlowView: View {
 
     @State private var activeInstrument: InstrumentCode?
     @State private var scoreSummary: String?
+    @State private var isSavingInstrument = false
 
     private var instruments: [InstrumentCode] { timepoint.instruments }
 
@@ -96,15 +97,22 @@ struct SurveyFlowView: View {
             refreshSummary()
         }
         .sheet(item: $activeInstrument) { instrument in
-            InstrumentSurveyView(timepoint: timepoint, instrument: instrument) { outcome in
-                activeInstrument = nil
-                Task {
+            InstrumentSurveyView(
+                timepoint: timepoint,
+                instrument: instrument,
+                existing: session.completedSurvey(timepoint: timepoint, instrument: instrument)
+            ) { outcome in
+                Task { @MainActor in
+                    isSavingInstrument = true
                     await session.applySurveyOutcome(outcome, timepoint: timepoint)
                     refreshSummary()
+                    isSavingInstrument = false
+                    activeInstrument = nil
                 }
             } onCancel: {
                 activeInstrument = nil
             }
+            .interactiveDismissDisabled(isSavingInstrument)
         }
     }
 

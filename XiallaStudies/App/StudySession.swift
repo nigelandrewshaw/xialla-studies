@@ -141,16 +141,31 @@ final class StudySession: ObservableObject {
     }
 
     func applySurveyOutcome(_ outcome: SurveyTaskOutcome, timepoint: SurveyTimepoint) async {
-        guard var enrollment = snapshot.enrollment else { return }
+        // Ensure we always have an enrollment to attach administrations to.
+        if snapshot.enrollment == nil {
+            await ensureParticipant()
+            await selectProspectiveArmIfNeededForSurveySave()
+        }
+        guard var enrollment = snapshot.enrollment else {
+            lastError = "Could not save survey — no enrollment on this device."
+            return
+        }
         let enrollmentId = enrollment.id
+
+        // Copy-on-write so @Published always emits and LocalStudyStore gets the merged surveys.
+        var next = snapshot
+        let now = Date()
 
         // Merge per instrument so rows can be completed in any order (re-take replaces that instrument only).
         for var admin in outcome.administrations {
-            snapshot.surveys.removeAll {
+            next.surveys.removeAll {
                 $0.timepoint == timepoint && $0.instrument == admin.instrument
             }
             admin.enrollmentId = enrollmentId
-            snapshot.surveys.append(admin)
+            admin.status = .completed
+            if admin.completedAt == nil { admin.completedAt = now }
+            if admin.startedAt == nil { admin.startedAt = now }
+            next.surveys.append(admin)
             do {
                 try await api.submitSurvey(admin)
             } catch {
@@ -163,7 +178,7 @@ final class StudySession: ObservableObject {
         }
 
         let completedInstruments = Set(
-            snapshot.surveys
+            next.surveys
                 .filter { $0.timepoint == timepoint && $0.status == .completed }
                 .map(\.instrument)
         )
@@ -171,7 +186,6 @@ final class StudySession: ObservableObject {
         let timepointComplete = required.isSubset(of: completedInstruments)
 
         if timepointComplete {
-            let now = Date()
             if timepoint == .baseline {
                 enrollment.baselineCompletedAt = now
                 enrollment.followUpDueAt = Calendar.current.date(
@@ -180,24 +194,53 @@ final class StudySession: ObservableObject {
                     to: now
                 )
                 enrollment.status = .baselineComplete
-                snapshot.enrollment = enrollment
-                snapshot.preferences.demoWeek4Advanced = false
+                next.enrollment = enrollment
+                next.preferences.demoWeek4Advanced = false
+                snapshot = next
                 await scheduleReminders(enrollmentId: enrollmentId, baselineCompletedAt: now)
             } else if timepoint == .week4 {
                 enrollment.status = .completed
                 enrollment.completedAt = now
-                snapshot.enrollment = enrollment
+                next.enrollment = enrollment
+                snapshot = next
                 do {
                     try await reminders.cancelReminders(enrollmentId: enrollmentId)
                 } catch {
                     lastError = error.localizedDescription
                 }
+            } else {
+                next.enrollment = enrollment
+                snapshot = next
             }
             await persist()
             path = []
         } else {
+            next.enrollment = enrollment
+            snapshot = next
             await persist()
         }
+    }
+
+    /// Soft recovery if surveys are opened without an enrollment (should be rare).
+    private func selectProspectiveArmIfNeededForSurveySave() async {
+        guard snapshot.enrollment == nil else { return }
+        await ensureParticipant()
+        guard let participant = snapshot.participant else { return }
+        snapshot.enrollment = StudyEnrollment(
+            id: UUID(),
+            participantId: participant.id,
+            arm: .prospective,
+            status: .consented,
+            enrolledAt: Date(),
+            consentedAt: Date(),
+            consentVersion: StudyConfig.consentDocumentVersion,
+            baselineCompletedAt: nil,
+            followUpDueAt: nil,
+            completedAt: nil,
+            withdrawnAt: nil,
+            meta: .makeNow()
+        )
+        await persist()
     }
 
     /// Convenience for stub / branded fallback “complete all” without RK result parsing.
@@ -347,6 +390,13 @@ final class StudySession: ObservableObject {
             try await store.saveSnapshot(snapshot)
         } catch {
             lastError = error.localizedDescription
+        }
+    }
+
+    /// Latest completed administration for an instrument at a timepoint (for retake prefills).
+    func completedSurvey(timepoint: SurveyTimepoint, instrument: InstrumentCode) -> SurveyAdministration? {
+        snapshot.surveys.last {
+            $0.timepoint == timepoint && $0.instrument == instrument && $0.status == .completed
         }
     }
 

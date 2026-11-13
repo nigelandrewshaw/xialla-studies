@@ -39,6 +39,8 @@ Fieldwork Geo body copy on consent screens uses **16pt** (+1pt vs earlier stubs)
 
 IIEF-5 and companion instruments use branded SwiftUI (`InstrumentSurveyView`): official item wording, 1–5 sliders defaulting to **3**, tan `#CDA788` filled tracks. Primary CTAs remain black `#212322` on white canvases.
 
+`KeyboardAvoidingFormScroll` wraps instrument sheets so AE / free-text editors and IIEF-5 (all 5 items + Save) scroll above the keyboard. Save awaits `LocalStudyStore` persistence and marks the instrument `.completed` before the sheet dismisses (status shows Done after relaunch). Sheet dismiss control is **Cancel**.
+
 ## Unit tests
 
 `XiallaStudiesTests` covers config/timepoints, arm gating, `site_code`/`study_code` meta, IIEF-5 bands + official wording smoke check, snapshot Codable round-trip (incl. preferences).

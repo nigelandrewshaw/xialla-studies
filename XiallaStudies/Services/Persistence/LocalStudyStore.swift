@@ -119,7 +119,10 @@ actor LocalStudyStore: StudyStore {
     func saveSnapshot(_ snapshot: StudySnapshot) async throws {
         var copy = snapshot
         copy.schemaVersion = StudySnapshot.currentSchemaVersion
+        let dir = fileURL.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         let data = try encoder.encode(copy)
+        // Atomic write so mid-save quit cannot leave a truncated snapshot (survey Done status).
         try data.write(to: fileURL, options: [.atomic])
     }
 

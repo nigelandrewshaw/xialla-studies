@@ -1,9 +1,13 @@
 import SwiftUI
+import UIKit
 
 /// Single-instrument survey sheet — any baseline/follow-up row can open anytime (no forced sequence).
+/// All content (including IIEF-5 × 5 + Save) lives in `KeyboardAvoidingFormScroll`.
 struct InstrumentSurveyView: View {
     let timepoint: SurveyTimepoint
     let instrument: InstrumentCode
+    /// Prior completed administration for this row (retake / restore after relaunch).
+    var existing: SurveyAdministration? = nil
     var onFinish: (SurveyTaskOutcome) -> Void
     var onCancel: () -> Void
 
@@ -14,6 +18,7 @@ struct InstrumentSurveyView: View {
     @State private var aeAny = "no"
     @State private var aeDetail = ""
     @State private var freeText = ""
+    @State private var didHydrate = false
 
     private let yesNoNa: [(value: String, label: String)] = [
         ("yes", "Yes"),
@@ -29,43 +34,58 @@ struct InstrumentSurveyView: View {
         NavigationStack {
             ZStack {
                 AtmosphereBackground()
+                    .allowsHitTesting(false)
 
-                ScrollView(.vertical, showsIndicators: true) {
+                KeyboardAvoidingFormScroll {
                     VStack(alignment: .leading, spacing: 16) {
                         SectionIntro(
                             headline: instrument.displayName,
                             support: supportCopy
                         )
 
-                        contentCard
+                        content
 
                         PrimaryButton(title: "Save") {
                             onFinish(buildOutcome())
                         }
+                        .formPrimaryActionAnchor()
                         .padding(.top, 4)
-                        .padding(.bottom, 24)
+                        .padding(.bottom, 8)
                     }
                     .padding(.horizontal, BrandTheme.contentInset)
                     .padding(.vertical, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .navigationTitle(timepoint.displayName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", action: onCancel)
+                    Button("Cancel", action: onCancel)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil,
+                            from: nil,
+                            for: nil
+                        )
+                    }
+                    .font(BrandTheme.body(16, weight: .semibold))
                 }
             }
+            .onAppear { hydrateFromExistingIfNeeded() }
         }
     }
 
     @ViewBuilder
-    private var contentCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            switch instrument {
-            case .iief5:
-                ForEach(Array(IIEF5Scoring.items.enumerated()), id: \.offset) { index, item in
+    private var content: some View {
+        switch instrument {
+        case .iief5:
+            // One card per item so all 5 + Save scroll fully on short screens.
+            ForEach(Array(IIEF5Scoring.items.enumerated()), id: \.offset) { index, item in
+                questionCard {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("\(index + 1). \(item.prompt)")
                             .font(BrandTheme.body(14, weight: .medium))
@@ -90,70 +110,110 @@ struct InstrumentSurveyView: View {
                             .foregroundStyle(BrandTheme.ink)
                     }
                 }
-            case .baselineHistory:
-                picker(
-                    "Have you used other treatments for erectile dysfunction before starting this study?",
-                    selection: $historyPriorED,
-                    options: yesNoNa
-                )
-                Text("Is there anything else you would like the study team to know about your history before first use of Xialla?")
-                    .font(BrandTheme.body(15, weight: .semibold))
-                    .fixedSize(horizontal: false, vertical: true)
-                TextField("Optional notes", text: $historyNotes, axis: .vertical)
-                    .lineLimit(3...6)
-                    .padding(12)
-                    .background(RoundedRectangle(cornerRadius: 4).stroke(BrandTheme.mist))
-            case .usability:
+            }
+        case .baselineHistory:
+            questionCard {
+                VStack(alignment: .leading, spacing: 14) {
+                    picker(
+                        "Have you used other treatments for erectile dysfunction before starting this study?",
+                        selection: $historyPriorED,
+                        options: yesNoNa
+                    )
+                    Text("Is there anything else you would like the study team to know about your history before first use of Xialla?")
+                        .font(BrandTheme.body(15, weight: .semibold))
+                        .fixedSize(horizontal: false, vertical: true)
+                    formTextEditor(text: $historyNotes, placeholder: "Optional notes")
+                }
+            }
+        case .usability:
+            questionCard {
                 likertSlider(
                     "Thinking about your experience so far, how easy was Xialla to use?",
                     low: "Very difficult",
                     high: "Very easy"
                 )
-            case .comfort:
+            }
+        case .comfort:
+            questionCard {
                 likertSlider(
                     "How comfortable was Xialla to wear during use?",
                     low: "Very uncomfortable",
                     high: "Very comfortable"
                 )
-            case .satisfaction:
+            }
+        case .satisfaction:
+            questionCard {
                 likertSlider(
                     "Overall, how satisfied are you with Xialla?",
                     low: "Very dissatisfied",
                     high: "Very satisfied"
                 )
-            case .adverseEvents:
-                picker(
-                    "Did you experience any adverse events or problems that you think may be related to using Xialla?",
-                    selection: $aeAny,
-                    options: yesNo
-                )
-                if aeAny == "yes" {
-                    Text("If you answered yes, please briefly describe what happened.")
+            }
+        case .adverseEvents:
+            questionCard {
+                VStack(alignment: .leading, spacing: 14) {
+                    picker(
+                        "Did you experience any adverse events or problems that you think may be related to using Xialla?",
+                        selection: $aeAny,
+                        options: yesNo
+                    )
+                    if aeAny == "yes" {
+                        Text("If you answered yes, please briefly describe what happened.")
+                            .font(BrandTheme.body(15, weight: .semibold))
+                            .fixedSize(horizontal: false, vertical: true)
+                        formTextEditor(text: $aeDetail, placeholder: "Please describe what happened")
+                    }
+                }
+            }
+        case .freeText:
+            questionCard {
+                VStack(alignment: .leading, spacing: 14) {
+                    Text("Please share any additional comments for the study team. This is optional.")
                         .font(BrandTheme.body(15, weight: .semibold))
                         .fixedSize(horizontal: false, vertical: true)
-                    TextField("Please describe what happened", text: $aeDetail, axis: .vertical)
-                        .lineLimit(3...6)
-                        .padding(12)
-                        .background(RoundedRectangle(cornerRadius: 4).stroke(BrandTheme.mist))
+                    formTextEditor(text: $freeText, placeholder: "Optional comments for the study team")
                 }
-            case .freeText:
-                Text("Please share any additional comments for the study team. This is optional.")
-                    .font(BrandTheme.body(15, weight: .semibold))
-                    .fixedSize(horizontal: false, vertical: true)
-                TextField("Optional comments for the study team", text: $freeText, axis: .vertical)
-                    .lineLimit(3...6)
-                    .padding(12)
-                    .background(RoundedRectangle(cornerRadius: 4).stroke(BrandTheme.mist))
             }
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func questionCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        content()
+            .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(BrandTheme.canvas)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(BrandTheme.mist, lineWidth: 1)
+                    )
+            )
+    }
+
+    private func formTextEditor(text: Binding<String>, placeholder: String) -> some View {
+        ZStack(alignment: .topLeading) {
+            if text.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Text(placeholder)
+                    .font(BrandTheme.body(15))
+                    .foregroundStyle(BrandTheme.graphite.opacity(0.55))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 20)
+                    .allowsHitTesting(false)
+            }
+            TextEditor(text: text)
+                .font(BrandTheme.body(15))
+                .foregroundStyle(BrandTheme.ink)
+                .scrollContentBackground(.hidden)
+                .frame(minHeight: 120)
+                .padding(12)
+        }
         .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(BrandTheme.canvas)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .stroke(BrandTheme.mist, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .stroke(BrandTheme.mist, lineWidth: 1)
+                .background(
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(Color.white.opacity(0.92))
                 )
         )
     }
@@ -161,7 +221,7 @@ struct InstrumentSurveyView: View {
     private var supportCopy: String {
         switch instrument {
         case .iief5:
-            return "\(IIEF5Scoring.recallPeriodInstruction) Please rate each item from 1 to 5. Each slider starts at 3."
+            return "\(IIEF5Scoring.recallPeriodInstruction) Please rate each item from 1 to 5. Each slider starts at 3. Scroll to reach every question and Save."
         case .baselineHistory:
             return "Brief history questions for this study site. You can open any questionnaire from the list in any order."
         case .usability, .comfort, .satisfaction:
@@ -204,6 +264,45 @@ struct InstrumentSurveyView: View {
                 }
             }
             .pickerStyle(.segmented)
+        }
+    }
+
+    private func hydrateFromExistingIfNeeded() {
+        guard !didHydrate, let existing, existing.status == .completed else {
+            didHydrate = true
+            return
+        }
+        didHydrate = true
+        switch instrument {
+        case .iief5:
+            var restored = Array(repeating: 3.0, count: 5)
+            for q in 1...5 {
+                if let item = existing.responses.first(where: { $0.itemCode == "iief5.q\(q)" }),
+                   let value = Double(item.value) {
+                    restored[q - 1] = min(5, max(1, value))
+                }
+            }
+            iiefAnswers = restored
+        case .baselineHistory:
+            let raw = existing.responses.first?.value ?? "no"
+            let parts = raw.split(separator: "|", maxSplits: 1).map(String.init)
+            historyPriorED = parts.first ?? "no"
+            historyNotes = parts.count > 1 ? parts[1] : ""
+        case .usability, .comfort, .satisfaction:
+            if let value = existing.responses.first?.value, let number = Double(value) {
+                likert = min(5, max(1, number))
+            }
+        case .adverseEvents:
+            let value = existing.responses.first?.value ?? "none"
+            if value == "none" || value.isEmpty {
+                aeAny = "no"
+                aeDetail = ""
+            } else {
+                aeAny = "yes"
+                aeDetail = value
+            }
+        case .freeText:
+            freeText = existing.responses.first?.value ?? ""
         }
     }
 

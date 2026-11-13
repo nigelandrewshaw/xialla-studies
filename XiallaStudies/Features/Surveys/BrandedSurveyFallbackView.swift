@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Full-battery branded IIEF-5 + companion surveys (legacy sheet).
 /// Prefer `InstrumentSurveyView` for per-row opens. IIEF-5: sliders 1–5 default **3**.
@@ -36,6 +37,7 @@ struct BrandedSurveyFallbackView: View {
         NavigationStack {
             ZStack {
                 AtmosphereBackground()
+                    .allowsHitTesting(false)
 
                 Group {
                     switch page {
@@ -47,14 +49,24 @@ struct BrandedSurveyFallbackView: View {
                         donePage
                     }
                 }
-                .padding(.horizontal, BrandTheme.contentInset)
-                .padding(.vertical, 16)
             }
             .navigationTitle(timepoint.displayName)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", action: onCancel)
+                    Button("Cancel", action: onCancel)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        UIApplication.shared.sendAction(
+                            #selector(UIResponder.resignFirstResponder),
+                            to: nil,
+                            from: nil,
+                            for: nil
+                        )
+                    }
+                    .font(BrandTheme.body(16, weight: .semibold))
                 }
             }
         }
@@ -62,7 +74,7 @@ struct BrandedSurveyFallbackView: View {
 
     /// Full-page scroll so every IIEF-5 item and Continue stay reachable on short devices.
     private var iief5Page: some View {
-        ScrollView(.vertical, showsIndicators: true) {
+        KeyboardAvoidingFormScroll(actionAnchorId: "fallback-continue") {
             VStack(alignment: .leading, spacing: 16) {
                 SectionIntro(
                     headline: "IIEF-5",
@@ -102,15 +114,17 @@ struct BrandedSurveyFallbackView: View {
                 PrimaryButton(title: "Continue") {
                     page = .companions
                 }
+                .formPrimaryActionAnchor("fallback-continue")
                 .padding(.top, 4)
-                .padding(.bottom, 24)
+                .padding(.bottom, 8)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, BrandTheme.contentInset)
+            .padding(.vertical, 16)
         }
     }
 
     private var companionsPage: some View {
-        ScrollView(.vertical, showsIndicators: true) {
+        KeyboardAvoidingFormScroll(actionAnchorId: "fallback-save") {
             VStack(alignment: .leading, spacing: 18) {
                 SectionIntro(
                     headline: "Additional questions",
@@ -164,10 +178,7 @@ struct BrandedSurveyFallbackView: View {
                             Text("If you answered yes, please briefly describe what happened.")
                                 .font(BrandTheme.body(15, weight: .semibold))
                                 .fixedSize(horizontal: false, vertical: true)
-                            TextField("Please describe what happened", text: $aeDetail, axis: .vertical)
-                                .lineLimit(3...6)
-                                .padding(12)
-                                .background(RoundedRectangle(cornerRadius: 4).stroke(BrandTheme.mist))
+                            formTextEditor(text: $aeDetail, placeholder: "Please describe what happened")
                         }
                     }
                 }
@@ -176,24 +187,23 @@ struct BrandedSurveyFallbackView: View {
                         Text("Please share any additional comments for the study team. This is optional.")
                             .font(BrandTheme.body(15, weight: .semibold))
                             .fixedSize(horizontal: false, vertical: true)
-                        TextField("Optional comments for the study team", text: $freeText, axis: .vertical)
-                            .lineLimit(3...6)
-                            .padding(12)
-                            .background(RoundedRectangle(cornerRadius: 4).stroke(BrandTheme.mist))
+                        formTextEditor(text: $freeText, placeholder: "Optional comments for the study team")
                     }
                 }
 
                 PrimaryButton(title: "Save responses") {
                     page = .done
                 }
-                .padding(.bottom, 24)
+                .formPrimaryActionAnchor("fallback-save")
+                .padding(.bottom, 8)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, BrandTheme.contentInset)
+            .padding(.vertical, 16)
         }
     }
 
     private var donePage: some View {
-        ScrollView(.vertical, showsIndicators: true) {
+        KeyboardAvoidingFormScroll(actionAnchorId: "fallback-done") {
             VStack(alignment: .leading, spacing: 16) {
                 let ints = answers.map { Int($0) }
                 let total = IIEF5Scoring.total(answers: ints) ?? 0
@@ -221,11 +231,40 @@ struct BrandedSurveyFallbackView: View {
                         )
                     )
                 }
+                .formPrimaryActionAnchor("fallback-done")
                 .padding(.top, 8)
-                .padding(.bottom, 24)
+                .padding(.bottom, 8)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, BrandTheme.contentInset)
+            .padding(.vertical, 16)
         }
+    }
+
+    private func formTextEditor(text: Binding<String>, placeholder: String) -> some View {
+        ZStack(alignment: .topLeading) {
+            if text.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Text(placeholder)
+                    .font(BrandTheme.body(15))
+                    .foregroundStyle(BrandTheme.graphite.opacity(0.55))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 20)
+                    .allowsHitTesting(false)
+            }
+            TextEditor(text: text)
+                .font(BrandTheme.body(15))
+                .foregroundStyle(BrandTheme.ink)
+                .scrollContentBackground(.hidden)
+                .frame(minHeight: 120)
+                .padding(12)
+        }
+        .background(
+            RoundedRectangle(cornerRadius: 4, style: .continuous)
+                .stroke(BrandTheme.mist, lineWidth: 1)
+                .background(
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(Color.white.opacity(0.92))
+                )
+        )
     }
 
     /// Interaction card for each survey control — keeps questions readable inside the scroll stack.
