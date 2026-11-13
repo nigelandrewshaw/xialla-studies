@@ -12,8 +12,8 @@ struct ResearchKitSurveyPresenter: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> ORKTaskViewController {
         let task = ResearchKitTaskFactory.makeSurveyTask(timepoint: timepoint)
-        // ResearchKit 3+: initializer uses taskRunUUID (not the old taskRun label).
-        let vc = ORKTaskViewController(task: task, taskRunUUID: nil)
+        // Linked ResearchKit Swift overlay: init(task:taskRun:) (taskRunUUID was renamed).
+        let vc = ORKTaskViewController(task: task, taskRun: nil)
         vc.delegate = context.coordinator
         vc.view.tintColor = UIColor(BrandTheme.tan)
         return vc
