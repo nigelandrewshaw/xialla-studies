@@ -79,8 +79,8 @@ ORK task chrome uses the app tint (tan `#CDA788`) for scale/slider fills. Primar
 
 ## Branding / Fieldwork
 
-- Logo + homepage hero pulled from xialla.com CDN into `Assets.xcassets`.
-  Home hero uses the clean lifestyle photo `Couple_Near_Fence_Overlooking_Ocean.jpg` (image only; white wordmark is a SwiftUI overlay). Do not use the OG/social `mmeIf.jpg` crop — it bakes in site headline copy.
+- Logo + homepage hero in `Assets.xcassets`.
+  Home hero uses the clean lifestyle photo `HomeHero.png` (image only, no baked-in site text; white wordmark is a SwiftUI overlay). Do not use the OG/social `mmeIf.jpg` crop.
 - **Fieldwork Geo** desktop OTFs (Regular / Demibold / Bold) ship under `XiallaStudies/Resources/Fonts/` and are listed in `UIAppFonts`. PostScript names: `Fieldwork-Geo-Regular`, `Fieldwork-Geo-Demibold`, `Fieldwork-Geo-Bold`. `BrandTheme` uses these exclusively (no Avenir). Adobe Fonts / Typekit webfonts must not replace them.
 - Chrome: white main screens; primary buttons Pantone 419 C `#212322`; tan Pantone 4665 C `#CDA788` for slider fills and light visual interest only (not full-screen fills). Accent orange remains in the kit but is not used for CTAs or slider tracks.
 
