@@ -1,14 +1,18 @@
 import Foundation
 import SwiftUI
 
-/// In-memory + local study coordinator for the scaffold.
+/// In-memory + local study coordinator. Every mutation persists via `LocalStudyStore`
+/// so Jeff can quit mid-demo and reopen without losing progress.
 @MainActor
 final class StudySession: ObservableObject {
     @Published private(set) var snapshot: StudySnapshot = .empty
-    @Published var path: [AppRoute] = []
+    @Published var path: [AppRoute] = [] {
+        didSet { Task { await persistResumeRoute() } }
+    }
     @Published var showSettings = false
     @Published var isLoading = true
     @Published var lastError: String?
+    @Published var lastIIEF5Summary: String?
 
     private let store: any StudyStore
     private let api: any StudyAPIClient
@@ -26,6 +30,10 @@ final class StudySession: ObservableObject {
 
     var enrollment: StudyEnrollment? { snapshot.enrollment }
     var status: EnrollmentStatus { snapshot.enrollment?.status ?? .notStarted }
+    var preferences: StudyPreferences { snapshot.preferences }
+    var hasSeenSplash: Bool { snapshot.preferences.hasSeenSplash }
+
+    // MARK: - Lifecycle
 
     func bootstrap() async {
         isLoading = true
@@ -33,11 +41,21 @@ final class StudySession: ObservableObject {
         do {
             snapshot = try await store.loadSnapshot()
             refreshDerivedStatus()
+            if let route = snapshot.preferences.resumeRoute {
+                path = [route]
+            }
         } catch {
             lastError = error.localizedDescription
             snapshot = .empty
         }
     }
+
+    func markSplashSeen() async {
+        snapshot.preferences.hasSeenSplash = true
+        await persist()
+    }
+
+    // MARK: - Flow
 
     func ensureParticipant() async {
         if snapshot.participant != nil { return }
@@ -87,7 +105,11 @@ final class StudySession: ObservableObject {
         path.append(.consent)
     }
 
-    func completeConsent(comprehensionPassed: Bool, signatureBlobRef: String?) async {
+    func completeConsent(
+        comprehensionPassed: Bool,
+        signatureBlobRef: String?,
+        pdfURL: URL? = nil
+    ) async {
         guard var enrollment = snapshot.enrollment else { return }
         let consent = ConsentRecord(
             id: UUID(),
@@ -99,6 +121,7 @@ final class StudySession: ObservableObject {
             meta: .makeNow()
         )
         snapshot.consent = consent
+        snapshot.consentPDFPath = pdfURL?.path
         enrollment.status = .consented
         enrollment.consentedAt = consent.signedAt
         enrollment.consentVersion = consent.documentVersion
@@ -108,34 +131,21 @@ final class StudySession: ObservableObject {
         do {
             try await api.submitConsent(consent)
         } catch {
-            // Offline-first: keep local; surface later for sync.
             lastError = error.localizedDescription
         }
 
         path.append(.baselineSurveys)
     }
 
-    func completeBaselineSurveys() async {
+    func applySurveyOutcome(_ outcome: SurveyTaskOutcome, timepoint: SurveyTimepoint) async {
         guard var enrollment = snapshot.enrollment else { return }
-        let now = Date()
-        let instruments: [InstrumentCode] = [
-            .iief5, .baselineHistory, .usability, .comfort, .satisfaction, .adverseEvents, .freeText
-        ]
+        let enrollmentId = enrollment.id
 
-        for instrument in instruments {
-            let admin = SurveyAdministration(
-                id: UUID(),
-                enrollmentId: enrollment.id,
-                instrument: instrument,
-                timepoint: .baseline,
-                status: .completed,
-                startedAt: now,
-                completedAt: now,
-                responses: stubResponses(for: instrument),
-                scoreTotal: instrument == .iief5 ? 15 : nil,
-                scoreBand: instrument == .iief5 ? "mild-to-moderate (stub)" : nil,
-                meta: .makeNow()
-            )
+        // Replace prior administrations for this timepoint (re-take safe for demo).
+        snapshot.surveys.removeAll { $0.timepoint == timepoint }
+
+        for var admin in outcome.administrations {
+            admin.enrollmentId = enrollmentId
             snapshot.surveys.append(admin)
             do {
                 try await api.submitSurvey(admin)
@@ -144,66 +154,114 @@ final class StudySession: ObservableObject {
             }
         }
 
-        enrollment.baselineCompletedAt = now
-        enrollment.followUpDueAt = Calendar.current.date(
-            byAdding: .day,
-            value: StudyConfig.primaryFollowUpWeek * 7,
-            to: now
-        )
-        enrollment.status = .baselineComplete
-        snapshot.enrollment = enrollment
+        if let total = outcome.iief5Total, let band = outcome.iief5Band {
+            lastIIEF5Summary = "IIEF-5 \(total) (\(IIEF5Scoring.displayName(for: band)))"
+        }
 
-        do {
-            _ = try await reminders.requestAuthorization()
-            let schedules = try await reminders.scheduleWeek4FollowUp(
-                enrollmentId: enrollment.id,
-                baselineCompletedAt: now
+        let now = Date()
+        if timepoint == .baseline {
+            enrollment.baselineCompletedAt = now
+            enrollment.followUpDueAt = Calendar.current.date(
+                byAdding: .day,
+                value: StudyConfig.primaryFollowUpWeek * 7,
+                to: now
             )
-            snapshot.reminders.append(contentsOf: schedules)
-        } catch {
-            lastError = error.localizedDescription
+            enrollment.status = .baselineComplete
+            snapshot.enrollment = enrollment
+            snapshot.preferences.demoWeek4Advanced = false
+            await scheduleReminders(enrollmentId: enrollmentId, baselineCompletedAt: now)
+        } else if timepoint == .week4 {
+            enrollment.status = .completed
+            enrollment.completedAt = now
+            snapshot.enrollment = enrollment
+            do {
+                try await reminders.cancelReminders(enrollmentId: enrollmentId)
+            } catch {
+                lastError = error.localizedDescription
+            }
         }
 
         await persist()
         path = []
+    }
+
+    /// Convenience for stub / branded fallback “complete all” without RK result parsing.
+    func completeBaselineSurveys(answers: [Int] = Array(repeating: 3, count: 5)) async {
+        let outcome = SurveyTaskOutcome.emptyDefaults(timepoint: .baseline, answers: answers)
+        await applySurveyOutcome(outcome, timepoint: .baseline)
     }
 
     func startWeek4FollowUp() {
         path.append(.week4FollowUp)
     }
 
-    func completeWeek4FollowUp() async {
+    func completeWeek4FollowUp(answers: [Int] = Array(repeating: 3, count: 5)) async {
+        let outcome = SurveyTaskOutcome.emptyDefaults(timepoint: .week4, answers: answers)
+        await applySurveyOutcome(outcome, timepoint: .week4)
+    }
+
+    /// Demo: jump clock so week‑4 is due now (persisted).
+    func demoAdvanceToWeek4() async {
         guard var enrollment = snapshot.enrollment else { return }
+        guard enrollment.status == .baselineComplete || enrollment.status == .followUpDue else { return }
         let now = Date()
-        let instruments: [InstrumentCode] = [
-            .iief5, .usability, .comfort, .satisfaction, .adverseEvents, .freeText
-        ]
-        for instrument in instruments {
-            let admin = SurveyAdministration(
-                id: UUID(),
-                enrollmentId: enrollment.id,
-                instrument: instrument,
-                timepoint: .week4,
-                status: .completed,
-                startedAt: now,
-                completedAt: now,
-                responses: stubResponses(for: instrument),
-                scoreTotal: instrument == .iief5 ? 18 : nil,
-                scoreBand: instrument == .iief5 ? "mild (stub)" : nil,
-                meta: .makeNow()
-            )
-            snapshot.surveys.append(admin)
-        }
-        enrollment.status = .completed
-        enrollment.completedAt = now
+        enrollment.followUpDueAt = now
+        enrollment.status = .followUpDue
         snapshot.enrollment = enrollment
-        do {
-            try await reminders.cancelReminders(enrollmentId: enrollment.id)
-        } catch {
-            lastError = error.localizedDescription
+        snapshot.preferences.demoWeek4Advanced = true
+        await persist()
+    }
+
+    /// Demo: seed a full mid-study state (eligible → consented → baseline done).
+    func demoSeedBaselineComplete() async {
+        await ensureParticipant()
+        guard let participant = snapshot.participant else { return }
+        let enrollmentId = UUID()
+        let now = Date()
+        let baselineAt = Calendar.current.date(byAdding: .day, value: -28, to: now) ?? now
+
+        snapshot.enrollment = StudyEnrollment(
+            id: enrollmentId,
+            participantId: participant.id,
+            arm: .prospective,
+            status: .baselineComplete,
+            enrolledAt: baselineAt,
+            consentedAt: baselineAt,
+            consentVersion: StudyConfig.consentDocumentVersion,
+            baselineCompletedAt: baselineAt,
+            followUpDueAt: now,
+            completedAt: nil,
+            withdrawnAt: nil,
+            meta: .makeNow()
+        )
+        snapshot.consent = ConsentRecord(
+            id: UUID(),
+            enrollmentId: enrollmentId,
+            documentVersion: StudyConfig.consentDocumentVersion,
+            signedAt: baselineAt,
+            signatureBlobRef: "demo:jeff-walkthrough",
+            comprehensionPassed: true,
+            meta: .makeNow()
+        )
+        let outcome = SurveyTaskOutcome.emptyDefaults(
+            timepoint: .baseline,
+            answers: [3, 3, 3, 3, 3]
+        )
+        snapshot.surveys = outcome.administrations.map { admin in
+            var copy = admin
+            copy.enrollmentId = enrollmentId
+            return copy
         }
+        snapshot.preferences.hasSeenSplash = true
+        snapshot.preferences.demoWeek4Advanced = true
+        snapshot.enrollment?.status = .followUpDue
         await persist()
         path = []
+    }
+
+    func setRemindersEnabled(_ enabled: Bool) async {
+        snapshot.preferences.remindersEnabled = enabled
+        await persist()
     }
 
     func withdraw() async {
@@ -217,15 +275,40 @@ final class StudySession: ObservableObject {
         } catch {
             lastError = error.localizedDescription
         }
+        snapshot.preferences.resumeRoute = nil
         await persist()
         path = []
         showSettings = false
     }
 
     func resetLocalDataForDebug() async {
+        do {
+            try await store.clear()
+        } catch {
+            lastError = error.localizedDescription
+        }
         snapshot = .empty
         path = []
+        lastIIEF5Summary = nil
         await persist()
+    }
+
+    // MARK: - Private
+
+    private func scheduleReminders(enrollmentId: UUID, baselineCompletedAt: Date) async {
+        guard snapshot.preferences.remindersEnabled else { return }
+        do {
+            let authorized = try await reminders.requestAuthorization()
+            snapshot.preferences.notificationsAuthorized = authorized
+            let schedules = try await reminders.scheduleWeek4FollowUp(
+                enrollmentId: enrollmentId,
+                baselineCompletedAt: baselineCompletedAt
+            )
+            snapshot.reminders.removeAll { $0.enrollmentId == enrollmentId }
+            snapshot.reminders.append(contentsOf: schedules)
+        } catch {
+            lastError = error.localizedDescription
+        }
     }
 
     private func refreshDerivedStatus() {
@@ -246,15 +329,12 @@ final class StudySession: ObservableObject {
         }
     }
 
-    private func stubResponses(for instrument: InstrumentCode) -> [SurveyResponseItem] {
-        [
-            SurveyResponseItem(
-                id: UUID(),
-                itemCode: "\(instrument.rawValue).stub",
-                value: "stub",
-                answeredAt: Date()
-            )
-        ]
+    private func persistResumeRoute() async {
+        let route = path.last
+        if snapshot.preferences.resumeRoute != route {
+            snapshot.preferences.resumeRoute = route
+            await persist()
+        }
     }
 }
 
@@ -265,4 +345,30 @@ enum AppRoute: Hashable {
     case week4FollowUp
     case reminders
     case kitStub
+    case provider
+
+    var persistedRaw: String {
+        switch self {
+        case .eligibility: return "eligibility"
+        case .consent: return "consent"
+        case .baselineSurveys: return "baselineSurveys"
+        case .week4FollowUp: return "week4FollowUp"
+        case .reminders: return "reminders"
+        case .kitStub: return "kitStub"
+        case .provider: return "provider"
+        }
+    }
+
+    init?(persistedRaw: String) {
+        switch persistedRaw {
+        case "eligibility": self = .eligibility
+        case "consent": self = .consent
+        case "baselineSurveys": self = .baselineSurveys
+        case "week4FollowUp": self = .week4FollowUp
+        case "reminders": self = .reminders
+        case "kitStub": self = .kitStub
+        case "provider": self = .provider
+        default: return nil
+        }
+    }
 }

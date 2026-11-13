@@ -1,5 +1,5 @@
 # XcodeGen spec — on a Mac: `brew install xcodegen && xcodegen generate`
-# Then open XiallaStudies.xcodeproj and add ResearchKit (see README).
+# ResearchKit: run ./scripts/bootstrap-researchkit.sh then embed ResearchKit.xcodeproj (see README).
 
 name: XiallaStudies
 options:
@@ -23,6 +23,8 @@ targets:
     platform: iOS
     sources:
       - path: XiallaStudies
+        excludes:
+          - Resources/Fonts/README.md
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.xialla.studies
@@ -33,6 +35,9 @@ targets:
         ENABLE_PREVIEWS: YES
     info:
       path: XiallaStudies/Supporting/Info.plist
+    # After bootstrap, add manually in Xcode:
+    # dependencies:
+    #   - framework: Vendor/ResearchKit/build/...  (prefer Embed ResearchKit + ResearchKitUI)
 
   XiallaStudiesTests:
     type: bundle.unit-test

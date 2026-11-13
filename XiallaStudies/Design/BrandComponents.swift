@@ -3,13 +3,25 @@ import SwiftUI
 struct BrandWordmark: View {
     var size: CGFloat = 36
     var light: Bool = false
+    /// Prefer the official logo asset; fall back to typographic wordmark.
+    var useLogoAsset: Bool = true
 
     var body: some View {
-        Text("Xialla")
-            .font(BrandTheme.display(size, weight: .medium))
-            .tracking(1.2)
-            .foregroundStyle(light ? BrandTheme.parchment : BrandTheme.ink)
-            .accessibilityAddTraits(.isHeader)
+        Group {
+            if useLogoAsset {
+                Image(light ? "XiallaLogoWhite" : "XiallaLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: size * 0.85)
+                    .accessibilityLabel("Xialla")
+            } else {
+                Text("Xialla")
+                    .font(BrandTheme.display(size, weight: .medium))
+                    .tracking(1.2)
+                    .foregroundStyle(light ? BrandTheme.chalk : BrandTheme.ink)
+            }
+        }
+        .accessibilityAddTraits(.isHeader)
     }
 }
 
@@ -24,9 +36,9 @@ struct PrimaryButton: View {
                 .font(BrandTheme.body(17, weight: .semibold))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .foregroundStyle(BrandTheme.parchment)
+                .foregroundStyle(BrandTheme.chalk)
                 .background(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
                         .fill(enabled ? BrandTheme.teal : BrandTheme.graphite.opacity(0.35))
                 )
         }
@@ -48,8 +60,8 @@ struct SecondaryButton: View {
                 .padding(.vertical, 14)
                 .foregroundStyle(BrandTheme.teal)
                 .background(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .stroke(BrandTheme.teal.opacity(0.45), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .stroke(BrandTheme.teal.opacity(0.55), lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)
@@ -99,7 +111,7 @@ struct StatusChip: View {
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(
-                Capsule(style: .continuous)
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
                     .fill(tone.color.opacity(0.12))
             )
     }

@@ -3,69 +3,51 @@
 Prospective-first **ResearchKit** observational study iOS app for Xialla.
 
 > App v1: baseline + **4-week** follow-up only (8/12 weeks structured for later).  
-> Records carry `study_code` + `site_code`. Backend is stubbed (Cloud Run / Postgres later).
+> Records carry `study_code` + `site_code`. Backend is stubbed (Cloud Run / Postgres later).  
+> Progress persists locally between launches for demos.
 
 Suggested bundle ID: `com.xialla.studies`
 
-## Open in Xcode
+## Open in Xcode (Jeff demo)
 
-1. Clone this repo on a Mac with **Xcode 16+** (iOS 17 deployment target).
-2. Open `XiallaStudies.xcodeproj` (already generated), **or** regenerate with [XcodeGen](https://github.com/yonaskolb/XcodeGen):
+1. Clone on a Mac with **Xcode 16+** (iOS 17+):
 
    ```bash
-   brew install xcodegen
-   xcodegen generate
+   git clone https://github.com/nigelandrewshaw/xialla-studies.git
+   cd xialla-studies
+   git checkout cursor/scaffold-ios-study-app-5ff7   # or main once merged
    open XiallaStudies.xcodeproj
    ```
 
-3. Set your **Team** for signing on the `XiallaStudies` target.
-4. Run on a simulator or device.
+2. Select the **XiallaStudies** scheme → set your **Team** for signing.
+3. Run on a simulator or device.
+4. Walkthrough: Splash → Eligibility → Consent → Baseline (IIEF-5 sliders default **3**) → Home → Settings → **Demo: jump to week 4** → Week‑4 surveys → Reminders / Investigator profile.
 
-> This cloud environment has **no Mac/Xcode**. Sources and the project file are complete; compile/test on a Mac.
+> Optional: `./scripts/bootstrap-researchkit.sh` then embed ResearchKit + ResearchKitUI for native ORK chrome. Without it, branded SwiftUI fallbacks still complete the full demo.
 
 ## ResearchKit dependency
 
-Upstream ResearchKit does **not** ship a root Swift Package today. Official install is an **embedded framework**:
-
-1. Clone ResearchKit (git-lfs required for some assets):
-
-   ```bash
-   ./scripts/bootstrap-researchkit.sh
-   ```
-
-   or manually:
-
-   ```bash
-   git clone https://github.com/ResearchKit/ResearchKit.git Vendor/ResearchKit
-   ```
-
-2. In Xcode: **File → Add Files to “XiallaStudies”…** → add `Vendor/ResearchKit/ResearchKit.xcodeproj`.
-3. Select the `XiallaStudies` app target → **General → Frameworks, Libraries, and Embedded Content** → add **ResearchKit** and **ResearchKitUI** (Embed & Sign).
-4. Build. ResearchKit presenters (`#if canImport(ResearchKit)`) activate automatically.
-
-**CocoaPods alternative** (vendored xcframeworks; needs git-lfs):
-
 ```bash
-pod install
-open XiallaStudies.xcworkspace
+./scripts/bootstrap-researchkit.sh
+# optional: RESEARCHKIT_URL=https://github.com/nigelandrewshaw/ResearchKit.git ./scripts/bootstrap-researchkit.sh
 ```
 
-Without ResearchKit linked, the branded SwiftUI consent/survey stubs still run; RK sheets show a fallback.
+Then in Xcode: add `Vendor/ResearchKit/ResearchKit.xcodeproj` → embed **ResearchKit** + **ResearchKitUI**.
 
-## What’s scaffolded
+## What’s included
 
 | Area | Status |
 |------|--------|
-| Splash / Home / Settings | Branded SwiftUI shell |
-| Eligibility | Prospective enabled; current-user add-on gated |
-| Consent | Info → comprehension stub → signature; RK task wrapper |
-| Surveys | IIEF-5 + history + usability/comfort/satisfaction + AE + free text stubs |
-| Week-4 follow-up | Wired; local reminder scheduler stub |
-| Config | `STUDY_CODE` / `SITE_CODE` placeholders in `StudyConfig` |
-| Persistence | Local JSON snapshot |
-| API | `StudyAPIClient` protocol + stub / live placeholders |
-| Kit fulfillment | Stub only (timing TBD with Jeff) |
-| Tests | Model / scoring / snapshot unit tests |
+| Splash / Home | Full-bleed xialla.com hero + logo |
+| Provider | `StudyParameters.provider` → Dr. Jeffrey Campbell profile |
+| Eligibility | Prospective enabled; current-user gated |
+| Consent | Info → comprehension → signature; RK + PDF when linked |
+| Surveys | IIEF-5 sliders **1–5 default 3** + history / UX / AE |
+| Week-4 | Real path + **demo advance** / seed in Settings |
+| Reminders | Local notification scheduler (~4 weeks) |
+| Persistence | `LocalStudyStore` JSON — survives relaunch |
+| Config | `study_code` / `site_code` + study parameters model |
+| Tests | Model / scoring / snapshot round-trip |
 
 ## Study flow (v1)
 
@@ -76,21 +58,12 @@ Splash → Home → Eligibility (prospective)
       → Week-4 follow-up → Complete
 ```
 
-## Config placeholders
+## Config
 
-Edit `XiallaStudies/Config/StudyConfig.swift`:
+Edit `StudyParameters.xiallaObservationalV1` / `StudyConfig.active` (or later load from DB):
 
-- `studyCode` → replace `STUDY_CODE`
-- `siteCode` → replace `SITE_CODE` (first site: Dr. Jeffrey Campbell / St. Joseph’s London)
-- `apiBaseURL` → Cloud Run URL when available
+- `studyCode` / `siteCode`
+- `provider` (name, photo asset, title, site, bio)
+- `apiBaseURL` when Cloud Run is live
 
-## Next steps
-
-1. Create Apple Developer App ID `com.xialla.studies` and enable signing.
-2. Drop IRB-approved consent copy into ResearchKit consent sections.
-3. Clear IIEF-5 licensing before shipping real item wording.
-4. Implement `LiveStudyAPIClient` against Cloud Run + Postgres.
-5. Confirm kit fulfillment timing with Jeff; replace kit stub.
-6. TestFlight internal build once ResearchKit is linked.
-
-See `docs/BUILD_NOTES.md` for environment / no-Mac notes.
+See `docs/BUILD_NOTES.md` for Fieldwork font licensing, assets, and no-Mac notes.

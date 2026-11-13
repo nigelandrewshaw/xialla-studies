@@ -6,7 +6,7 @@ import ResearchKitUI
 
 struct ResearchKitSurveyPresenter: UIViewControllerRepresentable {
     let timepoint: SurveyTimepoint
-    var onFinish: () -> Void
+    var onFinish: (_ result: SurveyTaskOutcome) -> Void
     var onCancel: () -> Void
 
     func makeUIViewController(context: Context) -> ORKTaskViewController {
@@ -19,14 +19,20 @@ struct ResearchKitSurveyPresenter: UIViewControllerRepresentable {
     func updateUIViewController(_ uiViewController: ORKTaskViewController, context: Context) {}
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(onFinish: onFinish, onCancel: onCancel)
+        Coordinator(timepoint: timepoint, onFinish: onFinish, onCancel: onCancel)
     }
 
     final class Coordinator: NSObject, ORKTaskViewControllerDelegate {
-        let onFinish: () -> Void
+        let timepoint: SurveyTimepoint
+        let onFinish: (SurveyTaskOutcome) -> Void
         let onCancel: () -> Void
 
-        init(onFinish: @escaping () -> Void, onCancel: @escaping () -> Void) {
+        init(
+            timepoint: SurveyTimepoint,
+            onFinish: @escaping (SurveyTaskOutcome) -> Void,
+            onCancel: @escaping () -> Void
+        ) {
+            self.timepoint = timepoint
             self.onFinish = onFinish
             self.onCancel = onCancel
         }
@@ -38,7 +44,11 @@ struct ResearchKitSurveyPresenter: UIViewControllerRepresentable {
         ) {
             taskViewController.dismiss(animated: true) {
                 if reason == .completed {
-                    self.onFinish()
+                    let outcome = SurveyResultParser.parse(
+                        taskResult: taskViewController.result,
+                        timepoint: self.timepoint
+                    )
+                    self.onFinish(outcome)
                 } else {
                     self.onCancel()
                 }
@@ -51,25 +61,12 @@ struct ResearchKitSurveyPresenter: UIViewControllerRepresentable {
 
 struct ResearchKitSurveyPresenter: View {
     let timepoint: SurveyTimepoint
-    var onFinish: () -> Void
+    var onFinish: (_ result: SurveyTaskOutcome) -> Void
     var onCancel: () -> Void
 
     var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("ResearchKit survey unavailable")
-                    .font(BrandTheme.display(24, weight: .medium))
-                Text("Link ResearchKit to present \(timepoint.displayName) as an ORKOrderedTask. Stub completion is available from the previous screen.")
-                    .font(BrandTheme.body(15))
-                    .foregroundStyle(BrandTheme.graphite)
-                Spacer()
-                PrimaryButton(title: "Mark complete (stub)") {
-                    onFinish()
-                }
-                SecondaryButton(title: "Cancel", action: onCancel)
-            }
-            .padding(24)
-        }
+        // Branded custom IIEF-5 + companion stubs when RK is not linked.
+        BrandedSurveyFallbackView(timepoint: timepoint, onFinish: onFinish, onCancel: onCancel)
     }
 }
 

@@ -11,22 +11,38 @@ The scaffolding agent ran on Linux without Xcode / `xcodebuild` / iOS Simulator.
 ## Verify on Mac
 
 ```bash
-# Optional regenerate
-xcodegen generate
+git pull
+open XiallaStudies.xcodeproj
+# Set Team for signing, Run on simulator/device
 
-# Link ResearchKit (see README), then:
-xcodebuild -scheme XiallaStudies -destination 'platform=iOS Simulator,name=iPhone 16' test
+# Optional ResearchKit:
+./scripts/bootstrap-researchkit.sh
+# Then embed ResearchKit + ResearchKitUI (README)
 ```
 
 ## Unit tests / simulator without ResearchKit
 
-`XiallaStudiesTests` covers config/timepoints, arm gating, `site_code`/`study_code` meta, IIEF-5 bands, and snapshot Codable round-trip. These do not require ResearchKit.
+`XiallaStudiesTests` covers config/timepoints, arm gating, `site_code`/`study_code` meta, IIEF-5 bands, snapshot Codable round-trip (incl. preferences). These do not require ResearchKit.
 
-The app target does **not** link ResearchKit by default (empty Frameworks phase). Presenters use `#if canImport(ResearchKit)` stubs, so a simulator build should compile and link without ResearchKit. Optional: `./scripts/bootstrap-researchkit.sh` then embed ResearchKit + ResearchKitUI (see README).
+The app target does **not** link ResearchKit by default. Presenters use `#if canImport(ResearchKit)` with a branded SwiftUI fallback (IIEF-5 **sliders 1–5, default 3**), so a simulator build should compile and demo the full flow without ResearchKit. After bootstrap + embed, real `ORKOrderedTask`s activate.
+
+## Local persistence
+
+`LocalStudyStore` writes `Application Support/XiallaStudies/study-snapshot.json` (atomic). Snapshot includes enrollment, consent, survey answers/scores, reminders, kit stub, consent PDF path, and `StudyPreferences` (splash seen, demo week‑4 flag, resume route, reminder toggle). Quit mid-flow and relaunch — progress restores.
+
+## Branding / Fieldwork
+
+- Logo + homepage hero pulled from xialla.com CDN into `Assets.xcassets`.
+- **Fieldwork** is Adobe Fonts (Typekit kit `shw7daa`) — webfont license does **not** allow shipping binaries in the app. See `XiallaStudies/Resources/Fonts/README.md`. Until a desktop license is added, UI uses **Avenir Next** at Fieldwork-like weights. `UIAppFonts` can be registered when `.otf` files are dropped in.
+- Colors: site ink `#1C1C1C`, product teal accent, light gray surfaces from site CSS tokens.
+
+## Study parameters / provider
+
+`StudyParameters` + `StudyProviderParameters` hold study/site codes, follow-ups, and the participating investigator (Jeff hardcoded for demo). Screens read `StudyConfig.active` / `StudyConfig.provider` so a future DB load can swap the pack without rewriting UI.
 
 ## Asset catalog path
 
-`Assets.xcassets` must resolve to `XiallaStudies/Resources/Assets.xcassets` (group: XiallaStudies → Resources → Assets.xcassets). Regenerate with `python3 scripts/generate_xcodeproj.py` if the catalog shows as Recovered References or Xcode looks for `./Assets.xcassets` at the repo root.
+`Assets.xcassets` must resolve to `XiallaStudies/Resources/Assets.xcassets`. Regenerate with `python3 scripts/generate_xcodeproj.py` if needed.
 
 ## Regenerating the Xcode project
 

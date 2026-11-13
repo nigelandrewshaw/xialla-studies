@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Branded consent bookends. ResearchKit task is presented from `ResearchKitConsentPresenter`.
+/// Branded consent bookends + ResearchKit task (or SwiftUI fallback).
 struct ConsentFlowView: View {
     @EnvironmentObject private var session: StudySession
     @State private var step: Step = .intro
@@ -48,9 +48,16 @@ struct ConsentFlowView: View {
         .navigationTitle("Consent")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showResearchKitTask) {
-            ResearchKitConsentPresenter {
+            ResearchKitConsentPresenter { signatureRef, pdfURL in
                 showResearchKitTask = false
-                step = .comprehension
+                Task {
+                    await session.completeConsent(
+                        comprehensionPassed: true,
+                        signatureBlobRef: signatureRef,
+                        pdfURL: pdfURL
+                    )
+                    step = .done
+                }
             } onCancel: {
                 showResearchKitTask = false
             }
@@ -63,23 +70,24 @@ struct ConsentFlowView: View {
         case .intro:
             SectionIntro(
                 headline: "What you’re agreeing to",
-                support: "You’ll review study information, answer a short comprehension check, and sign if you choose to join. You can withdraw later from Settings."
+                support: "You’ll review study information, answer a short comprehension check, and sign if you choose to join. Progress is saved on this device."
             )
+            providerChip
         case .info:
             SectionIntro(
                 headline: "Study information",
-                support: "Purpose, procedures, risks/benefits, data use, and withdrawal — stub copy until IRB-approved text is wired into ResearchKit consent sections."
+                support: "Purpose, procedures, risks/benefits, data use, and withdrawal — aligned with the observational protocol (IRB text can replace stubs)."
             )
             VStack(alignment: .leading, spacing: 10) {
-                infoLine("Prospective observational study (not a clinical trial app).")
+                infoLine("Prospective observational study (not a treatment program).")
                 infoLine("Baseline questionnaires before first use; week‑4 follow-up.")
                 infoLine("Data tagged with study_code and site_code.")
-                infoLine("Contact the site team to ask questions before signing.")
+                infoLine("Investigator: \(StudyConfig.provider.displayName).")
             }
         case .comprehension:
             SectionIntro(
                 headline: "Comprehension check",
-                support: "Stub question — replace with IRB-approved items."
+                support: "Confirm you understand the study type."
             )
             VStack(spacing: 10) {
                 Text("This app is for:")
@@ -103,7 +111,7 @@ struct ConsentFlowView: View {
                         }
                         .padding(14)
                         .background(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
                                 .stroke(
                                     comprehensionAnswer == choice ? BrandTheme.teal : BrandTheme.mist,
                                     lineWidth: 1
@@ -116,25 +124,45 @@ struct ConsentFlowView: View {
         case .signature:
             SectionIntro(
                 headline: "Signature",
-                support: "Type your name to stub a signature. On device, ResearchKit captures a drawn signature."
+                support: "Type your name to record consent locally. With ResearchKit linked, a drawn signature + PDF export are used."
             )
             TextField("Full name", text: $signatureName)
                 .textContentType(.name)
                 .padding(14)
                 .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(BrandTheme.parchment)
+                    RoundedRectangle(cornerRadius: 4, style: .continuous)
+                        .fill(Color.white.opacity(0.7))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            RoundedRectangle(cornerRadius: 4, style: .continuous)
                                 .stroke(BrandTheme.mist, lineWidth: 1)
                         )
                 )
         case .done:
             SectionIntro(
                 headline: "Consent saved locally",
-                support: "Version \(StudyConfig.consentDocumentVersion). Sync to Cloud Run when the API is live."
+                support: "Version \(StudyConfig.consentDocumentVersion). You can quit and reopen — progress persists on this device."
             )
         }
+    }
+
+    private var providerChip: some View {
+        HStack(spacing: 12) {
+            if let asset = StudyConfig.provider.photoAssetName {
+                Image(asset)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 48, height: 48)
+                    .clipped()
+            }
+            VStack(alignment: .leading, spacing: 2) {
+                Text(StudyConfig.provider.displayName)
+                    .font(BrandTheme.body(14, weight: .semibold))
+                Text(StudyConfig.provider.organization)
+                    .font(BrandTheme.body(12))
+                    .foregroundStyle(BrandTheme.graphite)
+            }
+        }
+        .padding(.top, 4)
     }
 
     @ViewBuilder
@@ -142,11 +170,11 @@ struct ConsentFlowView: View {
         switch step {
         case .intro:
             VStack(spacing: 12) {
-                PrimaryButton(title: "Review information") {
-                    step = .info
-                }
-                SecondaryButton(title: "Open ResearchKit consent task") {
+                PrimaryButton(title: "Open consent task") {
                     showResearchKitTask = true
+                }
+                SecondaryButton(title: "Review in app instead") {
+                    step = .info
                 }
             }
         case .info:

@@ -57,6 +57,7 @@ fastlane/test_output
 
 # Vendored ResearchKit clone (use scripts/bootstrap-researchkit.sh)
 Vendor/ResearchKit/
+Vendor/ResearchKit.bootstrap.stamp
 
 # CocoaPods
 Podfile.lock

@@ -9,18 +9,25 @@
 		9372BA05ADC784F8B5F7A3EE /* StudySession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5236DEC4725414BE9D02BB74 /* StudySession.swift */; };
 		83882FBB6435AA1838FDB7A4 /* XiallaStudiesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8737017949832043FF232D63 /* XiallaStudiesApp.swift */; };
 		FE4AA21C7FBA4B60A6FE9E56 /* StudyConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513390C65FBA8721E27E557A /* StudyConfig.swift */; };
+		0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F269246B4DD871D37E23332 /* StudyParameters.swift */; };
 		F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648F92AA96FA5171F750B289 /* BrandComponents.swift */; };
 		71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6932CDFF5E49B18C9118306 /* BrandTheme.swift */; };
 		30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */; };
+		D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */; };
+		7CA543FB7C5D56EA7A385F79 /* ConsentResultParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4876AB18C3576C22B284F229 /* ConsentResultParser.swift */; };
 		3D19A3790D00D088A7DFA43D /* ResearchKitConsentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8164E5F8CBB60695661FA8DA /* ResearchKitConsentPresenter.swift */; };
 		FAD5E87C5255B91FE898F920 /* EligibilityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAD1D68A9E9F28C9E587C10 /* EligibilityView.swift */; };
 		C099509641FC880434A54388 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3ED3154E841D7F362176CE /* HomeView.swift */; };
 		9B5ED234FE52E19913394407 /* KitFulfillmentStubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAEF5C25FAC273D196E1AD8 /* KitFulfillmentStubView.swift */; };
+		733BA7E0892F316B28500C09 /* ProviderProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D6B75A9F0138F352BD5C349 /* ProviderProfileView.swift */; };
 		8A8601F95B903EC1F35492C3 /* ReminderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D427B2936BAC4BB5A78D2050 /* ReminderSettingsView.swift */; };
 		819CDE760F0CA9B2F2D1DEA3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBB0B29F54C46DB409E2A788 /* SettingsView.swift */; };
 		AE457CEA45144AD8BBA0506F /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C2F31F29CE4608041631F1 /* SplashView.swift */; };
+		3DF9960A1D24C689E3E68C44 /* BrandedSurveyFallbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */; };
 		FE02F94E3B17D772EE801D69 /* ResearchKitSurveyPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBB36FD2E33BA4BBCC3618B9 /* ResearchKitSurveyPresenter.swift */; };
+		3687716EDEB98DCFFBEF607D /* ResearchKitTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15E11D0FBA68290E5DE5267 /* ResearchKitTaskFactory.swift */; };
 		0555174015E9FD884B85058E /* SurveyFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */; };
+		ABB9556A046527A2101E4DF3 /* SurveyResultParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A47A1DB38A5BD758B9B1E72 /* SurveyResultParser.swift */; };
 		05EC4A687C13E0A1D8FA3170 /* IIEF5Scoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194D554DB420FFE822D4B7EC /* IIEF5Scoring.swift */; };
 		7C47258BEA5C9E161D4665A1 /* StudyModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0510C2B4FD045414DBECDB /* StudyModels.swift */; };
 		0A961A33F9DEA0988113D929 /* StudyAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10B7274A50BE4E775287ACB6 /* StudyAPIClient.swift */; };
@@ -36,18 +43,25 @@
 		5236DEC4725414BE9D02BB74 /* StudySession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudySession.swift; sourceTree = "<group>"; };
 		8737017949832043FF232D63 /* XiallaStudiesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiallaStudiesApp.swift; sourceTree = "<group>"; };
 		513390C65FBA8721E27E557A /* StudyConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyConfig.swift; sourceTree = "<group>"; };
+		9F269246B4DD871D37E23332 /* StudyParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyParameters.swift; sourceTree = "<group>"; };
 		648F92AA96FA5171F750B289 /* BrandComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandComponents.swift; sourceTree = "<group>"; };
 		A6932CDFF5E49B18C9118306 /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
 		C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentFlowView.swift; sourceTree = "<group>"; };
+		643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentPDFExporter.swift; sourceTree = "<group>"; };
+		4876AB18C3576C22B284F229 /* ConsentResultParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentResultParser.swift; sourceTree = "<group>"; };
 		8164E5F8CBB60695661FA8DA /* ResearchKitConsentPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitConsentPresenter.swift; sourceTree = "<group>"; };
 		7BAD1D68A9E9F28C9E587C10 /* EligibilityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EligibilityView.swift; sourceTree = "<group>"; };
 		BC3ED3154E841D7F362176CE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		BEAEF5C25FAC273D196E1AD8 /* KitFulfillmentStubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KitFulfillmentStubView.swift; sourceTree = "<group>"; };
+		3D6B75A9F0138F352BD5C349 /* ProviderProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderProfileView.swift; sourceTree = "<group>"; };
 		D427B2936BAC4BB5A78D2050 /* ReminderSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderSettingsView.swift; sourceTree = "<group>"; };
 		FBB0B29F54C46DB409E2A788 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		31C2F31F29CE4608041631F1 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandedSurveyFallbackView.swift; sourceTree = "<group>"; };
 		CBB36FD2E33BA4BBCC3618B9 /* ResearchKitSurveyPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitSurveyPresenter.swift; sourceTree = "<group>"; };
+		A15E11D0FBA68290E5DE5267 /* ResearchKitTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitTaskFactory.swift; sourceTree = "<group>"; };
 		A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyFlowView.swift; sourceTree = "<group>"; };
+		6A47A1DB38A5BD758B9B1E72 /* SurveyResultParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyResultParser.swift; sourceTree = "<group>"; };
 		194D554DB420FFE822D4B7EC /* IIEF5Scoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIEF5Scoring.swift; sourceTree = "<group>"; };
 		0D0510C2B4FD045414DBECDB /* StudyModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyModels.swift; sourceTree = "<group>"; };
 		10B7274A50BE4E775287ACB6 /* StudyAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyAPIClient.swift; sourceTree = "<group>"; };
@@ -105,6 +119,7 @@
 			isa = PBXGroup;
 			children = (
 				513390C65FBA8721E27E557A /* StudyConfig.swift */,
+				9F269246B4DD871D37E23332 /* StudyParameters.swift */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -125,6 +140,7 @@
 				6114A3F06AE578CF7BBFEFCB /* Eligibility */,
 				DB13DE2AD419A423949EB982 /* Home */,
 				4DAA01EA8FAFFBEC3563C140 /* Kit */,
+				5EA3CB521159D44D29A210BB /* Provider */,
 				F8F2A7BC5DF4965C480A9598 /* Reminders */,
 				F22666AA846314FCBD444616 /* Settings */,
 				E3EA3E4E9537B7A9170931B4 /* Splash */,
@@ -137,6 +153,8 @@
 			isa = PBXGroup;
 			children = (
 				C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */,
+				643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */,
+				4876AB18C3576C22B284F229 /* ConsentResultParser.swift */,
 				8164E5F8CBB60695661FA8DA /* ResearchKitConsentPresenter.swift */,
 			);
 			path = Consent;
@@ -166,6 +184,14 @@
 			path = Kit;
 			sourceTree = "<group>";
 		};
+		5EA3CB521159D44D29A210BB /* Provider */ = {
+			isa = PBXGroup;
+			children = (
+				3D6B75A9F0138F352BD5C349 /* ProviderProfileView.swift */,
+			);
+			path = Provider;
+			sourceTree = "<group>";
+		};
 		F8F2A7BC5DF4965C480A9598 /* Reminders */ = {
 			isa = PBXGroup;
 			children = (
@@ -193,8 +219,11 @@
 		7F0CAF55A820D7CB4AFEE849 /* Surveys */ = {
 			isa = PBXGroup;
 			children = (
+				1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */,
 				CBB36FD2E33BA4BBCC3618B9 /* ResearchKitSurveyPresenter.swift */,
+				A15E11D0FBA68290E5DE5267 /* ResearchKitTaskFactory.swift */,
 				A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */,
+				6A47A1DB38A5BD758B9B1E72 /* SurveyResultParser.swift */,
 			);
 			path = Surveys;
 			sourceTree = "<group>";
@@ -369,18 +398,25 @@
 				9372BA05ADC784F8B5F7A3EE /* StudySession.swift in Sources */,
 				83882FBB6435AA1838FDB7A4 /* XiallaStudiesApp.swift in Sources */,
 				FE4AA21C7FBA4B60A6FE9E56 /* StudyConfig.swift in Sources */,
+				0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */,
 				F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */,
 				71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */,
 				30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */,
+				D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */,
+				7CA543FB7C5D56EA7A385F79 /* ConsentResultParser.swift in Sources */,
 				3D19A3790D00D088A7DFA43D /* ResearchKitConsentPresenter.swift in Sources */,
 				FAD5E87C5255B91FE898F920 /* EligibilityView.swift in Sources */,
 				C099509641FC880434A54388 /* HomeView.swift in Sources */,
 				9B5ED234FE52E19913394407 /* KitFulfillmentStubView.swift in Sources */,
+				733BA7E0892F316B28500C09 /* ProviderProfileView.swift in Sources */,
 				8A8601F95B903EC1F35492C3 /* ReminderSettingsView.swift in Sources */,
 				819CDE760F0CA9B2F2D1DEA3 /* SettingsView.swift in Sources */,
 				AE457CEA45144AD8BBA0506F /* SplashView.swift in Sources */,
+				3DF9960A1D24C689E3E68C44 /* BrandedSurveyFallbackView.swift in Sources */,
 				FE02F94E3B17D772EE801D69 /* ResearchKitSurveyPresenter.swift in Sources */,
+				3687716EDEB98DCFFBEF607D /* ResearchKitTaskFactory.swift in Sources */,
 				0555174015E9FD884B85058E /* SurveyFlowView.swift in Sources */,
+				ABB9556A046527A2101E4DF3 /* SurveyResultParser.swift in Sources */,
 				05EC4A687C13E0A1D8FA3170 /* IIEF5Scoring.swift in Sources */,
 				7C47258BEA5C9E161D4665A1 /* StudyModels.swift in Sources */,
 				0A961A33F9DEA0988113D929 /* StudyAPIClient.swift in Sources */,

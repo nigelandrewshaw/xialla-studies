@@ -5,24 +5,36 @@ struct HomeView: View {
     @State private var appeared = false
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             AtmosphereBackground()
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
-                    header
+                VStack(alignment: .leading, spacing: 0) {
+                    heroBand
 
-                    statusBlock
-
-                    nextAction
-
-                    Spacer(minLength: 40)
+                    VStack(alignment: .leading, spacing: 28) {
+                        statusBlock
+                        if let summary = session.lastIIEF5Summary {
+                            Text(summary)
+                                .font(BrandTheme.body(15, weight: .semibold))
+                                .foregroundStyle(BrandTheme.teal)
+                        } else if let iief = session.snapshot.surveys.last(where: { $0.instrument == .iief5 }),
+                                  let total = iief.scoreTotal {
+                            Text("Latest IIEF-5 \(total)" + (iief.scoreBand.map { " (\($0))" } ?? ""))
+                                .font(BrandTheme.body(15, weight: .semibold))
+                                .foregroundStyle(BrandTheme.teal)
+                        }
+                        nextAction
+                        providerLink
+                        Spacer(minLength: 40)
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 28)
+                    .opacity(appeared ? 1 : 0)
+                    .offset(y: appeared ? 0 : 10)
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 20)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 10)
             }
+            .ignoresSafeArea(edges: .top)
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -42,13 +54,38 @@ struct HomeView: View {
         }
     }
 
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            BrandWordmark(size: 32)
-            Text("Observational study")
-                .font(BrandTheme.body(15))
-                .foregroundStyle(BrandTheme.graphite)
+    /// Full-bleed brand hero band (not a card) — homepage header imagery.
+    private var heroBand: some View {
+        ZStack(alignment: .bottomLeading) {
+            Image("HomeHero")
+                .resizable()
+                .scaledToFill()
+                .frame(maxWidth: .infinity)
+                .frame(height: 280)
+                .clipped()
+
+            LinearGradient(
+                colors: [
+                    .clear,
+                    BrandTheme.ink.opacity(0.55),
+                    BrandTheme.teal.opacity(0.85)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            VStack(alignment: .leading, spacing: 8) {
+                BrandWordmark(size: 36, light: true)
+                Text("Observational study")
+                    .font(BrandTheme.body(15, weight: .medium))
+                    .foregroundStyle(BrandTheme.chalk.opacity(0.9))
+            }
+            .padding(.horizontal, 24)
+            .padding(.bottom, 28)
+            .opacity(appeared ? 1 : 0)
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 280)
     }
 
     private var statusBlock: some View {
@@ -89,11 +126,14 @@ struct HomeView: View {
             }
         case .baselineComplete:
             VStack(spacing: 12) {
-                Text("We’ll remind you at week 4. You can keep using Xialla as usual.")
+                Text("We’ll remind you at week 4. You can keep using Xialla as usual. Progress is saved if you quit.")
                     .font(BrandTheme.body(15))
                     .foregroundStyle(BrandTheme.graphite)
                 SecondaryButton(title: "Reminder settings") {
                     session.path.append(.reminders)
+                }
+                SecondaryButton(title: "Demo: jump to week 4") {
+                    Task { await session.demoAdvanceToWeek4() }
                 }
             }
         case .followUpDue:
@@ -162,5 +202,35 @@ struct HomeView: View {
         case .completed: return .done
         case .withdrawn: return .neutral
         }
+    }
+
+    private var providerLink: some View {
+        Button {
+            session.path.append(.provider)
+        } label: {
+            HStack(spacing: 12) {
+                if let asset = StudyConfig.provider.photoAssetName {
+                    Image(asset)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 52, height: 52)
+                        .clipped()
+                }
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(StudyConfig.provider.displayName)
+                        .font(BrandTheme.body(15, weight: .semibold))
+                        .foregroundStyle(BrandTheme.ink)
+                    Text("Study investigator · \(StudyConfig.provider.location)")
+                        .font(BrandTheme.body(13))
+                        .foregroundStyle(BrandTheme.graphite)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(BrandTheme.graphite)
+            }
+            .padding(.vertical, 8)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Study investigator profile")
     }
 }

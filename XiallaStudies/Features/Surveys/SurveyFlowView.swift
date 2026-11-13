@@ -6,6 +6,7 @@ struct SurveyFlowView: View {
 
     @State private var showResearchKit = false
     @State private var completedLocally = false
+    @State private var scoreSummary: String?
 
     private var instruments: [InstrumentCode] {
         switch timepoint {
@@ -24,8 +25,8 @@ struct SurveyFlowView: View {
                 SectionIntro(
                     headline: timepoint.displayName,
                     support: timepoint == .baseline
-                        ? "Complete these before first use when possible. IIEF-5 wording is placeholder until licensed."
-                        : "Week‑4 instruments. Additional 8/12-week timepoints can plug into the same structure later."
+                        ? "IIEF-5 uses 1–5 sliders (default 3), then history and experience questions. Saved on-device."
+                        : "Week‑4 instruments. IIEF-5 sliders default to 3."
                 )
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -44,24 +45,22 @@ struct SurveyFlowView: View {
                     }
                 }
 
+                if let scoreSummary {
+                    Text(scoreSummary)
+                        .font(BrandTheme.body(15, weight: .semibold))
+                        .foregroundStyle(BrandTheme.teal)
+                }
+
                 Spacer()
 
                 VStack(spacing: 12) {
-                    SecondaryButton(title: "Open ResearchKit survey task") {
-                        showResearchKit = true
-                    }
-                    PrimaryButton(title: completedLocally ? "Continue" : "Complete stubs & save") {
-                        Task {
-                            if !completedLocally {
-                                if timepoint == .baseline {
-                                    await session.completeBaselineSurveys()
-                                } else if timepoint == .week4 {
-                                    await session.completeWeek4FollowUp()
-                                }
-                                completedLocally = true
-                            } else {
-                                session.path = []
-                            }
+                    if !completedLocally {
+                        PrimaryButton(title: "Start questionnaires") {
+                            showResearchKit = true
+                        }
+                    } else {
+                        PrimaryButton(title: "Back to home") {
+                            session.path = []
                         }
                     }
                 }
@@ -69,16 +68,26 @@ struct SurveyFlowView: View {
             .padding(24)
         }
         .navigationBarTitleDisplayMode(.inline)
+        .task {
+            // Reflect already-persisted administrations after relaunch.
+            let existing = session.snapshot.surveys.filter { $0.timepoint == timepoint && $0.status == .completed }
+            if !existing.isEmpty {
+                completedLocally = true
+                if let iief = existing.first(where: { $0.instrument == .iief5 }),
+                   let total = iief.scoreTotal {
+                    scoreSummary = "IIEF-5 \(total)" + (iief.scoreBand.map { " (\($0))" } ?? "")
+                }
+            }
+        }
         .sheet(isPresented: $showResearchKit) {
-            ResearchKitSurveyPresenter(timepoint: timepoint) {
+            ResearchKitSurveyPresenter(timepoint: timepoint) { outcome in
                 showResearchKit = false
                 Task {
-                    if timepoint == .baseline {
-                        await session.completeBaselineSurveys()
-                    } else if timepoint == .week4 {
-                        await session.completeWeek4FollowUp()
-                    }
+                    await session.applySurveyOutcome(outcome, timepoint: timepoint)
                     completedLocally = true
+                    if let total = outcome.iief5Total, let band = outcome.iief5Band {
+                        scoreSummary = "IIEF-5 \(total) (\(IIEF5Scoring.displayName(for: band)))"
+                    }
                 }
             } onCancel: {
                 showResearchKit = false

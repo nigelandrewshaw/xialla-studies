@@ -21,15 +21,32 @@ final class StudyModelTests: XCTestCase {
     }
 
     func testIIEF5ScoreBandsHelper() {
-        XCTAssertEqual(IIEF5Scoring.band(for: 8), .severe)
-        XCTAssertEqual(IIEF5Scoring.band(for: 12), .moderate)
-        XCTAssertEqual(IIEF5Scoring.band(for: 18), .mildToModerate)
-        XCTAssertEqual(IIEF5Scoring.band(for: 22), .mild)
+        // Standard IIEF-5 bands: 5–7 severe, 8–11 moderate, 12–16 mild–moderate, 17–21 mild, 22–25 none
+        XCTAssertEqual(IIEF5Scoring.band(for: 6), .severe)
+        XCTAssertEqual(IIEF5Scoring.band(for: 8), .moderate)
+        XCTAssertEqual(IIEF5Scoring.band(for: 12), .mildToModerate)
+        XCTAssertEqual(IIEF5Scoring.band(for: 18), .mild)
+        XCTAssertEqual(IIEF5Scoring.band(for: 22), .none)
         XCTAssertEqual(IIEF5Scoring.band(for: 25), .none)
+        XCTAssertEqual(IIEF5Scoring.total(answers: [3, 3, 3, 3, 3]), 15)
+        XCTAssertEqual(IIEF5Scoring.band(for: 15), .mildToModerate)
     }
 
-    func testSnapshotRoundTrip() throws {
+    func testStudyParametersProviderIsJeff() {
+        let provider = StudyConfig.provider
+        XCTAssertEqual(provider.displayName, "Dr. Jeffrey Campbell")
+        XCTAssertEqual(provider.photoAssetName, "DrJeffreyCampbell")
+        XCTAssertTrue(provider.organization.contains("Joseph"))
+    }
+
+    func testSnapshotRoundTripIncludesPreferences() throws {
         let enrollmentId = UUID()
+        var prefs = StudyPreferences.defaults
+        prefs.hasSeenSplash = true
+        prefs.demoWeek4Advanced = true
+        prefs.resumeRoute = .week4FollowUp
+        prefs.remindersEnabled = true
+
         let snapshot = StudySnapshot(
             participant: ParticipantProfile(
                 id: UUID(),
@@ -54,7 +71,28 @@ final class StudyModelTests: XCTestCase {
                 meta: .makeNow()
             ),
             consent: nil,
-            surveys: [],
+            surveys: [
+                SurveyAdministration(
+                    id: UUID(),
+                    enrollmentId: enrollmentId,
+                    instrument: .iief5,
+                    timepoint: .baseline,
+                    status: .completed,
+                    startedAt: Date(timeIntervalSince1970: 1_700_000_200),
+                    completedAt: Date(timeIntervalSince1970: 1_700_000_200),
+                    responses: (1...5).map {
+                        SurveyResponseItem(
+                            id: UUID(),
+                            itemCode: "iief5.q\($0)",
+                            value: "3",
+                            answeredAt: Date(timeIntervalSince1970: 1_700_000_200)
+                        )
+                    },
+                    scoreTotal: 15,
+                    scoreBand: "mild-to-moderate",
+                    meta: .makeNow()
+                )
+            ],
             reminders: [],
             kit: KitFulfillmentStub(
                 id: UUID(),
@@ -62,7 +100,10 @@ final class StudyModelTests: XCTestCase {
                 status: .pendingDecision,
                 notes: "stub",
                 meta: .makeNow()
-            )
+            ),
+            preferences: prefs,
+            consentPDFPath: nil,
+            schemaVersion: StudySnapshot.currentSchemaVersion
         )
 
         let encoder = JSONEncoder()
@@ -73,5 +114,23 @@ final class StudyModelTests: XCTestCase {
         let decoded = try decoder.decode(StudySnapshot.self, from: data)
         XCTAssertEqual(decoded.enrollment?.arm, .prospective)
         XCTAssertEqual(decoded.kit?.status, .pendingDecision)
+        XCTAssertTrue(decoded.preferences.hasSeenSplash)
+        XCTAssertTrue(decoded.preferences.demoWeek4Advanced)
+        XCTAssertEqual(decoded.preferences.resumeRoute, .week4FollowUp)
+        XCTAssertEqual(decoded.surveys.first?.scoreTotal, 15)
+    }
+
+    func testLocalStudyStorePersistsAndClears() async throws {
+        let store = LocalStudyStore(filename: "test-snapshot-\(UUID().uuidString).json")
+        var snap = StudySnapshot.empty
+        snap.preferences.hasSeenSplash = true
+        snap.preferences.demoWeek4Advanced = true
+        try await store.saveSnapshot(snap)
+        let loaded = try await store.loadSnapshot()
+        XCTAssertTrue(loaded.preferences.hasSeenSplash)
+        XCTAssertTrue(loaded.preferences.demoWeek4Advanced)
+        try await store.clear()
+        let cleared = try await store.loadSnapshot()
+        XCTAssertFalse(cleared.preferences.hasSeenSplash)
     }
 }

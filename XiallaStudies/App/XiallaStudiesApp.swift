@@ -8,6 +8,7 @@ struct XiallaStudiesApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(session)
+                .tint(BrandTheme.teal)
                 .task {
                     await session.bootstrap()
                 }
@@ -21,8 +22,15 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            if showSplash || session.isLoading {
+            if session.isLoading {
+                ZStack {
+                    HeroBackground()
+                    ProgressView()
+                        .tint(BrandTheme.chalk)
+                }
+            } else if showSplash && !session.hasSeenSplash {
                 SplashView {
+                    Task { await session.markSplashSeen() }
                     withAnimation(BrandTheme.reveal) {
                         showSplash = false
                     }
@@ -45,6 +53,8 @@ struct RootView: View {
                                 ReminderSettingsView()
                             case .kitStub:
                                 KitFulfillmentStubView()
+                            case .provider:
+                                ProviderProfileView()
                             }
                         }
                 }
@@ -56,5 +66,8 @@ struct RootView: View {
         }
         .animation(BrandTheme.reveal, value: showSplash)
         .animation(BrandTheme.reveal, value: session.isLoading)
+        .onChange(of: session.hasSeenSplash) { _, seen in
+            if seen { showSplash = false }
+        }
     }
 }
