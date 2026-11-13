@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Branded IIEF-5 + companion surveys when ResearchKit is not linked.
-/// IIEF-5 items use **sliders 1–5 defaulting to 3** with official instrument wording.
+/// Full-battery branded IIEF-5 + companion surveys (legacy sheet).
+/// Prefer `InstrumentSurveyView` for per-row opens. IIEF-5: sliders 1–5 default **3**.
 struct BrandedSurveyFallbackView: View {
     let timepoint: SurveyTimepoint
     var onFinish: (SurveyTaskOutcome) -> Void

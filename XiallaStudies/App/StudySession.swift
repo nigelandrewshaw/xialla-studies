@@ -108,7 +108,8 @@ final class StudySession: ObservableObject {
     func completeConsent(
         comprehensionPassed: Bool,
         signatureBlobRef: String?,
-        pdfURL: URL? = nil
+        pdfURL: URL? = nil,
+        navigateToBaseline: Bool = true
     ) async {
         guard var enrollment = snapshot.enrollment else { return }
         let consent = ConsentRecord(
@@ -134,7 +135,9 @@ final class StudySession: ObservableObject {
             lastError = error.localizedDescription
         }
 
-        path.append(.baselineSurveys)
+        if navigateToBaseline {
+            path.append(.baselineSurveys)
+        }
     }
 
     func applySurveyOutcome(_ outcome: SurveyTaskOutcome, timepoint: SurveyTimepoint) async {

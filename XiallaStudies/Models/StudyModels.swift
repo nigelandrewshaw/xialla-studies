@@ -146,7 +146,7 @@ struct ConsentRecord: Codable, Equatable, Identifiable {
     var enrollmentId: UUID
     var documentVersion: String
     var signedAt: Date
-    /// Local stub reference for signature image / PDF blob.
+    /// Local reference for saved signature PNG (and typed name) under Documents.
     var signatureBlobRef: String?
     var comprehensionPassed: Bool
     var meta: StudyRecordMeta

@@ -96,7 +96,7 @@ struct SurveyFlowView: View {
             refreshSummary()
         }
         .sheet(item: $activeInstrument) { instrument in
-            ResearchKitSurveyPresenter(timepoint: timepoint, instrument: instrument) { outcome in
+            InstrumentSurveyView(timepoint: timepoint, instrument: instrument) { outcome in
                 activeInstrument = nil
                 Task {
                     await session.applySurveyOutcome(outcome, timepoint: timepoint)

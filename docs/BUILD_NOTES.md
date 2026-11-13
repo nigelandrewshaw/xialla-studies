@@ -6,9 +6,9 @@ The scaffolding agent ran on Linux without Xcode / `xcodebuild` / iOS Simulator.
 
 - Sources, `project.yml`, and `XiallaStudies.xcodeproj` were generated here.
 - **Compile and UI tests must run on a Mac** with Xcode 16+.
-- ResearchKit is **not** committed (large + git-lfs). Bootstrap on a Mac clones it into `Vendor/` (gitignored) and wires the Xcode project.
+- The app is **native SwiftUI only** — ResearchKit is not a dependency.
 
-## Mac: open, sign, run (without ResearchKit)
+## Mac: open, sign, run
 
 ```bash
 git pull
@@ -17,61 +17,31 @@ open XiallaStudies.xcodeproj
 # Run on simulator or device
 ```
 
-Branded SwiftUI consent/survey fallbacks run the full demo without ResearchKit (`#if canImport`). IIEF-5 uses **official item wording**, 1–5 sliders defaulting to **3**, with tan `#CDA788` filled tracks.
+If you previously cloned ResearchKit under `Vendor/` or embedded ResearchKit / ResearchKitUI frameworks, remove those local refs after pull — they are unused.
 
-## Mac: wire ResearchKit (recommended)
+## Consent (native)
 
-```bash
-# One-time (or after a clean clone):
-./scripts/bootstrap-researchkit.sh
+Branded multi-step eConsent:
 
-# Optional fork:
-# RESEARCHKIT_URL=https://github.com/nigelandrewshaw/ResearchKit.git ./scripts/bootstrap-researchkit.sh
+1. Purpose  
+2. Procedures  
+3. Data use  
+4. Risks and benefits  
+5. Voluntary participation / withdrawal  
+6. Comprehension check  
+7. First name + last name + PencilKit signature pad (finger / Apple Pencil) + date  
 
-open XiallaStudies.xcodeproj
-# Team → Build & Run
-```
+Signature PNG and a lightweight consent PDF are written under the app Documents directory; `ConsentRecord.signatureBlobRef` and `consentPDFPath` persist via `LocalStudyStore`. Sign & join requires non-empty names and ink on the pad.
 
-What bootstrap does:
+Fieldwork Geo body copy on consent screens uses **16pt** (+1pt vs earlier stubs). No header/icon overlays on review sections.
 
-1. Clones ResearchKit into `Vendor/ResearchKit/` (requires network; `brew install git-lfs` recommended).
-2. Regenerates `XiallaStudies.xcodeproj` via `scripts/generate_xcodeproj.py`.
-3. Runs `scripts/wire_researchkit_xcodeproj.py` to:
-   - add `Vendor/ResearchKit/ResearchKit.xcodeproj` as a subproject
-   - link **ResearchKit** + **ResearchKitUI**
-   - **Embed & Sign** both frameworks on the app target
+## Surveys (native)
 
-You should **not** need to manually Add Files / Embed in Xcode after a successful bootstrap. If frameworks are missing (e.g. you regenerated the project later):
-
-```bash
-python3 scripts/generate_xcodeproj.py
-python3 scripts/wire_researchkit_xcodeproj.py
-```
-
-### XcodeGen alternative
-
-```bash
-brew install xcodegen
-./scripts/bootstrap-researchkit.sh   # clone + wire checked-in pbxproj
-# If you prefer regenerating from project.yml:
-xcodegen generate
-python3 scripts/wire_researchkit_xcodeproj.py
-```
-
-### What “wired” ResearchKit enables
-
-| Flow | Behavior |
-|------|----------|
-| Consent | Branded instruction steps (square SF Symbol `iconImage`, scrollable `bodyItems` above sticky Next, Fieldwork via `ResearchKitChrome`; not raw landscape `consent_XX` art) → comprehension → `ORKConsentReviewStep` → PDF when feasible |
-| Surveys | `ORKOrderedTask` with official IIEF-5 scale items (1–5, default 3) + companion forms |
-| Bookends | Branded SwiftUI intro/hub screens still wrap the ORK task sheets |
-| Fallback | If frameworks are not linked, SwiftUI consent stubs + `BrandedSurveyFallbackView` keep demos working |
-
-ORK task chrome uses the app tint (tan `#CDA788`) for scale/slider fills. Primary CTAs remain black `#212322` on white canvases.
+IIEF-5 and companion instruments use branded SwiftUI (`InstrumentSurveyView`): official item wording, 1–5 sliders defaulting to **3**, tan `#CDA788` filled tracks. Primary CTAs remain black `#212322` on white canvases.
 
 ## Unit tests
 
-`XiallaStudiesTests` covers config/timepoints, arm gating, `site_code`/`study_code` meta, IIEF-5 bands + official wording smoke check, snapshot Codable round-trip (incl. preferences). These do not require ResearchKit.
+`XiallaStudiesTests` covers config/timepoints, arm gating, `site_code`/`study_code` meta, IIEF-5 bands + official wording smoke check, snapshot Codable round-trip (incl. preferences).
 
 ## Local persistence
 
@@ -96,8 +66,6 @@ ORK task chrome uses the app tint (tan `#CDA788`) for scale/slider fills. Primar
 
 ```bash
 python3 scripts/generate_xcodeproj.py
-# If ResearchKit was bootstrapped:
-python3 scripts/wire_researchkit_xcodeproj.py
 # or
-xcodegen generate && python3 scripts/wire_researchkit_xcodeproj.py
+brew install xcodegen && xcodegen generate
 ```

@@ -1,9 +1,9 @@
-# Optional path — official install is embedding ResearchKit.xcodeproj (see README).
+# CocoaPods is unused — the app is native SwiftUI only (no ResearchKit).
+# Kept as a stub so accidental `pod install` does not pull frameworks.
 platform :ios, '17.0'
 use_frameworks!
 
 target 'XiallaStudies' do
-  pod 'ResearchKit', '~> 3.0'
 end
 
 target 'XiallaStudiesTests' do

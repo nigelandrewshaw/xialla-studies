@@ -17,7 +17,7 @@ struct StudySnapshot: Codable, Equatable {
     var kit: KitFulfillmentStub?
     /// Lightweight UI / demo preferences that should survive relaunch.
     var preferences: StudyPreferences
-    /// Optional consent PDF path under Documents (ResearchKit export).
+    /// Optional consent PDF path under Documents (native export).
     var consentPDFPath: String?
     /// Schema for forward-compatible migrations.
     var schemaVersion: Int

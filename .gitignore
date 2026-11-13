@@ -55,7 +55,7 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
-# Vendored ResearchKit clone (use scripts/bootstrap-researchkit.sh)
+# Legacy local ResearchKit clones (no longer used — safe to delete after pull)
 Vendor/ResearchKit/
 Vendor/ResearchKit.bootstrap.stamp
 

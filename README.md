@@ -1,6 +1,6 @@
 # Xialla Studies
 
-Prospective-first **ResearchKit** observational study iOS app for Xialla.
+Prospective-first observational study iOS app for Xialla — **native branded SwiftUI** (consent + surveys).
 
 > App v1: baseline + **4-week** follow-up only (8/12 weeks structured for later).  
 > Records carry `study_code` + `site_code`. Backend is stubbed (Cloud Run / Postgres later).  
@@ -16,24 +16,15 @@ Suggested bundle ID: `com.xialla.studies`
    git clone https://github.com/nigelandrewshaw/xialla-studies.git
    cd xialla-studies
    git checkout cursor/scaffold-ios-study-app-5ff7   # or main once merged
-   ./scripts/bootstrap-researchkit.sh                 # clone + wire ResearchKit
    open XiallaStudies.xcodeproj
    ```
 
 2. Select the **XiallaStudies** scheme → set your **Team** for signing.
-3. Run on a simulator or device.
-4. Walkthrough: Splash → Eligibility → Consent (ORK when linked) → Baseline (official IIEF-5, sliders default **3**, tan fill) → Home → Settings → **Demo: jump to week 4** → Week‑4 surveys → Reminders / Investigator profile.
+3. If you previously bootstrapped ResearchKit locally, remove `Vendor/ResearchKit` and any leftover framework refs in Xcode — this project no longer embeds ResearchKit.
+4. Run on a simulator or device.
+5. Walkthrough: Splash → Eligibility → **native Consent** (sections → comprehension → name + signature pad) → Baseline (official IIEF-5, sliders default **3**, tan fill) → Home → Settings → **Demo: jump to week 4** → Week‑4 surveys → Reminders / Investigator profile.
 
-> Without bootstrap, branded SwiftUI fallbacks still complete the full demo. See `docs/BUILD_NOTES.md` for Mac wiring details.
-
-## ResearchKit dependency
-
-```bash
-./scripts/bootstrap-researchkit.sh
-# optional: RESEARCHKIT_URL=https://github.com/nigelandrewshaw/ResearchKit.git ./scripts/bootstrap-researchkit.sh
-```
-
-Bootstrap clones `Vendor/ResearchKit` (gitignored) and wires **ResearchKit** + **ResearchKitUI** into the checked-in Xcode project (link + Embed & Sign). No manual Add Files step required after a successful run.
+See `docs/BUILD_NOTES.md` for Fieldwork fonts, assets, and no-Mac notes.
 
 ## What’s included
 
@@ -42,9 +33,9 @@ Bootstrap clones `Vendor/ResearchKit` (gitignored) and wires **ResearchKit** + *
 | Splash / Home | Full-bleed xialla.com hero + logo; white content canvas |
 | Provider | `StudyParameters.provider` → Dr. Jeffrey Campbell profile |
 | Eligibility | Prospective enabled; current-user gated |
-| Consent | ORK visual consent → comprehension → signature → PDF when linked |
-| Surveys | Official IIEF-5 wording; sliders **1–5 default 3** (tan fill) + history / UX / AE |
-| Chrome | White screens; primary buttons `#212322`; tan `#CDA788` accents |
+| Consent | Native branded multi-step (purpose → procedures → data use → risks/benefits → voluntary → comprehension → first/last name + PencilKit signature + date); PNG + PDF saved locally |
+| Surveys | Official IIEF-5 wording; branded SwiftUI sliders **1–5 default 3** (tan fill) + history / UX / AE |
+| Chrome | White screens; primary buttons `#212322`; tan `#CDA788` accents; Fieldwork Geo |
 | Week-4 | Real path + **demo advance** / seed in Settings |
 | Reminders | Local notification scheduler (~4 weeks) |
 | Persistence | `LocalStudyStore` JSON — survives relaunch |
@@ -68,4 +59,4 @@ Edit `StudyParameters.xiallaObservationalV1` / `StudyConfig.active` (or later lo
 - `provider` (name, photo asset, title, site, bio)
 - `apiBaseURL` when Cloud Run is live
 
-See `docs/BUILD_NOTES.md` for Fieldwork font licensing, ResearchKit Mac steps, assets, and no-Mac notes.
+See `docs/BUILD_NOTES.md` for Fieldwork font licensing, assets, and regenerate notes.

@@ -12,11 +12,11 @@
 		0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F269246B4DD871D37E23332 /* StudyParameters.swift */; };
 		F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 648F92AA96FA5171F750B289 /* BrandComponents.swift */; };
 		71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6932CDFF5E49B18C9118306 /* BrandTheme.swift */; };
-		35ABF541B3A35E0F429E628D /* ResearchKitChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F335F7659E21147879CB56 /* ResearchKitChrome.swift */; };
+		5A9A8E464427FAA289992260 /* ConsentDocumentCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 266CB3925C7B88E76190B0C5 /* ConsentDocumentCopy.swift */; };
 		30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */; };
 		D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */; };
-		7CA543FB7C5D56EA7A385F79 /* ConsentResultParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4876AB18C3576C22B284F229 /* ConsentResultParser.swift */; };
-		3D19A3790D00D088A7DFA43D /* ResearchKitConsentPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8164E5F8CBB60695661FA8DA /* ResearchKitConsentPresenter.swift */; };
+		726ADD1B3686AB860004CD55 /* ConsentSignatureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AD61EAA61FFB8FF863A5BB /* ConsentSignatureStore.swift */; };
+		35F7372A9A6AAB5AF7B46CF1 /* SignaturePadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 186DBD0A08BD900C308E6BB7 /* SignaturePadView.swift */; };
 		FAD5E87C5255B91FE898F920 /* EligibilityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BAD1D68A9E9F28C9E587C10 /* EligibilityView.swift */; };
 		C099509641FC880434A54388 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3ED3154E841D7F362176CE /* HomeView.swift */; };
 		9B5ED234FE52E19913394407 /* KitFulfillmentStubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEAEF5C25FAC273D196E1AD8 /* KitFulfillmentStubView.swift */; };
@@ -26,8 +26,6 @@
 		AE457CEA45144AD8BBA0506F /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C2F31F29CE4608041631F1 /* SplashView.swift */; };
 		3DF9960A1D24C689E3E68C44 /* BrandedSurveyFallbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */; };
 		973ECD6898011F227E63B150 /* InstrumentSurveyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD0D810520F49E72B9305506 /* InstrumentSurveyView.swift */; };
-		FE02F94E3B17D772EE801D69 /* ResearchKitSurveyPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBB36FD2E33BA4BBCC3618B9 /* ResearchKitSurveyPresenter.swift */; };
-		3687716EDEB98DCFFBEF607D /* ResearchKitTaskFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A15E11D0FBA68290E5DE5267 /* ResearchKitTaskFactory.swift */; };
 		0555174015E9FD884B85058E /* SurveyFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */; };
 		ABB9556A046527A2101E4DF3 /* SurveyResultParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A47A1DB38A5BD758B9B1E72 /* SurveyResultParser.swift */; };
 		05EC4A687C13E0A1D8FA3170 /* IIEF5Scoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 194D554DB420FFE822D4B7EC /* IIEF5Scoring.swift */; };
@@ -51,11 +49,11 @@
 		9F269246B4DD871D37E23332 /* StudyParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StudyParameters.swift; sourceTree = "<group>"; };
 		648F92AA96FA5171F750B289 /* BrandComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandComponents.swift; sourceTree = "<group>"; };
 		A6932CDFF5E49B18C9118306 /* BrandTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandTheme.swift; sourceTree = "<group>"; };
-		51F335F7659E21147879CB56 /* ResearchKitChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitChrome.swift; sourceTree = "<group>"; };
+		266CB3925C7B88E76190B0C5 /* ConsentDocumentCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentDocumentCopy.swift; sourceTree = "<group>"; };
 		C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentFlowView.swift; sourceTree = "<group>"; };
 		643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentPDFExporter.swift; sourceTree = "<group>"; };
-		4876AB18C3576C22B284F229 /* ConsentResultParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentResultParser.swift; sourceTree = "<group>"; };
-		8164E5F8CBB60695661FA8DA /* ResearchKitConsentPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitConsentPresenter.swift; sourceTree = "<group>"; };
+		A3AD61EAA61FFB8FF863A5BB /* ConsentSignatureStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsentSignatureStore.swift; sourceTree = "<group>"; };
+		186DBD0A08BD900C308E6BB7 /* SignaturePadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignaturePadView.swift; sourceTree = "<group>"; };
 		7BAD1D68A9E9F28C9E587C10 /* EligibilityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EligibilityView.swift; sourceTree = "<group>"; };
 		BC3ED3154E841D7F362176CE /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		BEAEF5C25FAC273D196E1AD8 /* KitFulfillmentStubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KitFulfillmentStubView.swift; sourceTree = "<group>"; };
@@ -65,8 +63,6 @@
 		31C2F31F29CE4608041631F1 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandedSurveyFallbackView.swift; sourceTree = "<group>"; };
 		CD0D810520F49E72B9305506 /* InstrumentSurveyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstrumentSurveyView.swift; sourceTree = "<group>"; };
-		CBB36FD2E33BA4BBCC3618B9 /* ResearchKitSurveyPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitSurveyPresenter.swift; sourceTree = "<group>"; };
-		A15E11D0FBA68290E5DE5267 /* ResearchKitTaskFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResearchKitTaskFactory.swift; sourceTree = "<group>"; };
 		A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyFlowView.swift; sourceTree = "<group>"; };
 		6A47A1DB38A5BD758B9B1E72 /* SurveyResultParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurveyResultParser.swift; sourceTree = "<group>"; };
 		194D554DB420FFE822D4B7EC /* IIEF5Scoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IIEF5Scoring.swift; sourceTree = "<group>"; };
@@ -139,7 +135,6 @@
 			children = (
 				648F92AA96FA5171F750B289 /* BrandComponents.swift */,
 				A6932CDFF5E49B18C9118306 /* BrandTheme.swift */,
-				51F335F7659E21147879CB56 /* ResearchKitChrome.swift */,
 			);
 			path = Design;
 			sourceTree = "<group>";
@@ -163,10 +158,11 @@
 		2733A94FC6201CAC65289A88 /* Consent */ = {
 			isa = PBXGroup;
 			children = (
+				266CB3925C7B88E76190B0C5 /* ConsentDocumentCopy.swift */,
 				C2FDC42170CB96BEEAF080CE /* ConsentFlowView.swift */,
 				643479EE8AC9902C98136D5C /* ConsentPDFExporter.swift */,
-				4876AB18C3576C22B284F229 /* ConsentResultParser.swift */,
-				8164E5F8CBB60695661FA8DA /* ResearchKitConsentPresenter.swift */,
+				A3AD61EAA61FFB8FF863A5BB /* ConsentSignatureStore.swift */,
+				186DBD0A08BD900C308E6BB7 /* SignaturePadView.swift */,
 			);
 			path = Consent;
 			sourceTree = "<group>";
@@ -232,8 +228,6 @@
 			children = (
 				1B159FB3B3FD9FA772CBA32E /* BrandedSurveyFallbackView.swift */,
 				CD0D810520F49E72B9305506 /* InstrumentSurveyView.swift */,
-				CBB36FD2E33BA4BBCC3618B9 /* ResearchKitSurveyPresenter.swift */,
-				A15E11D0FBA68290E5DE5267 /* ResearchKitTaskFactory.swift */,
 				A530A3626D9A35CA8A9924B3 /* SurveyFlowView.swift */,
 				6A47A1DB38A5BD758B9B1E72 /* SurveyResultParser.swift */,
 			);
@@ -427,11 +421,11 @@
 				0338E7A98D4E0C0CDFEDEBEE /* StudyParameters.swift in Sources */,
 				F2E1E7D3EC2E8C58F5326910 /* BrandComponents.swift in Sources */,
 				71C597B511DD470000CFFFD0 /* BrandTheme.swift in Sources */,
-				35ABF541B3A35E0F429E628D /* ResearchKitChrome.swift in Sources */,
+				5A9A8E464427FAA289992260 /* ConsentDocumentCopy.swift in Sources */,
 				30C13796023AF78C0EBD4027 /* ConsentFlowView.swift in Sources */,
 				D82EAD6494E2C6D8F2FAAC1E /* ConsentPDFExporter.swift in Sources */,
-				7CA543FB7C5D56EA7A385F79 /* ConsentResultParser.swift in Sources */,
-				3D19A3790D00D088A7DFA43D /* ResearchKitConsentPresenter.swift in Sources */,
+				726ADD1B3686AB860004CD55 /* ConsentSignatureStore.swift in Sources */,
+				35F7372A9A6AAB5AF7B46CF1 /* SignaturePadView.swift in Sources */,
 				FAD5E87C5255B91FE898F920 /* EligibilityView.swift in Sources */,
 				C099509641FC880434A54388 /* HomeView.swift in Sources */,
 				9B5ED234FE52E19913394407 /* KitFulfillmentStubView.swift in Sources */,
@@ -441,8 +435,6 @@
 				AE457CEA45144AD8BBA0506F /* SplashView.swift in Sources */,
 				3DF9960A1D24C689E3E68C44 /* BrandedSurveyFallbackView.swift in Sources */,
 				973ECD6898011F227E63B150 /* InstrumentSurveyView.swift in Sources */,
-				FE02F94E3B17D772EE801D69 /* ResearchKitSurveyPresenter.swift in Sources */,
-				3687716EDEB98DCFFBEF607D /* ResearchKitTaskFactory.swift in Sources */,
 				0555174015E9FD884B85058E /* SurveyFlowView.swift in Sources */,
 				ABB9556A046527A2101E4DF3 /* SurveyResultParser.swift in Sources */,
 				05EC4A687C13E0A1D8FA3170 /* IIEF5Scoring.swift in Sources */,
