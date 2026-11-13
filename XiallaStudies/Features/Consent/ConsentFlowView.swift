@@ -106,14 +106,14 @@ struct ConsentFlowView: View {
                             Spacer()
                             if comprehensionAnswer == choice {
                                 Image(systemName: "checkmark.circle.fill")
-                                    .foregroundStyle(BrandTheme.teal)
+                                    .foregroundStyle(BrandTheme.accent)
                             }
                         }
                         .padding(14)
                         .background(
                             RoundedRectangle(cornerRadius: 4, style: .continuous)
                                 .stroke(
-                                    comprehensionAnswer == choice ? BrandTheme.teal : BrandTheme.mist,
+                                    comprehensionAnswer == choice ? BrandTheme.accent : BrandTheme.mist,
                                     lineWidth: 1
                                 )
                         )
@@ -208,7 +208,7 @@ struct ConsentFlowView: View {
     private func infoLine(_ text: String) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Circle()
-                .fill(BrandTheme.teal)
+                .fill(BrandTheme.accent)
                 .frame(width: 6, height: 6)
                 .padding(.top, 7)
             Text(text)

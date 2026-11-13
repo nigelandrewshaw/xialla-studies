@@ -63,12 +63,12 @@ struct EligibilityView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(BrandTheme.parchment.opacity(0.9))
+                    .fill(BrandTheme.chalk.opacity(0.92))
                     .shadow(color: BrandTheme.ink.opacity(0.06), radius: 12, y: 4)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(enabled ? BrandTheme.teal.opacity(0.35) : BrandTheme.mist, lineWidth: 1)
+                    .stroke(enabled ? BrandTheme.accent.opacity(0.35) : BrandTheme.mist, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

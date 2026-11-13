@@ -39,7 +39,7 @@ struct PrimaryButton: View {
                 .foregroundStyle(BrandTheme.chalk)
                 .background(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .fill(enabled ? BrandTheme.teal : BrandTheme.graphite.opacity(0.35))
+                        .fill(enabled ? BrandTheme.accent : BrandTheme.graphite.opacity(0.35))
                 )
         }
         .disabled(!enabled)
@@ -58,10 +58,10 @@ struct SecondaryButton: View {
                 .font(BrandTheme.body(16, weight: .medium))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .foregroundStyle(BrandTheme.teal)
+                .foregroundStyle(BrandTheme.ink)
                 .background(
                     RoundedRectangle(cornerRadius: 4, style: .continuous)
-                        .stroke(BrandTheme.teal.opacity(0.55), lineWidth: 1)
+                        .stroke(BrandTheme.ink.opacity(0.55), lineWidth: 1)
                 )
         }
         .buttonStyle(.plain)
@@ -97,9 +97,9 @@ struct StatusChip: View {
         var color: Color {
             switch self {
             case .neutral: return BrandTheme.graphite
-            case .active: return BrandTheme.teal
+            case .active: return BrandTheme.accent
             case .due: return BrandTheme.attention
-            case .done: return BrandTheme.success
+            case .done: return BrandTheme.ink
             }
         }
     }
@@ -112,7 +112,7 @@ struct StatusChip: View {
             .padding(.vertical, 6)
             .background(
                 RoundedRectangle(cornerRadius: 4, style: .continuous)
-                    .fill(tone.color.opacity(0.12))
+                    .fill(tone.color.opacity(0.14))
             )
     }
 }

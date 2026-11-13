@@ -48,7 +48,7 @@ struct SurveyFlowView: View {
                 if let scoreSummary {
                     Text(scoreSummary)
                         .font(BrandTheme.body(15, weight: .semibold))
-                        .foregroundStyle(BrandTheme.teal)
+                        .foregroundStyle(BrandTheme.accent)
                 }
 
                 Spacer()

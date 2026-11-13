@@ -14,7 +14,7 @@ struct SplashView: View {
 
                 VStack(spacing: 20) {
                     BrandWordmark(size: 52, light: true)
-                        .padding(.horizontal, 48)
+                        .padding(.horizontal, BrandTheme.contentInset + 24)
                         .opacity(appeared ? 1 : 0)
                         .offset(y: appeared ? 0 : 14)
                         .scaleEffect(appeared ? 1 : 0.96)
@@ -23,7 +23,8 @@ struct SplashView: View {
                         .font(BrandTheme.body(17))
                         .foregroundStyle(BrandTheme.chalk.opacity(0.9))
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 36)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, BrandTheme.contentInset + 12)
                         .opacity(appeared ? 1 : 0)
                         .offset(y: appeared ? 0 : 10)
                 }
@@ -33,7 +34,7 @@ struct SplashView: View {
                 PrimaryButton(title: "Continue") {
                     onContinue()
                 }
-                .padding(.horizontal, 28)
+                .padding(.horizontal, BrandTheme.contentInset + 4)
                 .padding(.bottom, 40)
                 .opacity(appeared ? 1 : 0)
             }

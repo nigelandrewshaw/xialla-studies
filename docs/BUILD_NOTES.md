@@ -34,7 +34,7 @@ The app target does **not** link ResearchKit by default. Presenters use `#if can
 
 - Logo + homepage hero pulled from xialla.com CDN into `Assets.xcassets`.
 - **Fieldwork** is Adobe Fonts (Typekit kit `shw7daa`) — webfont license does **not** allow shipping binaries in the app. See `XiallaStudies/Resources/Fonts/README.md`. Until a desktop license is added, UI uses **Avenir Next** at Fieldwork-like weights. `UIAppFonts` can be registered when `.otf` files are dropped in.
-- Colors: site ink `#1C1C1C`, product teal accent, light gray surfaces from site CSS tokens.
+- Official Pantone swatch in `BrandTheme`: ink `#212322` (419 C), tan surfaces `#CDA788` (4665 C), accent `#FF6A39` (1645 C). Forest/sage in kit but not chrome.
 
 ## Study parameters / provider
 

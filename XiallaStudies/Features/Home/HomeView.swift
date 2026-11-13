@@ -8,7 +8,7 @@ struct HomeView: View {
         ZStack(alignment: .top) {
             AtmosphereBackground()
 
-            ScrollView {
+            ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
                     heroBand
 
@@ -17,22 +17,26 @@ struct HomeView: View {
                         if let summary = session.lastIIEF5Summary {
                             Text(summary)
                                 .font(BrandTheme.body(15, weight: .semibold))
-                                .foregroundStyle(BrandTheme.teal)
+                                .foregroundStyle(BrandTheme.accent)
+                                .fixedSize(horizontal: false, vertical: true)
                         } else if let iief = session.snapshot.surveys.last(where: { $0.instrument == .iief5 }),
                                   let total = iief.scoreTotal {
                             Text("Latest IIEF-5 \(total)" + (iief.scoreBand.map { " (\($0))" } ?? ""))
                                 .font(BrandTheme.body(15, weight: .semibold))
-                                .foregroundStyle(BrandTheme.teal)
+                                .foregroundStyle(BrandTheme.accent)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         nextAction
                         providerLink
                         Spacer(minLength: 40)
                     }
-                    .padding(.horizontal, 24)
+                    .padding(.horizontal, BrandTheme.contentInset)
                     .padding(.top, 28)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .opacity(appeared ? 1 : 0)
                     .offset(y: appeared ? 0 : 10)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .ignoresSafeArea(edges: .top)
         }
@@ -54,38 +58,41 @@ struct HomeView: View {
         }
     }
 
-    /// Full-bleed brand hero band (not a card) — homepage header imagery.
+    /// Full-bleed brand hero — logo over product imagery; status copy sits below.
     private var heroBand: some View {
-        ZStack(alignment: .bottomLeading) {
-            Image("HomeHero")
-                .resizable()
-                .scaledToFill()
-                .frame(maxWidth: .infinity)
-                .frame(height: 280)
-                .clipped()
+        Color.clear
+            .frame(height: 280)
+            .frame(maxWidth: .infinity)
+            .overlay {
+                GeometryReader { geo in
+                    ZStack(alignment: .bottomLeading) {
+                        Image("HomeHero")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: geo.size.width, height: geo.size.height)
+                            .clipped()
 
-            LinearGradient(
-                colors: [
-                    .clear,
-                    BrandTheme.ink.opacity(0.55),
-                    BrandTheme.teal.opacity(0.85)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+                        LinearGradient(
+                            colors: [
+                                .clear,
+                                BrandTheme.ink.opacity(0.45),
+                                BrandTheme.ink.opacity(0.82)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
 
-            VStack(alignment: .leading, spacing: 8) {
-                BrandWordmark(size: 36, light: true)
-                Text("Observational study")
-                    .font(BrandTheme.body(15, weight: .medium))
-                    .foregroundStyle(BrandTheme.chalk.opacity(0.9))
+                        BrandWordmark(size: 40, light: true)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, BrandTheme.contentInset)
+                            .padding(.trailing, BrandTheme.contentInset)
+                            .padding(.bottom, 28)
+                            .opacity(appeared ? 1 : 0)
+                    }
+                }
             }
-            .padding(.horizontal, 24)
-            .padding(.bottom, 28)
-            .opacity(appeared ? 1 : 0)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 280)
+            .clipped()
+            .accessibilityElement(children: .contain)
     }
 
     private var statusBlock: some View {
@@ -93,19 +100,32 @@ struct HomeView: View {
             Text(statusHeadline)
                 .font(BrandTheme.display(26, weight: .medium))
                 .foregroundStyle(BrandTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
             Text(statusSupport)
                 .font(BrandTheme.body(16))
                 .foregroundStyle(BrandTheme.graphite)
+                .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 8) {
-                StatusChip(text: chipLabel, tone: chipTone)
-                if let due = session.enrollment?.followUpDueAt {
-                    StatusChip(
-                        text: "Due \(due.formatted(date: .abbreviated, time: .omitted))",
-                        tone: session.status == .followUpDue ? .due : .neutral
-                    )
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) {
+                    statusChips
+                }
+                VStack(alignment: .leading, spacing: 8) {
+                    statusChips
                 }
             }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    private var statusChips: some View {
+        StatusChip(text: chipLabel, tone: chipTone)
+        if let due = session.enrollment?.followUpDueAt {
+            StatusChip(
+                text: "Due \(due.formatted(date: .abbreviated, time: .omitted))",
+                tone: session.status == .followUpDue ? .due : .neutral
+            )
         }
     }
 
@@ -125,10 +145,11 @@ struct HomeView: View {
                 session.path.append(.baselineSurveys)
             }
         case .baselineComplete:
-            VStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 12) {
                 Text("We’ll remind you at week 4. You can keep using Xialla as usual. Progress is saved if you quit.")
                     .font(BrandTheme.body(15))
                     .foregroundStyle(BrandTheme.graphite)
+                    .fixedSize(horizontal: false, vertical: true)
                 SecondaryButton(title: "Reminder settings") {
                     session.path.append(.reminders)
                 }
@@ -144,10 +165,12 @@ struct HomeView: View {
             Text("Thank you — your study participation is complete.")
                 .font(BrandTheme.body(16))
                 .foregroundStyle(BrandTheme.graphite)
+                .fixedSize(horizontal: false, vertical: true)
         case .withdrawn:
             Text("You have withdrawn from the study.")
                 .font(BrandTheme.body(16))
                 .foregroundStyle(BrandTheme.graphite)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -208,27 +231,37 @@ struct HomeView: View {
         Button {
             session.path.append(.provider)
         } label: {
-            HStack(spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
                 if let asset = StudyConfig.provider.photoAssetName {
                     Image(asset)
                         .resizable()
                         .scaledToFill()
                         .frame(width: 52, height: 52)
-                        .clipped()
+                        .clipShape(Circle())
+                        .overlay(
+                            Circle()
+                                .stroke(BrandTheme.ink.opacity(0.12), lineWidth: 1)
+                        )
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text(StudyConfig.provider.displayName)
                         .font(BrandTheme.body(15, weight: .semibold))
                         .foregroundStyle(BrandTheme.ink)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                     Text("Study investigator · \(StudyConfig.provider.location)")
                         .font(BrandTheme.body(13))
                         .foregroundStyle(BrandTheme.graphite)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                Spacer()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .layoutPriority(1)
                 Image(systemName: "chevron.right")
                     .foregroundStyle(BrandTheme.graphite)
             }
             .padding(.vertical, 8)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Study investigator profile")

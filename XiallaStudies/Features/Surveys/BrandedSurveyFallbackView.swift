@@ -67,14 +67,14 @@ struct BrandedSurveyFallbackView: View {
                                     .font(BrandTheme.body(12))
                                     .foregroundStyle(BrandTheme.graphite)
                                 Slider(value: $answers[index], in: 1...5, step: 1)
-                                    .tint(BrandTheme.teal)
+                                    .tint(BrandTheme.accent)
                                 Text("5")
                                     .font(BrandTheme.body(12))
                                     .foregroundStyle(BrandTheme.graphite)
                             }
                             Text("Selected: \(Int(answers[index]))")
                                 .font(BrandTheme.body(13, weight: .semibold))
-                                .foregroundStyle(BrandTheme.teal)
+                                .foregroundStyle(BrandTheme.accent)
                         }
                     }
                 }
@@ -160,12 +160,12 @@ struct BrandedSurveyFallbackView: View {
                 .font(BrandTheme.body(15, weight: .semibold))
             HStack {
                 Text(low).font(BrandTheme.body(12)).foregroundStyle(BrandTheme.graphite)
-                Slider(value: value, in: 1...5, step: 1).tint(BrandTheme.teal)
+                Slider(value: value, in: 1...5, step: 1).tint(BrandTheme.accent)
                 Text(high).font(BrandTheme.body(12)).foregroundStyle(BrandTheme.graphite)
             }
             Text("\(Int(value.wrappedValue))")
                 .font(BrandTheme.body(13, weight: .medium))
-                .foregroundStyle(BrandTheme.teal)
+                .foregroundStyle(BrandTheme.accent)
         }
     }
 

@@ -1,37 +1,42 @@
 import SwiftUI
 
-/// Xialla study visual tokens — aligned with xialla.com (ink chrome + product teal).
+/// Xialla study visual tokens — official Pantone brand swatch + site layout habits.
 /// Fieldwork (Adobe Fonts / Typekit) cannot be legally redistributed as an app binary;
-/// we match weights with Avenir Next (geometric humanist sans) until a desktop Fieldwork
-/// license is added under `Resources/Fonts/` + `UIAppFonts`. See `docs/BUILD_NOTES.md`.
+/// we match weights with Avenir Next until a desktop Fieldwork license is added under
+/// `Resources/Fonts/` + `UIAppFonts`. See `docs/BUILD_NOTES.md`.
 enum BrandTheme {
-    // MARK: - Colors (from xialla.com CSS tokens + product teal)
+    // MARK: - Official swatch (Pantone)
 
-    /// Site ink — `--text-color` / `--accent` ≈ rgb(28, 28, 28).
-    static let ink = Color(red: 28 / 255, green: 28 / 255, blue: 28 / 255)
+    /// Near-black — Pantone 419 C `#212322`. Primary text / dark UI / secondary chrome.
+    static let ink = Color(red: 33 / 255, green: 35 / 255, blue: 34 / 255)
 
-    /// Secondary text — site muted (~65% of ink on light).
-    static let graphite = Color(red: 0.40, green: 0.40, blue: 0.40)
+    /// Tan — Pantone 4665 C `#CDA788`. Surfaces / backgrounds.
+    static let tan = Color(red: 205 / 255, green: 167 / 255, blue: 136 / 255)
 
-    /// Light surface — site `--background` light scheme ≈ rgb(239, 239, 239).
-    static let parchment = Color(red: 239 / 255, green: 239 / 255, blue: 239 / 255)
+    /// Accent — Pantone 1645 C `#FF6A39`. Highlighted type, badges, tints, primary CTAs.
+    static let accent = Color(red: 255 / 255, green: 106 / 255, blue: 57 / 255)
 
-    /// Cool mist for gradients (hero teal-gray from homepage imagery).
-    static let mist = Color(red: 0.78, green: 0.84, blue: 0.84)
+    /// Forest — Pantone kit `#1D3C34`. Available sparingly; not brand chrome.
+    static let forest = Color(red: 29 / 255, green: 60 / 255, blue: 52 / 255)
 
-    /// Product teal — Xialla device / medical silicone accent (not hospital blue).
-    static let teal = Color(red: 18 / 255, green: 92 / 255, blue: 96 / 255)
+    /// Sage — Pantone kit `#A9C47F`. Available sparingly; not brand chrome.
+    static let sage = Color(red: 169 / 255, green: 196 / 255, blue: 127 / 255)
 
-    /// Soft teal highlight for focus / progress.
-    static let tealSoft = Color(red: 0.22, green: 0.52, blue: 0.54)
+    // MARK: - Derived UI tokens
 
-    /// Attention (reminders / AE) — restrained amber.
-    static let attention = Color(red: 0.72, green: 0.45, blue: 0.18)
+    /// Secondary text — ink at reduced strength on tan.
+    static let graphite = Color(red: 72 / 255, green: 68 / 255, blue: 64 / 255)
 
-    /// Success / completion — site success-text ≈ rgb(48, 122, 7) softened.
-    static let success = Color(red: 48 / 255, green: 122 / 255, blue: 7 / 255)
+    /// Soft border / chip wash — tan lightened toward chalk.
+    static let mist = Color(red: 232 / 255, green: 214 / 255, blue: 196 / 255)
 
-    /// Pure white for overlays on dark hero.
+    /// Alias for surface fills that previously used paper gray.
+    static let parchment = tan
+
+    /// Reminders / due — same family as accent highlight.
+    static let attention = accent
+
+    /// Pure white for overlays on dark hero / labels on accent fills.
     static let chalk = Color.white
 
     // MARK: - Gradients
@@ -39,9 +44,9 @@ enum BrandTheme {
     static var atmosphere: LinearGradient {
         LinearGradient(
             colors: [
-                parchment,
-                mist.opacity(0.55),
-                teal.opacity(0.14)
+                tan,
+                mist,
+                tan.opacity(0.92)
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
@@ -51,9 +56,9 @@ enum BrandTheme {
     static var heroWash: LinearGradient {
         LinearGradient(
             colors: [
-                ink.opacity(0.55),
-                Color(red: 0.05, green: 0.18, blue: 0.20).opacity(0.72),
-                teal.opacity(0.78)
+                ink.opacity(0.35),
+                ink.opacity(0.62),
+                Color.black.opacity(0.78)
             ],
             startPoint: .top,
             endPoint: .bottom
@@ -100,6 +105,11 @@ enum BrandTheme {
         }
     }
 
+    // MARK: - Layout
+
+    /// Horizontal content inset — keeps Dynamic Island / narrow phones from clipping leading edges.
+    static let contentInset: CGFloat = 24
+
     // MARK: - Motion
 
     static let reveal = Animation.easeOut(duration: 0.55)
@@ -129,15 +139,17 @@ struct HeroBackground: View {
     var intensity: Double = 1.0
 
     var body: some View {
-        ZStack {
-            Image(imageName)
-                .resizable()
-                .scaledToFill()
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                .clipped()
+        GeometryReader { geo in
+            ZStack {
+                Image(imageName)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .clipped()
 
-            BrandTheme.heroWash
-                .opacity(0.88 * intensity)
+                BrandTheme.heroWash
+                    .opacity(0.88 * intensity)
+            }
         }
         .ignoresSafeArea()
     }
