@@ -9,49 +9,60 @@ struct ProviderProfileView: View {
         ZStack {
             AtmosphereBackground()
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 0) {
                     portrait
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(provider.displayName)
-                            .font(BrandTheme.display(28, weight: .medium))
-                            .foregroundStyle(BrandTheme.ink)
-                        Text(provider.credentials)
-                            .font(BrandTheme.body(15, weight: .semibold))
-                            .foregroundStyle(BrandTheme.tan)
-                        Text(provider.title)
-                            .font(BrandTheme.body(16))
-                            .foregroundStyle(BrandTheme.ink)
-                        Text(provider.specialty)
-                            .font(BrandTheme.body(15))
-                            .foregroundStyle(BrandTheme.graphite)
-                    }
-                    .opacity(appeared ? 1 : 0)
-                    .offset(y: appeared ? 0 : 8)
-
-                    VStack(alignment: .leading, spacing: 6) {
-                        labelRow("Site", provider.organization)
-                        labelRow("Location", provider.location)
-                        labelRow("Study / site codes", "\(StudyConfig.studyCode) · \(StudyConfig.siteCode)")
-                    }
-
-                    Text(provider.bio)
-                        .font(BrandTheme.body(15))
-                        .foregroundStyle(BrandTheme.graphite)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    if let url = provider.profileURL {
-                        Link(destination: url) {
-                            Text("View on xialla.com")
+                    VStack(alignment: .leading, spacing: 24) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(provider.displayName)
+                                .font(BrandTheme.display(28, weight: .medium))
+                                .foregroundStyle(BrandTheme.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(provider.credentials)
                                 .font(BrandTheme.body(15, weight: .semibold))
                                 .foregroundStyle(BrandTheme.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(provider.title)
+                                .font(BrandTheme.body(16))
+                                .foregroundStyle(BrandTheme.ink)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(provider.specialty)
+                                .font(BrandTheme.body(15))
+                                .foregroundStyle(BrandTheme.graphite)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
-                    }
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 8)
 
-                    Spacer(minLength: 24)
+                        VStack(alignment: .leading, spacing: 10) {
+                            labelRow("Site", provider.organization)
+                            labelRow("Location", provider.location)
+                            labelRow("Study code", StudyConfig.studyCode)
+                            labelRow("Site code", StudyConfig.siteCode)
+                        }
+
+                        Text(provider.bio)
+                            .font(BrandTheme.body(15))
+                            .foregroundStyle(BrandTheme.graphite)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        if let url = provider.profileURL {
+                            Link(destination: url) {
+                                Text("View on xialla.com")
+                                    .font(BrandTheme.body(15, weight: .semibold))
+                                    .foregroundStyle(BrandTheme.ink)
+                            }
+                        }
+
+                        Spacer(minLength: 24)
+                    }
+                    .padding(.horizontal, BrandTheme.contentInset)
+                    .padding(.top, 24)
+                    .padding(.bottom, 16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(24)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
         .navigationTitle("Study investigator")
@@ -63,29 +74,38 @@ struct ProviderProfileView: View {
         }
     }
 
+    /// Full-bleed portrait constrained like Home hero — avoids scaledToFill overflow clipping text.
     @ViewBuilder
     private var portrait: some View {
-        Group {
-            if let asset = provider.photoAssetName {
-                Image(asset)
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                BrandTheme.tan.opacity(0.45)
+        Color.clear
+            .frame(height: 320)
+            .frame(maxWidth: .infinity)
+            .overlay {
+                GeometryReader { geo in
+                    Group {
+                        if let asset = provider.photoAssetName {
+                            Image(asset)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: geo.size.width, height: geo.size.height)
+                                .clipped()
+                        } else {
+                            BrandTheme.mist
+                                .frame(width: geo.size.width, height: geo.size.height)
+                        }
+                    }
+                    .overlay(alignment: .bottom) {
+                        LinearGradient(
+                            colors: [.clear, BrandTheme.ink.opacity(0.28)],
+                            startPoint: .center,
+                            endPoint: .bottom
+                        )
+                    }
+                }
             }
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 320)
-        .clipped()
-        .overlay(alignment: .bottom) {
-            LinearGradient(
-                colors: [.clear, BrandTheme.ink.opacity(0.35)],
-                startPoint: .center,
-                endPoint: .bottom
-            )
-        }
-        .opacity(appeared ? 1 : 0)
-        .scaleEffect(appeared ? 1 : 1.02)
+            .clipped()
+            .opacity(appeared ? 1 : 0)
+            .scaleEffect(appeared ? 1 : 1.02)
     }
 
     private func labelRow(_ title: String, _ value: String) -> some View {
@@ -93,12 +113,14 @@ struct ProviderProfileView: View {
             Text(title.uppercased())
                 .font(BrandTheme.body(11, weight: .semibold))
                 .tracking(0.8)
-                .foregroundStyle(BrandTheme.tan)
+                .foregroundStyle(BrandTheme.graphite)
             Text(value)
-                .font(BrandTheme.body(15))
+                .font(BrandTheme.body(15, weight: .medium))
                 .foregroundStyle(BrandTheme.ink)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 2)
     }
 }
 

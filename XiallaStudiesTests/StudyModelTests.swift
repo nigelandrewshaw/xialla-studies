@@ -53,6 +53,13 @@ final class StudyModelTests: XCTestCase {
         XCTAssertTrue(provider.organization.contains("Joseph"))
     }
 
+    func testStudyAndSiteCodesAreRealDemoValues() {
+        XCTAssertEqual(StudyConfig.studyCode, "XIALLA-OBS-V1")
+        XCTAssertEqual(StudyConfig.siteCode, "SJH-LON")
+        XCTAssertNotEqual(StudyConfig.studyCode, "STUDY_CODE")
+        XCTAssertNotEqual(StudyConfig.siteCode, "SITE_CODE")
+    }
+
     func testSnapshotRoundTripIncludesPreferences() throws {
         let enrollmentId = UUID()
         var prefs = StudyPreferences.defaults

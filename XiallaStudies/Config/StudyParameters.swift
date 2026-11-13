@@ -47,9 +47,10 @@ struct StudyProviderParameters: Codable, Equatable, Sendable, Identifiable {
 extension StudyParameters {
     /// Temporary hardcode for the Xialla observational v1 / Jeff demo.
     /// Replace with a fetch keyed by `studyCode` + `siteCode` when the API exists.
+    /// Demo codes: Observational Study v1.0 / first site St. Joseph’s London (`XIALLA-OBS-V1` · `SJH-LON`).
     static let xiallaObservationalV1 = StudyParameters(
-        studyCode: "STUDY_CODE",
-        siteCode: "SITE_CODE",
+        studyCode: "XIALLA-OBS-V1",
+        siteCode: "SJH-LON",
         consentDocumentVersion: "0.1.0-stub",
         primaryFollowUpWeek: 4,
         followUpWeeks: [4],
